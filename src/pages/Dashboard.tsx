@@ -1,23 +1,6 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 
 // ─── Shared atoms ────────────────────────────────────────────────────────────
-
-function Spark({ data, color = '#2d5c3a', w = 44, h = 16 }: {
-  data: number[]; color?: string; w?: number; h?: number;
-}) {
-  if (!data || data.length < 2) return null
-  const min = Math.min(...data)
-  const max = Math.max(...data)
-  const rng = max - min || 1
-  const pts = data
-    .map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / rng) * (h - 3) - 1.5}`)
-    .join(' ')
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="block shrink-0">
-      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-    </svg>
-  )
-}
 
 function SectionHead({ title, badge, link }: {
   title: string; badge?: string; link?: { label: string; fn: () => void };
@@ -47,76 +30,66 @@ function SectionHead({ title, badge, link }: {
 
 // ─── Market signals ──────────────────────────────────────────────────────────
 
-const CREATIVE_THUMB = '/uploads/IMG_3472.jpg'
-
-type KpiProps = {
-  label: string; value: string; delta?: string; pos?: boolean; meta?: string;
-  spark?: number[]; sparkColor?: string; last?: boolean;
-}
-
-function KpiTile({ label, value, delta, pos, meta, spark, sparkColor, last }: KpiProps) {
+function SignalCard({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className={`flex-1 min-w-0 px-[18px] py-[14px] flex flex-col gap-[5px] cursor-pointer ${last ? '' : 'border-r border-line'}`}>
-      <div className="text-[10px] font-medium text-dim uppercase tracking-[0.04em]">{label}</div>
-      <div className="flex items-end justify-between gap-1.5">
-        <div className="min-w-0 flex-1">
-          <div className="text-[22px] font-medium text-ink font-mono tracking-[-0.03em] leading-[1.05] tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
-            {value}
-          </div>
-          {meta && <div className="text-[11px] text-mid mt-1">{meta}</div>}
-          {delta && (
-            <div className={`text-[10px] font-mono mt-1 ${pos ? 'text-brand' : 'text-danger'}`}>{delta}</div>
-          )}
-        </div>
-        {spark && <Spark data={spark} color={sparkColor || '#2d5c3a'} />}
-      </div>
-    </div>
-  )
-}
-
-function TopCreativeTile() {
-  return (
-    <div className="flex-1 min-w-0 px-3 py-[10px] flex flex-col gap-[5px] cursor-pointer border-r border-line">
-      <div className="text-[10px] font-medium text-dim">Top creative</div>
-      <div className="flex items-start gap-[9px]">
-        <div className="relative shrink-0 w-10 h-10 rounded-[5px] overflow-hidden border border-line">
-          <img src={CREATIVE_THUMB} alt="" className="w-full h-full object-cover block" />
-          <span className="absolute top-[2px] left-[2px] text-[7px] font-bold tracking-[0.05em] bg-black/55 text-white px-1 py-[1px] rounded-sm">
-            UGC
-          </span>
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-[5px] mb-[2px]">
-            <span className="text-base font-medium text-ink font-mono tracking-[-0.02em]">82</span>
-            <span className="text-[10px] text-mid font-mono">CTR 4.8%</span>
-          </div>
-          <div className="text-[10px] text-dim truncate">Mag Glycinate</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function ActiveTestsTile() {
-  return (
-    <div className="flex-1 min-w-0 px-[14px] py-3 flex flex-col gap-[5px] cursor-pointer">
-      <div className="text-[10px] font-medium text-dim">Active tests</div>
-      <div>
-        <div className="text-[20px] font-medium text-ink font-mono tracking-[-0.03em] leading-[1.05] tabular-nums">3</div>
-        <div className="text-[11px] text-mid mt-1">2 completed last 7d</div>
-      </div>
+    <div className="flex-1 min-w-0 bg-surf border-[0.5px] border-[#e5e7eb] rounded-lg px-4 py-3.5 flex flex-col gap-2">
+      <div className="text-[10px] font-medium text-[#9ca3af] uppercase tracking-[0.04em]">{label}</div>
+      <div className="flex-1">{children}</div>
     </div>
   )
 }
 
 function MarketSignals() {
   return (
-    <div className="bg-surf border border-[#e2deda] rounded-[10px] flex overflow-hidden">
-      <KpiTile label="Findings · 7d" value="14" delta="↑ +5 vs prior" pos spark={[6, 7, 5, 9, 11, 10, 14]} />
-      <KpiTile label="MER" value="3.42" delta="↑ +0.18 vs prior" pos spark={[2.8, 3.0, 3.1, 3.2, 3.3, 3.38, 3.42]} />
-      <KpiTile label="Top product" value="Mag Glycinate" meta="+23% rev this week" spark={[40, 44, 50, 55, 62, 70, 80]} />
-      <TopCreativeTile />
-      <ActiveTestsTile />
+    <div className="flex gap-2.5">
+      <SignalCard label="FINDINGS · 7D">
+        <div className="text-[26px] font-medium text-ink leading-none mb-1.5">14</div>
+        <div className="text-[11px]">
+          <span className="text-[#1d9e75] font-medium">↑ +5</span>
+          <span className="text-[#6b7280]"> vs prior</span>
+        </div>
+      </SignalCard>
+
+      <SignalCard label="MER">
+        <div className="text-[26px] font-medium text-ink leading-none mb-1.5">3.42</div>
+        <div className="text-[11px]">
+          <span className="text-[#1d9e75] font-medium">↑ +0.18</span>
+          <span className="text-[#6b7280]"> vs prior</span>
+        </div>
+      </SignalCard>
+
+      <SignalCard label="TOP PRODUCT">
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/uploads/IMG_3472.jpg"
+            alt=""
+            className="w-7 h-7 rounded-[5px] object-cover shrink-0 border-[0.5px] border-[#e5e7eb]"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="text-[13px] font-medium text-ink truncate">Mag Glycinate</div>
+            <div className="text-[10px] font-medium text-[#1d9e75]">+23% rev</div>
+          </div>
+        </div>
+      </SignalCard>
+
+      <SignalCard label="TOP CREATIVE">
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/uploads/IMG_3486.jpg"
+            alt=""
+            className="w-9 h-9 rounded-[5px] object-cover shrink-0 border-[0.5px] border-[#e5e7eb]"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="text-base font-medium text-ink leading-[1.1]">82</div>
+            <div className="text-[10px] text-[#6b7280]">CTR 4.8%</div>
+          </div>
+        </div>
+      </SignalCard>
+
+      <SignalCard label="ACTIVE TESTS">
+        <div className="text-[26px] font-medium text-ink leading-none mb-1.5">3</div>
+        <div className="text-[11px] text-[#6b7280]">2 completed 7d</div>
+      </SignalCard>
     </div>
   )
 }
