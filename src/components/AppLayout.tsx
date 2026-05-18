@@ -139,7 +139,7 @@ function LeftNav() {
 
 function TopBar() {
   return (
-    <div className="h-[46px] bg-surf flex items-center px-5 gap-4 shrink-0 font-sans">
+    <div className="h-[46px] flex items-center px-5 gap-4 shrink-0 font-sans">
       <div className="flex-1" />
       <div className="flex items-center gap-2 bg-white border border-line rounded-lg px-3 h-[30px] w-[460px] cursor-text shrink-0">
         <span className="flex-1 text-[12px] text-dim">Ask Nanalyt anything…</span>
@@ -176,9 +176,9 @@ function AppLayout() {
   return (
     <div className="flex h-screen w-full bg-white">
       <LeftNav />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 bg-canvas">
         <TopBar />
-        <main className="flex-1 overflow-y-auto bg-canvas">
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>

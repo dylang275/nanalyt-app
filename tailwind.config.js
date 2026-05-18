@@ -12,7 +12,7 @@ export default {
         surf: '#ffffff',
         'surf-2': '#f0ede8',
         'nav-bg': '#ffffff',
-        canvas: '#ebecef',
+        canvas: '#f0efec',
         brand: {
           DEFAULT: '#2d5c3a',
           bg: '#e4ede7',
