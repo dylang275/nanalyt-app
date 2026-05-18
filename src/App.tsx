@@ -6,6 +6,8 @@ import Competitors from './pages/Competitors'
 import ActiveProducts from './pages/ActiveProducts'
 import Studio from './pages/Studio'
 import Research from './pages/Research'
+import Tests from './pages/Tests'
+import Settings from './pages/Settings'
 
 function App() {
   return (
@@ -13,10 +15,12 @@ function App() {
       <Route element={<AppLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="findings" element={<Findings />} />
-        <Route path="competitors" element={<Competitors />} />
         <Route path="active-products" element={<ActiveProducts />} />
-        <Route path="studio" element={<Studio />} />
+        <Route path="competitors" element={<Competitors />} />
         <Route path="research" element={<Research />} />
+        <Route path="studio" element={<Studio />} />
+        <Route path="tests" element={<Tests />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
     </Routes>
   )
