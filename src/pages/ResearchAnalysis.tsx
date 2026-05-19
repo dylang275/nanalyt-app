@@ -609,7 +609,7 @@ function DrawerKpiTile({ label, value, sub, subColor, last }: {
 function KeywordTable({ title, total, rows }: { title: string; total: string; rows: KeywordRow[] }) {
   const compColor: Record<KeywordRow['comp'], string> = { High: '#dc2626', Medium: '#d97706', Low: '#2d5c3a' }
   return (
-    <div className="border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden mb-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+    <div className="bg-surf border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden mb-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
       <div className="flex items-center justify-between px-3.5 py-2.5 bg-brand border-b-[0.5px] border-line">
         <span className="text-[11px] font-bold tracking-[0.04em] uppercase text-white">{title}</span>
         <span className="text-[11px] text-white/75">{total}</span>
@@ -652,7 +652,7 @@ function OverviewTabContent() {
     <div className="px-6 pt-6 pb-16 flex flex-col gap-7">
       <div>
         <div className="text-base font-medium text-ink mb-4">Signal Breakdown</div>
-        <div className="border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <div className="bg-surf border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
           {SIGNAL_BREAKDOWN_ROWS.map((r, i) => (
             <SignalRow key={i} label={r.label} value={r.value} threshold={r.threshold} passed={r.passed} />
           ))}
@@ -664,7 +664,7 @@ function OverviewTabContent() {
 
       <div>
         <div className="text-[14px] font-medium text-ink mb-3">At a glance</div>
-        <div className="border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden flex shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <div className="bg-surf border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden flex shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
           {AT_A_GLANCE.map((k, i) => (
             <DrawerKpiTile
               key={k.label}
@@ -679,7 +679,7 @@ function OverviewTabContent() {
       </div>
 
       <div>
-        <div className="border-[0.5px] border-[#e2deda] rounded-lg p-[18px] shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <div className="bg-surf border-[0.5px] border-[#e2deda] rounded-lg p-[18px] shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
           <div className="text-[9px] font-semibold tracking-[0.08em] uppercase text-ink mb-2">Search Interest Trend</div>
           <div className="flex items-baseline gap-2.5 mb-1">
             <span className="text-[20px] font-medium text-ink tracking-[-0.02em]">Up 0.08% over 30 days</span>
@@ -727,7 +727,7 @@ function OverviewTabContent() {
         </div>
         <div className="grid grid-cols-4 gap-2.5 mb-3.5">
           {SERP_KPIS.map(k => (
-            <div key={k.label} className="border-[0.5px] border-[#e2deda] rounded-lg px-3.5 py-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+            <div key={k.label} className="bg-surf border-[0.5px] border-[#e2deda] rounded-lg px-3.5 py-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
               <div className="text-[9px] font-semibold tracking-[0.06em] uppercase text-ink mb-1.5">{k.label}</div>
               <div className="text-[18px] font-medium font-mono tracking-[-0.02em] mb-1" style={{ color: k.valColor }}>
                 {k.val}
@@ -736,7 +736,7 @@ function OverviewTabContent() {
             </div>
           ))}
         </div>
-        <div className="border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <div className="bg-surf border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
           <div className="grid grid-cols-[32px_minmax(0,1fr)_90px_100px_60px] px-3.5 py-[7px] bg-brand border-b-[0.5px] border-white/15">
             {['#', 'DOMAIN', 'TYPE', 'BIG-BOX', ''].map((h, i) => (
               <div key={i} className="text-[9px] font-bold tracking-[0.06em] text-white/85">{h}</div>
@@ -770,7 +770,7 @@ function OverviewTabContent() {
           <div className="text-[15px] font-medium text-ink">3. Shopping Sellers</div>
           <PillTag>11 sellers · $28–$48 spread</PillTag>
         </div>
-        <div className="border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <div className="bg-surf border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
           <div className="grid grid-cols-[minmax(0,1fr)_80px_80px_80px_90px_50px] px-3.5 py-[7px] bg-brand border-b-[0.5px] border-white/15">
             {['SELLER', 'PRICE', 'SHIPPING', 'REVIEWS', 'SHOPPING AD', ''].map((h, i) => (
               <div key={i} className="text-[9px] font-bold tracking-[0.06em] text-white/85">{h}</div>
@@ -909,7 +909,7 @@ function CrossSourceTabContent() {
         </div>
       </div>
 
-      <div className="border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+      <div className="bg-surf border-[0.5px] border-[#e2deda] rounded-lg overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
         <div className="grid grid-cols-[110px_repeat(5,1fr)_110px_80px] px-3.5 py-2 bg-brand border-b-[0.5px] border-line">
           {['SIGNAL', ...X_SOURCES, 'GOOGLE', 'AGREEMENT'].map((h, i) => (
             <div
