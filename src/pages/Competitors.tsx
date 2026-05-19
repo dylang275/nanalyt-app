@@ -189,25 +189,8 @@ function GridAreaSpark({ vals, color, h = 100 }: { vals: number[]; color: string
     const cv = coords[i]
     d += ` C ${p.x + (cv.x - p.x) / 3} ${p.y} ${cv.x - (cv.x - p.x) / 3} ${cv.y} ${cv.x} ${cv.y}`
   }
-  const uid = `gcs${color.replace(/[^a-z0-9]/gi, '')}`
-  const gridYs = [0.25, 0.5, 0.75].map(f => f * h)
-  const gridXs = [0.33, 0.67].map(f => f * W)
-  const lp = coords[coords.length - 1]
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${h}`} className="block" style={{ height: h }} preserveAspectRatio="none">
-      <defs>
-        <linearGradient id={uid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.15" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.01" />
-        </linearGradient>
-      </defs>
-      {gridYs.map((y, i) => (
-        <line key={`hy${i}`} x1="0" y1={y} x2={W} y2={y} stroke="#e0ddd8" strokeWidth="0.8" strokeDasharray="4 4" />
-      ))}
-      {gridXs.map((x, i) => (
-        <line key={`vx${i}`} x1={x} y1="0" x2={x} y2={h} stroke="#e0ddd8" strokeWidth="0.8" strokeDasharray="4 4" />
-      ))}
-      <path d={`${d} L ${lp.x} ${h} L ${coords[0].x} ${h} Z`} fill={`url(#${uid})`} />
       <path d={d} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -455,7 +438,7 @@ function WatchlistView({ onOpen }: { onOpen: (c: Competitor) => void }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 items-stretch">
+      <div className="grid grid-cols-4 gap-2 items-stretch">
         {COMPETITORS.map(comp => (
           <CompetitorCard key={comp.id} comp={comp} onOpen={onOpen} />
         ))}
