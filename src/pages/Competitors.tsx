@@ -413,9 +413,16 @@ function SectionLabel({ children }: { children: ReactNode }) {
   )
 }
 
-function ProductPickerCard({ product, showCompetes }: { product: ProductPick; showCompetes: boolean }) {
+function ProductPickerCard({ product, showCompetes, onSelect }: {
+  product: ProductPick
+  showCompetes: boolean
+  onSelect: (p: ProductPick) => void
+}) {
   return (
-    <div className="flex items-stretch rounded-lg overflow-hidden cursor-pointer bg-surf shadow-lift transition-shadow hover:shadow-card-hover">
+    <div
+      onClick={() => onSelect(product)}
+      className="flex items-stretch rounded-lg overflow-hidden cursor-pointer bg-surf shadow-lift transition-shadow hover:shadow-card-hover"
+    >
       <div className="w-20 shrink-0 relative overflow-hidden" style={{ background: product.imgBg }}>
         <img src={product.img} alt="" className="absolute inset-0 w-full h-full object-cover opacity-70" />
       </div>
@@ -750,11 +757,422 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
   )
 }
 
+// ─── Angle reads (rich content keyed by angle name) ──────────────────────────
+
+type AngleRead = {
+  perf: string
+  coverageText: string
+  pdpText: string
+  rec: string
+  positioning: string
+  corePromise: string
+}
+
+const ANGLE_READS: Record<string, AngleRead> = {
+  'Sleep-Anxiety Crossover': {
+    perf: 'Strong — 34d median longevity, 34% of budget, growing trend',
+    coverageText: '0 of your 6 active ads address this angle',
+    pdpText: "Doesn't address this angle on Magnesium Glycinate Complex",
+    rec: 'Generate PDP variant and creative against this angle. Validated by Olly, Beam, and Moon Juice.',
+    positioning: 'Connects sleep quality with daytime anxiety reduction — buyers see the product as a tool for both nighttime rest and morning calm, not just a sleep aid.',
+    corePromise: 'The angle that meets buyers where stress and sleep blur together.',
+  },
+  'Science & Ingredients': {
+    perf: 'Strong — 22d median longevity, 29% of budget, stable trend',
+    coverageText: '0 of your 6 active ads address this angle',
+    pdpText: 'Not mentioned on Magnesium Glycinate Complex PDP',
+    rec: 'Run a static creative addressing ingredient quality. Beam has held this angle for 22+ days.',
+    positioning: 'Leads with formulation specifics, dosage, and clinical sourcing — appeals to buyers researching ingredients before purchase.',
+    corePromise: 'The receipts behind the claim.',
+  },
+  'Performance & Recovery': {
+    perf: 'Declining — 11d median longevity, 18% of budget, -4 pts in 30d',
+    coverageText: '3 of your 6 active ads run this angle',
+    pdpText: 'Addressed on Magnesium Glycinate Complex PDP',
+    rec: "You're running this but it's declining for competitors. Consider refreshing creative before fatigue sets in.",
+    positioning: 'Frames the product as a performance and recovery tool for active buyers — gym, training, athletic context.',
+    corePromise: 'Recover smarter, perform tomorrow.',
+  },
+  'Lifestyle & Wellness': {
+    perf: 'Stable — 14d median longevity, 26% of budget, flat trend',
+    coverageText: '2 of your 6 active ads run this angle',
+    pdpText: 'Lightly addressed on Magnesium Glycinate Complex PDP',
+    rec: 'Stable angle for competitors. Your coverage is adequate — no immediate action needed.',
+    positioning: 'Soft lifestyle storytelling — wellness rituals, morning routines, aspirational imagery rather than specific claims.',
+    corePromise: 'A small ritual for a better life.',
+  },
+  'Price & Value': {
+    perf: 'Declining — 7d median longevity, 15% of budget, -5 pts in 30d',
+    coverageText: '1 of your 6 active ads runs this angle',
+    pdpText: 'Addressed on Magnesium Glycinate Complex PDP',
+    rec: 'Declining across all competitors — high saturation. Consider pulling spend from this angle.',
+    positioning: 'Discount-led, cost-per-serving emphasis, subscribe-and-save messaging. Race-to-the-bottom dynamics.',
+    corePromise: 'More for less.',
+  },
+  'Clean Label': {
+    perf: 'Strong — 28d median longevity, 31% of budget, growing',
+    coverageText: '0 of your 6 active ads address this angle',
+    pdpText: 'Not addressed on Magnesium Glycinate Complex PDP',
+    rec: 'Clean label resonates with your buyer. Generate a static creative emphasizing ingredient transparency.',
+    positioning: 'Transparency-first messaging — no fillers, no artificial sweeteners, traceable sourcing. Appeals to ingredient-conscious buyers.',
+    corePromise: 'Nothing you can\'t pronounce.',
+  },
+}
+
+const EXAMPLE_ADS = [
+  { format: 'STATIC', img: '/uploads/Screenshot 2026-05-13 at 10.15.26 PM.png', title: 'Next-day calm · Product lifestyle', sub: 'Static · 1:1', hasPlay: false },
+  { format: 'UGC', img: '/uploads/IMG_3486.jpg', title: 'Sleep anxiety · Creator review', sub: 'UGC · 9:16', hasPlay: true },
+  { format: 'VIDEO', img: '/uploads/IMG_3488.jpg', title: 'Ingredient story · Science angle', sub: 'Video · 9:16', hasPlay: true },
+]
+
+function ExampleAds() {
+  return (
+    <div className="flex gap-4">
+      {EXAMPLE_ADS.map((ad, j) => (
+        <div key={j} className="flex-1 flex flex-col gap-2 min-w-0">
+          <div className="aspect-[9/14] rounded-lg overflow-hidden relative bg-[#111]">
+            <img src={ad.img} alt="" className="absolute inset-0 w-full h-full object-cover block" />
+            <div className="absolute inset-0 bg-black/[0.18]" />
+            <span className="absolute top-2.5 left-2.5 text-[9px] font-bold tracking-[0.05em] bg-black/55 text-white px-2 py-[3px] rounded-[3px]">
+              {ad.format}
+            </span>
+            {ad.hasPlay && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-11 h-11 rounded-full bg-black/40 border-[1.5px] border-white/60 flex items-center justify-center">
+                  <svg width="14" height="16" viewBox="0 0 14 16" fill="white">
+                    <path d="M2 1l11 7L2 15V1z" />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
+          <div>
+            <div className="text-[12px] font-medium text-ink mb-px">{ad.title}</div>
+            <div className="text-[10px] text-dim">{ad.sub} · 18d running</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Angle selector + angle detail views ─────────────────────────────────────
+
+function ProfileHero({
+  comp,
+  onCompetitorsClick,
+  onCompNameClick,
+  showCompName,
+}: {
+  comp: Competitor
+  onCompetitorsClick: () => void
+  onCompNameClick?: () => void
+  showCompName?: boolean
+}) {
+  return (
+    <div className="relative h-[70px] overflow-hidden shrink-0">
+      <img
+        src={comp.heroImg}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: 'center 30%' }}
+      />
+      <div className="absolute inset-0" style={{ background: comp.heroGrad }} />
+      <div className="absolute inset-0 px-6 flex items-center">
+        <div>
+          <div className="text-[10px] text-white/60 mb-[3px]">
+            <button onClick={onCompetitorsClick} className="bg-transparent border-0 text-white/65 cursor-pointer text-[10px] p-0 hover:text-white">
+              Competitors
+            </button>
+            <span className="mx-1 text-white/35">/</span>
+            {showCompName && onCompNameClick ? (
+              <button onClick={onCompNameClick} className="bg-transparent border-0 text-white/65 cursor-pointer text-[10px] p-0 hover:text-white">
+                {comp.name}
+              </button>
+            ) : (
+              <span className="text-white/90">{comp.name}</span>
+            )}
+          </div>
+          <div className="text-[14px] font-medium text-white">{comp.name}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ProductContextStrip({
+  product,
+  onAllProducts,
+  onSwitchProduct,
+}: {
+  product: ProductPick
+  onAllProducts: () => void
+  onSwitchProduct: () => void
+}) {
+  return (
+    <div className="px-6 py-2.5 flex items-center gap-2.5 shrink-0">
+      <button onClick={onAllProducts} className="text-[11px] text-mid bg-transparent border-0 cursor-pointer p-0 hover:text-ink">
+        ← All products
+      </button>
+      <span className="text-line">·</span>
+      <div className="w-6 h-6 rounded shrink-0 overflow-hidden" style={{ background: product.imgBg }}>
+        <img src={product.img} alt="" className="w-full h-full object-cover opacity-85" />
+      </div>
+      <span className="text-[12px] font-medium text-ink">{product.name}</span>
+      {product.competesWith && (
+        <span className="text-[11px] text-dim">
+          · vs <strong className="text-ink font-medium">{product.competesWith}</strong>
+        </span>
+      )}
+      <button
+        onClick={onSwitchProduct}
+        className="ml-auto text-[11px] text-mid bg-transparent border-[0.5px] border-line rounded-md px-2.5 py-1 cursor-pointer hover:bg-line-soft"
+      >
+        Switch product
+      </button>
+    </div>
+  )
+}
+
+function AngleSelectorView({
+  comp,
+  product,
+  onBackToProfile,
+  onBackToProducts,
+  onSelectAngle,
+}: {
+  comp: Competitor
+  product: ProductPick
+  onBackToProfile: () => void
+  onBackToProducts: () => void
+  onSelectAngle: (a: Angle) => void
+}) {
+  return (
+    <div className="flex flex-col h-full font-sans">
+      <ProfileHero comp={comp} onCompetitorsClick={onBackToProfile} />
+      <ProductContextStrip product={product} onAllProducts={onBackToProducts} onSwitchProduct={onBackToProducts} />
+      <div className="flex-1 overflow-y-auto min-h-0 px-6 py-5">
+        <div className="text-[15px] font-medium text-ink mb-1">Choose an angle to analyze</div>
+        <div className="text-[12px] text-mid mb-5">Select an angle to see how {comp.name} is using it and what it means for your ads.</div>
+        <div className="flex flex-col gap-2">
+          {comp.angles.map((angle, i) => (
+            <div
+              key={i}
+              onClick={() => onSelectAngle(angle)}
+              className="flex items-center gap-3.5 px-4 py-3.5 bg-surf rounded-lg shadow-lift cursor-pointer transition-shadow hover:shadow-card-hover"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="text-[14px] font-medium text-ink mb-1">{angle.name}</div>
+                <div className="flex gap-4">
+                  <span className="text-[11px] text-mid">
+                    <strong className="text-ink">{angle.share}%</strong> share
+                  </span>
+                  <span className="text-[11px] text-mid">
+                    <strong className="text-ink">{angle.longevity}d</strong> avg
+                  </span>
+                  <span className={`text-[11px] font-semibold ${angle.trendPos ? 'text-brand' : 'text-danger'}`}>
+                    {angle.trendPos ? '▲' : '▼'} {angle.trend}
+                  </span>
+                </div>
+              </div>
+              <span
+                className={`text-[9px] font-bold tracking-[0.05em] uppercase px-2 py-[3px] rounded-[3px] shrink-0 ${
+                  angle.coverage === 'MISSING' ? 'bg-alert-bg text-alert' : 'bg-brand-bg text-brand'
+                }`}
+              >
+                {angle.coverage === 'MISSING' ? 'Missing' : 'You run it'}
+              </span>
+              <span className="text-dim shrink-0">
+                <ArrowR />
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AngleDetailView({
+  comp,
+  product,
+  angle,
+  onBackToProfile,
+  onBackToProducts,
+  onSelectAngle,
+}: {
+  comp: Competitor
+  product: ProductPick
+  angle: Angle
+  onBackToProfile: () => void
+  onBackToProducts: () => void
+  onSelectAngle: (a: Angle) => void
+}) {
+  const isMissing = angle.coverage === 'MISSING'
+  const read = ANGLE_READS[angle.name]
+
+  return (
+    <div className="flex flex-col h-full font-sans">
+      <ProfileHero
+        comp={comp}
+        onCompetitorsClick={onBackToProfile}
+        onCompNameClick={onBackToProducts}
+        showCompName
+      />
+      <ProductContextStrip product={product} onAllProducts={onBackToProducts} onSwitchProduct={onBackToProducts} />
+
+      <div className="flex-1 grid grid-cols-[190px_1fr] overflow-hidden min-h-0">
+        <div className="border-r-[0.5px] border-line px-2.5 py-3.5 flex flex-col gap-0.5 overflow-y-auto">
+          <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-dim mb-2 pl-1.5">Angles</div>
+          {comp.angles.map((an, i) => {
+            const isSelected = an.name === angle.name
+            return (
+              <button
+                key={i}
+                onClick={() => onSelectAngle(an)}
+                className={`w-full text-left px-2.5 py-2 rounded-md border-0 cursor-pointer transition-colors ${
+                  isSelected ? 'bg-surf-2' : 'bg-transparent hover:bg-surf-2'
+                }`}
+              >
+                <div className={`text-[12px] mb-1 leading-[1.3] ${isSelected ? 'font-medium text-ink' : 'font-normal text-mid'}`}>
+                  {an.name}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={`text-[9px] font-bold tracking-[0.04em] uppercase px-1.5 py-px rounded-[3px] ${
+                    an.coverage === 'MISSING' ? 'bg-alert-bg text-alert' : 'bg-brand-bg text-brand'
+                  }`}>
+                    {an.coverage === 'MISSING' ? 'Missing' : 'You run it'}
+                  </span>
+                  <span className={`text-[10px] font-semibold font-mono ${an.trendPos ? 'text-brand' : 'text-danger'}`}>
+                    {an.trendPos ? '+' : ''}{an.trend}
+                  </span>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="overflow-y-auto px-8 py-7">
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-dim mb-1.5">Angle</div>
+              <div className="text-[20px] font-medium text-ink tracking-[-0.02em] leading-[1.15] max-w-[300px]">{angle.name}</div>
+            </div>
+            <span
+              className={`text-[9px] font-bold tracking-[0.05em] uppercase px-2.5 py-1 rounded shrink-0 mt-1 ${
+                isMissing ? 'bg-alert-bg text-alert' : 'bg-brand-bg text-brand'
+              }`}
+            >
+              {isMissing ? 'Missing from your ads' : 'You also run this'}
+            </span>
+          </div>
+
+          <div className="flex gap-0 mb-8">
+            {[
+              { l: 'Share of budget', v: `${angle.share}%`, sub: 'of their creative spend' },
+              { l: 'Avg longevity', v: `${angle.longevity}d`, sub: 'median days running' },
+              { l: '30d momentum', v: (angle.trendPos ? '+' : '') + angle.trend, sub: 'share point change', positive: angle.trendPos },
+            ].map((m, i) => (
+              <div key={i} className={`flex-1 ${i < 2 ? 'pr-6 mr-6 border-r-[0.5px] border-line' : ''}`}>
+                <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-dim mb-1.5">{m.l}</div>
+                <div
+                  className={`text-[26px] font-medium font-mono tracking-[-0.04em] leading-none mb-1 ${
+                    m.positive === false ? 'text-danger' : m.positive === true ? 'text-brand' : 'text-ink'
+                  }`}
+                >
+                  {m.v}
+                </div>
+                <div className="text-[11px] text-dim">{m.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mb-7">
+            <div className="text-[10px] font-medium tracking-[0.08em] uppercase text-ink mb-3">What this angle is</div>
+            <div className="text-[14px] italic text-ink leading-[1.65] mb-3 tracking-[-0.01em]">
+              "{read?.corePromise || 'A positioning angle their buyers are responding to.'}"
+            </div>
+            <div className="text-[13px] text-mid leading-[1.7]">
+              {read?.positioning || 'This angle connects with buyers at a key moment in their decision process. Competitors are validating it with sustained spend.'}
+            </div>
+          </div>
+
+          <div className="mb-7">
+            <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-dim mb-3.5">What it means for you</div>
+            {[
+              { l: 'Their performance', v: read?.perf || 'Strong — sustained spend, growing share, above-average longevity.' },
+              { l: 'Your coverage', v: read?.coverageText || '0 of your active ads address this angle.' },
+              { l: 'PDP support', v: read?.pdpText || 'Not addressed on your current product page.' },
+              { l: 'Recommendation', v: read?.rec || 'Generate creative and a PDP variant to test this angle.' },
+            ].map((row, j) => (
+              <div key={j} className="grid grid-cols-[120px_1fr] gap-4 pt-2.5">
+                <span className="text-[10px] font-semibold tracking-[0.05em] uppercase text-dim pt-0.5">{row.l}</span>
+                <span className="text-[13px] text-ink leading-[1.65]">{row.v}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-2 mb-7">
+            {['Generate PDP →', 'Generate creative →'].map(btn => (
+              <button
+                key={btn}
+                className="text-[12px] text-mid bg-transparent border-[0.5px] border-line rounded-md px-4 py-1.5 cursor-pointer transition-colors hover:bg-brand hover:text-white hover:border-brand"
+              >
+                {btn}
+              </button>
+            ))}
+          </div>
+
+          <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-dim mb-3.5">Example ads in this angle</div>
+          <ExampleAds />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Profile page ────────────────────────────────────────────────────────────
 
 function ProfilePage({ comp, onBack }: { comp: Competitor; onBack: () => void }) {
   const [subTab, setSubTab] = useState<'Creatives & Angles' | 'Comparison'>('Creatives & Angles')
+  const [selectedProduct, setSelectedProduct] = useState<ProductPick | null>(null)
+  const [selectedAngle, setSelectedAngle] = useState<Angle | null>(null)
   const SUB_TABS: typeof subTab[] = ['Creatives & Angles', 'Comparison']
+
+  if (selectedProduct && selectedAngle) {
+    return (
+      <AngleDetailView
+        comp={comp}
+        product={selectedProduct}
+        angle={selectedAngle}
+        onBackToProfile={() => {
+          setSelectedProduct(null)
+          setSelectedAngle(null)
+          onBack()
+        }}
+        onBackToProducts={() => {
+          setSelectedProduct(null)
+          setSelectedAngle(null)
+        }}
+        onSelectAngle={setSelectedAngle}
+      />
+    )
+  }
+
+  if (selectedProduct) {
+    return (
+      <AngleSelectorView
+        comp={comp}
+        product={selectedProduct}
+        onBackToProfile={() => {
+          setSelectedProduct(null)
+          onBack()
+        }}
+        onBackToProducts={() => setSelectedProduct(null)}
+        onSelectAngle={setSelectedAngle}
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col h-full font-sans">
@@ -835,14 +1253,14 @@ function ProfilePage({ comp, onBack }: { comp: Competitor; onBack: () => void })
               <div className="mb-6">
                 <div className="text-[11px] font-medium tracking-[0.04em] uppercase text-dim mb-2.5">Competing Products</div>
                 <div className="flex flex-col gap-2.5">
-                  {COMPETING_PRODUCTS.map(p => <ProductPickerCard key={p.id} product={p} showCompetes />)}
+                  {COMPETING_PRODUCTS.map(p => <ProductPickerCard key={p.id} product={p} showCompetes onSelect={setSelectedProduct} />)}
                 </div>
               </div>
 
               <div>
                 <div className="text-[11px] font-medium tracking-[0.04em] uppercase text-dim mb-2.5">Top Products</div>
                 <div className="flex flex-col gap-2.5">
-                  {TOP_PRODUCTS.map(p => <ProductPickerCard key={p.id} product={p} showCompetes={false} />)}
+                  {TOP_PRODUCTS.map(p => <ProductPickerCard key={p.id} product={p} showCompetes={false} onSelect={setSelectedProduct} />)}
                 </div>
               </div>
             </div>
