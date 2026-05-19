@@ -353,7 +353,7 @@ function FindingCard({ finding, onOpen, onTakeAction }: {
       >
         <div>
           {finding.related > 0 && (
-            <button className="text-[12px] font-medium text-mid bg-surf border border-line rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap hover:bg-line-soft">
+            <button className="text-[12px] font-medium text-white bg-ink border-0 rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap hover:opacity-90">
               {finding.related} related signals →
             </button>
           )}
@@ -1248,7 +1248,7 @@ function Findings() {
 
   return (
     <div className="flex flex-col h-full font-sans">
-      <div className="px-6 pt-5 bg-surf border-b border-line shrink-0">
+      <div className="px-6 pt-5 shrink-0">
         <div className="flex items-start justify-between mb-4">
           <div>
             <div className="text-[20px] font-medium text-ink tracking-[-0.025em]">Findings</div>
@@ -1256,19 +1256,19 @@ function Findings() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-dim font-mono">12 new · 47 total</span>
-            <button className="flex items-center gap-1.5 bg-surf-2 border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
+            <button className="flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-mid">
                 <path d="M2 3h7M3 5.5h5M4 8h3" />
               </svg>
               <span className="text-[11px] text-mid">Most recent</span>
             </button>
-            <button className="flex items-center gap-1.5 bg-surf-2 border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
+            <button className="flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-mid">
                 <path d="M5.5 1v6m0 0L3.5 5m2 2L7.5 5M2 9.5h7" />
               </svg>
               <span className="text-[11px] text-mid">Export</span>
             </button>
-            <button className="flex items-center gap-1.5 bg-surf-2 border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
+            <button className="flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-mid">
                 <path d="M1.5 2.5h8M3 5.5h5M4.5 8.5h2" />
               </svg>
@@ -1287,7 +1287,7 @@ function Findings() {
                 className={`text-[11px] px-3 py-[5px] rounded-md cursor-pointer transition-colors whitespace-nowrap border ${
                   isActive
                     ? 'bg-ink text-[#f5f4f2] border-ink font-medium'
-                    : 'bg-surf-2 text-mid border-line font-normal hover:bg-line'
+                    : 'bg-surf text-mid border-line font-normal hover:bg-line-soft'
                 }`}
               >
                 {f}
