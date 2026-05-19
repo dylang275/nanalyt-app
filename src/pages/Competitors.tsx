@@ -669,7 +669,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
               onClick={() => setMode(m)}
               className={`text-[12px] px-3 py-1 border-0 rounded-[5px] cursor-pointer transition-all ${
                 mode === m
-                  ? 'bg-brand text-white font-medium shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
+                  ? 'bg-ink text-white font-medium shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
                   : 'bg-transparent text-ink font-normal'
               }`}
             >
@@ -720,8 +720,8 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
         ))}
       </div>
 
-      <div className="bg-brand-bg border border-brand-dim rounded-lg px-4 py-3.5">
-        <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-brand mb-2">Nanalyt's Read</div>
+      <div className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-lg px-4 py-3.5">
+        <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-ink mb-2">Nanalyt's Read</div>
         <div className="text-[13px] text-ink leading-[1.55]">
           {comp.name} outspends you 2.8× on {compProduct} and dominates the <strong className="font-semibold">sleep-anxiety crossover angle</strong>, which you don't currently address. Your product wins on dosage (400mg vs 3mg) and clinical positioning, but {comp.name} captures the broader emotional audience through UGC at scale.
         </div>
@@ -1541,7 +1541,7 @@ function ProfilePage({ comp, onBack }: { comp: Competitor; onBack: () => void })
                 onClick={() => setSubTab(tab)}
                 className={`px-3.5 py-1 border-0 rounded-[5px] text-[12px] cursor-pointer transition-all ${
                   subTab === tab
-                    ? 'bg-brand text-white font-medium shadow-[0_1px_3px_rgba(0,0,0,0.12)]'
+                    ? 'bg-ink text-white font-medium shadow-[0_1px_3px_rgba(0,0,0,0.12)]'
                     : 'bg-transparent text-ink font-normal'
                 }`}
               >
