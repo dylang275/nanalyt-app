@@ -232,8 +232,18 @@ const GoogleG = (
 const MetaIcon = cdnIcon('meta', '0866FF')
 const TikTokIcon = cdnIcon('tiktok', '000000')
 
+const AmazonIcon = (
+  <img
+    src="https://api.iconify.design/fa6-brands:amazon.svg?color=%23232F3E"
+    width="14"
+    height="14"
+    alt=""
+    className="block shrink-0"
+  />
+)
+
 const PLATFORM_LOGOS: Record<string, ReactNode> = {
-  Amazon: cdnIcon('amazon', 'FF9900'),
+  Amazon: AmazonIcon,
   Reddit: cdnIcon('reddit', 'FF4500'),
   YouTube: cdnIcon('youtube', 'FF0000'),
   Meta: MetaIcon,
