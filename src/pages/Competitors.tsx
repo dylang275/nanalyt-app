@@ -777,7 +777,7 @@ const ANGLE_READS: Record<string, AngleRead> = {
     pdpText: "Doesn't address this angle on Magnesium Glycinate Complex",
     rec: 'Generate PDP variant and creative against this angle. Validated by Olly, Beam, and Moon Juice.',
     positioning: 'Connects sleep quality with daytime anxiety reduction — buyers see the product as a tool for both nighttime rest and morning calm, not just a sleep aid.',
-    corePromise: 'The angle that meets buyers where stress and sleep blur together.',
+    corePromise: 'Sleep through the worry, not just the fatigue.',
   },
   'Science & Ingredients': {
     perf: 'Strong — 22d median longevity, 29% of budget, stable trend',
@@ -1031,25 +1031,25 @@ function AngleDetailView({
 
   return (
     <div className="px-6 pt-5 pb-12 font-sans">
-      <div className="text-[12px] text-[#6b7280] mb-[18px]">
+      <div className="text-[12px] text-ink mb-[18px]">
         <button onClick={onBackToWatchlist} className="bg-transparent border-0 p-0 cursor-pointer underline decoration-[#e5e7eb] hover:text-ink hover:decoration-[#9ca3af]">
           Competitors
         </button>
-        <span className="mx-1.5 text-[#9ca3af]">/</span>
+        <span className="mx-1.5 text-ink">/</span>
         <button onClick={onBackToProfile} className="bg-transparent border-0 p-0 cursor-pointer underline decoration-[#e5e7eb] hover:text-ink hover:decoration-[#9ca3af]">
           {comp.name}
         </button>
-        <span className="mx-1.5 text-[#9ca3af]">/</span>
+        <span className="mx-1.5 text-ink">/</span>
         <button onClick={onBackToAngles} className="bg-transparent border-0 p-0 cursor-pointer underline decoration-[#e5e7eb] hover:text-ink hover:decoration-[#9ca3af]">
           {product.name}
         </button>
-        <span className="mx-1.5 text-[#9ca3af]">/</span>
+        <span className="mx-1.5 text-ink">/</span>
         <span className="text-ink">{angle.name}</span>
       </div>
 
       <div className={`${CARD_CLS} px-6 py-5 flex items-start gap-4 mb-[18px]`}>
         <div className="flex-1 min-w-0">
-          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-1.5">
+          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink mb-1.5">
             ANGLE · {comp.name.toUpperCase()} {product.name.toUpperCase()}
           </div>
           <div className="flex items-start gap-3 mb-2.5 flex-wrap">
@@ -1078,7 +1078,7 @@ function AngleDetailView({
 
       <div className="grid grid-cols-3 gap-2.5 mb-[18px]">
         <div className={`${CARD_CLS} px-[18px] py-4`}>
-          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-2">SHARE OF BUDGET</div>
+          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink mb-2">SHARE OF BUDGET</div>
           <div className="text-[26px] font-medium text-ink leading-none mb-1">{angle.share}%</div>
           <div className="text-[11px] text-ink mb-3">of their creative spend</div>
           <div className="h-1 bg-[#f0f1f3] rounded-[2px] overflow-hidden">
@@ -1086,7 +1086,7 @@ function AngleDetailView({
           </div>
         </div>
         <div className={`${CARD_CLS} px-[18px] py-4`}>
-          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-2">AVG LONGEVITY</div>
+          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink mb-2">AVG LONGEVITY</div>
           <div className="text-[26px] font-medium text-ink leading-none mb-1">{angle.longevity}d</div>
           <div className="text-[11px] text-ink mb-3">median days running</div>
           <div className="text-[11px] text-ink">
@@ -1094,7 +1094,7 @@ function AngleDetailView({
           </div>
         </div>
         <div className={`${CARD_CLS} px-[18px] py-4`}>
-          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-2">30D MOMENTUM</div>
+          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink mb-2">30D MOMENTUM</div>
           <div
             className="text-[26px] font-medium leading-none mb-1"
             style={{ color: angle.trendPos ? '#1d9e75' : '#dc2626' }}
@@ -1109,7 +1109,7 @@ function AngleDetailView({
       </div>
 
       <div className={`${CARD_CLS} px-6 py-5 mb-[18px]`}>
-        <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-[#9ca3af] mb-4">ANGLE OVERVIEW</div>
+        <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-ink mb-4">ANGLE OVERVIEW</div>
         <div>
           {[
             { label: 'Positioning', content: read?.positioning ?? 'Connects with buyers at a key moment in their decision process.', bold: false, quoted: false },
@@ -1117,7 +1117,7 @@ function AngleDetailView({
             { label: 'Core promise', content: read?.corePromise ?? 'A positioning angle their buyers are responding to.', bold: true, quoted: true },
           ].map((row, i, arr) => (
             <div key={i} className={`grid grid-cols-[160px_1fr] py-3 ${i < arr.length - 1 ? 'border-b-[0.5px] border-[#f0f1f3]' : ''}`}>
-              <span className="text-[12px] text-[#9ca3af]">{row.label}</span>
+              <span className="text-[12px] text-ink">{row.label}</span>
               <span className={`text-[13px] text-ink leading-[1.5] ${row.bold ? 'font-semibold' : ''}`}>
                 {row.quoted ? `"${row.content}"` : row.content}
               </span>
@@ -1128,12 +1128,12 @@ function AngleDetailView({
 
       <div className={`${CARD_CLS} px-6 py-5 mb-[22px]`}>
         <div className="flex items-center justify-between mb-3.5">
-          <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-[#9ca3af]">NANALYT'S READ</div>
+          <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-ink">NANALYT'S READ</div>
           <span className="text-[11px] font-medium text-[#27500a] bg-[#f0f9f4] px-2.5 py-[3px] rounded-xl">Recommended to run</span>
         </div>
         <div>
           <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
-            <span className="text-[12px] text-[#9ca3af]">Their performance</span>
+            <span className="text-[12px] text-ink">Their performance</span>
             <div className="flex gap-[18px] text-[13px] text-ink flex-wrap">
               <span>
                 <strong className="font-medium">{angle.longevity}d</strong> longevity
@@ -1147,19 +1147,19 @@ function AngleDetailView({
             </div>
           </div>
           <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
-            <span className="text-[12px] text-[#9ca3af]">Your coverage</span>
+            <span className="text-[12px] text-ink">Your coverage</span>
             <span className="text-[13px] text-ink">
               <strong className="font-medium">{isMissing ? '0 of 6' : '3 of 6'}</strong> active ads address this
             </span>
           </div>
           <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
-            <span className="text-[12px] text-[#9ca3af]">PDP support</span>
+            <span className="text-[12px] text-ink">PDP support</span>
             <span className="text-[13px] text-ink">
               <strong className="font-medium">{isMissing ? 'Not addressed' : 'Addressed'}</strong> on Magnesium Glycinate Complex
             </span>
           </div>
           <div className="grid grid-cols-[180px_1fr] py-3 items-center">
-            <span className="text-[12px] text-[#9ca3af]">Validated by</span>
+            <span className="text-[12px] text-ink">Validated by</span>
             <div className="flex gap-1.5 flex-wrap">
               {VALIDATOR_BRANDS.map(b => (
                 <span key={b.name} className="bg-[#f7f8fa] px-2.5 py-[3px] rounded-xl flex items-center gap-1.5 text-[12px] font-medium text-ink">
@@ -1174,10 +1174,10 @@ function AngleDetailView({
 
       <div>
         <div className="flex items-center justify-between mb-3">
-          <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-[#9ca3af]">
+          <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-ink">
             EXAMPLE ADS IN THIS ANGLE · {ANGLE_DETAIL_ADS.length}
           </div>
-          <span className="text-[11px] text-[#6b7280] cursor-pointer hover:text-ink">
+          <span className="text-[11px] text-ink cursor-pointer">
             View all on Meta Ad Library →
           </span>
         </div>
