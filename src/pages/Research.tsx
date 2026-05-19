@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -115,6 +116,7 @@ type SearchState = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 function Research() {
+  const navigate = useNavigate()
   const [tab, setTab] = useState<Tab>('Category')
   const [query, setQuery] = useState('')
   const [showSources, setShowSources] = useState(false)
@@ -337,7 +339,7 @@ function Research() {
             {searchState.done && (
               <div className="flex justify-end pt-3.5">
                 <button
-                  onClick={() => console.log('Navigate to research analysis for:', searchState.query)}
+                  onClick={() => navigate('/research/analysis')}
                   className="text-[13px] font-medium text-white bg-brand border-0 rounded-md px-4 py-2 cursor-pointer hover:opacity-90"
                 >
                   View analysis →
@@ -383,7 +385,8 @@ function Research() {
           {RECENT.map((r, i) => (
             <div
               key={i}
-              className={`grid grid-cols-[120px_minmax(0,1fr)_90px_200px] gap-3 px-[18px] py-3.5 items-center ${
+              onClick={() => navigate('/research/analysis')}
+              className={`grid grid-cols-[120px_minmax(0,1fr)_90px_200px] gap-3 px-[18px] py-3.5 items-center cursor-pointer hover:bg-black/[0.02] ${
                 i < RECENT.length - 1 ? 'border-b-[0.5px] border-[#f0f1f3]' : ''
               }`}
             >
@@ -396,10 +399,16 @@ function Research() {
               </div>
               <span className="text-[11px] text-ink whitespace-nowrap">{r.time}</span>
               <div className="flex items-center justify-end gap-3">
-                <button className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3 py-[5px] cursor-pointer whitespace-nowrap hover:opacity-90">
+                <button
+                  onClick={e => e.stopPropagation()}
+                  className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3 py-[5px] cursor-pointer whitespace-nowrap hover:opacity-90"
+                >
                   + Pipeline ({r.pipeline})
                 </button>
-                <span className="text-ink cursor-pointer flex hover:opacity-70">
+                <span
+                  onClick={e => e.stopPropagation()}
+                  className="text-ink cursor-pointer flex hover:opacity-70"
+                >
                   <XIcon />
                 </span>
               </div>
