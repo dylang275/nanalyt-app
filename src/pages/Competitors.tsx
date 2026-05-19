@@ -132,12 +132,19 @@ const SHARE_SERIES: ShareSeries[] = [
   { name: 'Pure Enc.', shade: TREND_GREEN, values: [15, 15, 14, 14, 13], lastPeriod: '15%' },
 ]
 
+const TOP_MOVING_ANGLES = [
+  { name: 'Sleep-Anxiety Crossover', delta: 12 },
+  { name: 'Subscribe & save framing', delta: 6 },
+  { name: 'Lifestyle & Wellness', delta: 2 },
+  { name: 'Performance & Recovery', delta: -4 },
+  { name: 'Price & Value', delta: -3 },
+]
+
 const RECENT_ALERTS = [
   { dot: '#2d5c3a', title: 'Olly launched 4 new Sleep-Anxiety Crossover ads', sub: 'Pushed share to 33%, highest in 6 months', time: '2h ago' },
   { dot: '#dc2626', title: 'Moon Juice paused 8 of 14 active ads', sub: 'Possible strategy shift — worth investigating', time: '1d ago' },
   { dot: '#2d5c3a', title: 'Beam launched first Sleep-Anxiety Crossover ad', sub: 'Validates angle across 3 of your 5 tracked competitors', time: '2d ago' },
   { dot: '#d97706', title: '3 competitors now running "next-day calm" framing', sub: 'Angle has crossed validation threshold', time: '3d ago' },
-  { dot: '#dc2626', title: "Ritual's share dropped from 18% to 15%", sub: 'Lowest activity in 30 days', time: '4d ago' },
 ]
 
 // ─── Profile-page product data (shared across all competitors for demo) ──────
@@ -305,6 +312,34 @@ function RecentAlerts() {
   )
 }
 
+function TopMovingAngles() {
+  return (
+    <div className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-[10px] py-1">
+      {TOP_MOVING_ANGLES.map((a, i) => {
+        const positive = a.delta >= 0
+        return (
+          <div
+            key={i}
+            className={`flex items-center gap-3 px-[14px] py-2.5 cursor-pointer hover:bg-black/[0.02] ${
+              i < TOP_MOVING_ANGLES.length - 1 ? 'border-b-[0.5px] border-[#f0f1f3]' : ''
+            }`}
+          >
+            <div className="flex-1 min-w-0">
+              <span className="text-[12px] font-medium text-ink truncate block">{a.name}</span>
+            </div>
+            <span
+              className="text-[12px] font-medium shrink-0"
+              style={{ color: positive ? '#27500a' : '#791f1f' }}
+            >
+              {positive ? '▲' : '▼'} {positive ? '+' : ''}{a.delta}pts
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── Competitor card ─────────────────────────────────────────────────────────
 
 function MoveIcon({ type }: { type: MoveType }) {
@@ -428,6 +463,16 @@ function WatchlistView({ onOpen }: { onOpen: (c: Competitor) => void }) {
         <div>
           <CompetitorsSectionHead title="Recent alerts" link={{ label: 'View all', fn: () => {} }} />
           <RecentAlerts />
+
+          <div className="mt-6">
+            <div className="flex items-center gap-2 mb-3.5 font-sans">
+              <span className="text-[14px] font-medium text-ink whitespace-nowrap">Top moving angles</span>
+              <span className="text-[12px] font-medium text-ink cursor-pointer ml-auto whitespace-nowrap hover:opacity-80">
+                View all →
+              </span>
+            </div>
+            <TopMovingAngles />
+          </div>
         </div>
       </div>
 
