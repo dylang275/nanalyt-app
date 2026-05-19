@@ -658,28 +658,12 @@ type GenContext = {
   variantCount: number
 }
 
-const PLACEHOLDER_AD_IMAGES = [
-  '/uploads/IMG_3495.PNG',
-  '/uploads/IMG_3497.PNG',
-  '/uploads/IMG_3499.PNG',
-  '/uploads/IMG_3486.jpg',
-  '/uploads/IMG_3488.jpg',
-]
-
-function formatSpec(format: string): string {
-  if (format === 'UGC') return '9:16 vertical'
-  if (format === 'Video') return '15s · 9:16'
-  if (format === 'Static') return '1:1 square'
-  return format
-}
-
 function Studio() {
   const [selectedProduct, setSelectedProduct] = useState(0)
   const [assetFilter, setAssetFilter] = useState<AssetFilter>('All')
-  const [assets, setAssets] = useState<Product[]>(INITIAL_PRODUCTS)
+  const [assets] = useState<Product[]>(INITIAL_PRODUCTS)
   const [wizardMode, setWizardMode] = useState<WizardMode | null>(null)
   const [genContext, setGenContext] = useState<GenContext | null>(null)
-  const [justGenerated, setJustGenerated] = useState<{ count: number; angle: string } | null>(null)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 
   const product = assets[selectedProduct]
@@ -698,40 +682,9 @@ function Studio() {
   }
 
   const handleGeneratingDone = () => {
-    if (!genContext) return
-    const { mode, productIdx, angleName, format, variantCount } = genContext
-    const ts = Date.now()
-
-    setAssets(prev =>
-      prev.map((p, pi) => {
-        if (pi !== productIdx) return p
-        if (mode === 'ad') {
-          const fmt: AdFormat = format === 'UGC' ? 'UGC' : format === 'Video' ? 'VIDEO' : 'STATIC'
-          const newAds: Ad[] = Array.from({ length: variantCount }).map((_, i) => ({
-            id: `gen-ad-${ts}-${i}`,
-            state: 'NEW',
-            fmt,
-            desc: `${angleName} · v${i + 1}`,
-            spec: formatSpec(format),
-            img: PLACEHOLDER_AD_IMAGES[(p.ads.length + i) % PLACEHOLDER_AD_IMAGES.length],
-          }))
-          return { ...p, ads: [...newAds, ...p.ads], newCount: p.newCount + variantCount }
-        } else {
-          const newPdps: Pdp[] = Array.from({ length: variantCount }).map((_, i) => ({
-            id: `gen-pdp-${ts}-${i}`,
-            state: 'NEW',
-            version: `v${p.pdps.length + i + 1}`,
-            angle: angleName,
-            time: `${format} · just now`,
-            img: '/uploads/Screenshot 2026-05-18 at 9.56.07 AM.png',
-          }))
-          return { ...p, pdps: [...newPdps, ...p.pdps], newCount: p.newCount + variantCount }
-        }
-      }),
-    )
+    // Demo flow only — wizard → generating modal → close. No assets are
+    // actually injected into the workspace.
     setGenContext(null)
-    setJustGenerated({ count: variantCount, angle: angleName })
-    setTimeout(() => setJustGenerated(null), 8000)
   }
 
   const filterPdps = (pdps: Pdp[]) =>
@@ -786,18 +739,6 @@ function Studio() {
           </div>
         )}
 
-        {justGenerated && (
-          <div className="flex items-center gap-2.5 bg-brand-bg border-[0.5px] border-brand-dim rounded-lg px-4 py-3 mb-4">
-            <span className="text-[9px] font-bold tracking-[0.05em] uppercase bg-brand text-white px-2 py-0.5 rounded-[10px] shrink-0">
-              Just generated
-            </span>
-            <span className="text-[12px] text-[#27500a]">
-              {justGenerated.count} new {justGenerated.count === 1 ? 'creative' : 'creatives'} for{' '}
-              <span className="underline cursor-pointer">'{justGenerated.angle}'</span> angle
-            </span>
-          </div>
-        )}
-
         <div className="grid grid-cols-[220px_1fr] gap-[18px] items-start">
           <div>
             <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-ink mb-2.5">
@@ -810,8 +751,8 @@ function Studio() {
                   <div
                     key={p.id}
                     onClick={() => setSelectedProduct(pi)}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors border-[0.5px] ${
-                      sel ? 'bg-surf-2 border-line' : 'bg-transparent border-transparent hover:bg-surf-2'
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors border-[0.5px] border-[#e5e7eb] ${
+                      sel ? 'bg-surf-2' : 'bg-surf hover:bg-[#fafafa]'
                     }`}
                   >
                     <div className="w-8 h-8 rounded-md overflow-hidden shrink-0 border-[0.5px] border-line">
