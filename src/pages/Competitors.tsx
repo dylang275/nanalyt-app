@@ -458,11 +458,13 @@ function WatchlistView({ onOpen }: { onOpen: (c: Competitor) => void }) {
 
       <div className="grid grid-cols-[1.8fr_1fr] gap-[18px] mb-8">
         <ShareOfActivityChart />
-        <div>
-          <CompetitorsSectionHead title="Recent alerts" link={{ label: 'View all', fn: () => {} }} />
-          <RecentAlerts />
+        <div className="flex flex-col h-full">
+          <div>
+            <CompetitorsSectionHead title="Recent alerts" link={{ label: 'View all', fn: () => {} }} />
+            <RecentAlerts />
+          </div>
 
-          <div className="mt-6">
+          <div className="mt-auto pt-6">
             <div className="flex items-center gap-2 mb-3.5 font-sans">
               <span className="text-[14px] font-medium text-ink whitespace-nowrap">Top moving angles</span>
               <span className="text-[12px] font-medium text-ink cursor-pointer ml-auto whitespace-nowrap hover:opacity-80">
