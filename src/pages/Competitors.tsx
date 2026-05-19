@@ -221,7 +221,7 @@ function ShareOfActivityChart() {
 
   return (
     <div className="font-sans mb-10">
-      <div className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-[10px] px-6 py-5">
+      <div className="bg-surf rounded-[10px] px-6 py-5">
         <div className="flex items-center gap-2.5 mb-6">
           <span className="text-[14px] font-medium text-ink tracking-[-0.01em]">Share of activity</span>
           <span className="text-[11px] text-mid bg-surf border border-line rounded-[20px] px-2.5 py-[2px] whitespace-nowrap">
