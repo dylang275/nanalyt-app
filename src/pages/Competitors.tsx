@@ -1060,7 +1060,7 @@ function AngleDetailView({
               {isMissing ? 'Missing from your ads' : 'You also run this'}
             </span>
           </div>
-          <div className="text-[13px] text-[#6b7280] leading-[1.5] max-w-[540px]">
+          <div className="text-[13px] text-ink leading-[1.5] max-w-[540px]">
             {read?.positioning ?? `A positioning angle ${comp.name} has scaled aggressively over the last 30 days. Validated by 3 of your tracked competitors.`}
           </div>
         </div>
@@ -1078,7 +1078,7 @@ function AngleDetailView({
         <div className={`${CARD_CLS} px-[18px] py-4`}>
           <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-2">SHARE OF BUDGET</div>
           <div className="text-[26px] font-medium text-ink leading-none mb-1">{angle.share}%</div>
-          <div className="text-[11px] text-[#9ca3af] mb-3">of their creative spend</div>
+          <div className="text-[11px] text-ink mb-3">of their creative spend</div>
           <div className="h-1 bg-[#f0f1f3] rounded-[2px] overflow-hidden">
             <div className="h-full bg-[#1f2937] rounded-[2px]" style={{ width: `${Math.min(angle.share, 100)}%` }} />
           </div>
@@ -1086,9 +1086,9 @@ function AngleDetailView({
         <div className={`${CARD_CLS} px-[18px] py-4`}>
           <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-2">AVG LONGEVITY</div>
           <div className="text-[26px] font-medium text-ink leading-none mb-1">{angle.longevity}d</div>
-          <div className="text-[11px] text-[#9ca3af] mb-3">median days running</div>
-          <div className="text-[11px] text-[#6b7280]">
-            <strong className="font-medium text-ink">+{Math.max(0, Math.round(((angle.longevity - 11) / 11) * 100))}%</strong> above 11d category avg
+          <div className="text-[11px] text-ink mb-3">median days running</div>
+          <div className="text-[11px] text-ink">
+            <strong className="font-medium">+{Math.max(0, Math.round(((angle.longevity - 11) / 11) * 100))}%</strong> above 11d category avg
           </div>
         </div>
         <div className={`${CARD_CLS} px-[18px] py-4`}>
@@ -1099,8 +1099,8 @@ function AngleDetailView({
           >
             {angle.trendPos ? '▲' : '▼'} {angle.trend}
           </div>
-          <div className="text-[11px] text-[#9ca3af] mb-3">share point change</div>
-          <div className="text-[11px] text-[#6b7280]">
+          <div className="text-[11px] text-ink mb-3">share point change</div>
+          <div className="text-[11px] text-ink">
             {angle.trendPos ? 'Fastest-growing in category' : 'Slowing across the category'}
           </div>
         </div>
@@ -1110,13 +1110,15 @@ function AngleDetailView({
         <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-[#9ca3af] mb-4">ANGLE OVERVIEW</div>
         <div>
           {[
-            { label: 'Positioning', content: read?.positioning ?? 'Connects with buyers at a key moment in their decision process.', bold: false },
-            { label: 'Target buyer', content: 'Working professionals 25-45 with high cognitive stress disrupting sleep. Skews female.', bold: false },
-            { label: 'Core promise', content: read?.corePromise ?? 'A positioning angle their buyers are responding to.', bold: true },
+            { label: 'Positioning', content: read?.positioning ?? 'Connects with buyers at a key moment in their decision process.', bold: false, quoted: false },
+            { label: 'Target buyer', content: 'Working professionals 25-45 with high cognitive stress disrupting sleep. Skews female.', bold: false, quoted: false },
+            { label: 'Core promise', content: read?.corePromise ?? 'A positioning angle their buyers are responding to.', bold: true, quoted: true },
           ].map((row, i, arr) => (
             <div key={i} className={`grid grid-cols-[160px_1fr] py-3 ${i < arr.length - 1 ? 'border-b-[0.5px] border-[#f0f1f3]' : ''}`}>
-              <span className="text-[12px] text-[#6b7280]">{row.label}</span>
-              <span className={`text-[13px] text-ink leading-[1.5] ${row.bold ? 'font-semibold' : ''}`}>{row.content}</span>
+              <span className="text-[12px] text-[#9ca3af]">{row.label}</span>
+              <span className={`text-[13px] text-ink leading-[1.5] ${row.bold ? 'font-semibold' : ''}`}>
+                {row.quoted ? `"${row.content}"` : row.content}
+              </span>
             </div>
           ))}
         </div>
@@ -1129,39 +1131,33 @@ function AngleDetailView({
         </div>
         <div>
           <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
-            <span className="text-[12px] text-[#6b7280]">Their performance</span>
-            <div className="flex gap-[18px] text-[13px] flex-wrap">
+            <span className="text-[12px] text-[#9ca3af]">Their performance</span>
+            <div className="flex gap-[18px] text-[13px] text-ink flex-wrap">
               <span>
-                <strong className="font-medium text-ink">{angle.longevity}d</strong>{' '}
-                <span className="text-[#9ca3af]">longevity</span>
+                <strong className="font-medium">{angle.longevity}d</strong> longevity
               </span>
               <span>
-                <strong className="font-medium text-ink">{angle.share}%</strong>{' '}
-                <span className="text-[#9ca3af]">spend</span>
+                <strong className="font-medium">{angle.share}%</strong> spend
               </span>
-              <strong className="font-medium text-ink">
+              <strong className="font-medium">
                 {angle.trendPos ? '▲ Growing' : '▼ Declining'}
               </strong>
             </div>
           </div>
           <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
-            <span className="text-[12px] text-[#6b7280]">Your coverage</span>
-            <span className="text-[13px]">
-              <strong className="font-medium text-ink">
-                {isMissing ? '0 of 6' : '3 of 6'}
-              </strong>{' '}
-              <span className="text-[#9ca3af]">active ads address this</span>
+            <span className="text-[12px] text-[#9ca3af]">Your coverage</span>
+            <span className="text-[13px] text-ink">
+              <strong className="font-medium">{isMissing ? '0 of 6' : '3 of 6'}</strong> active ads address this
             </span>
           </div>
           <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
-            <span className="text-[12px] text-[#6b7280]">PDP support</span>
-            <span className="text-[13px]">
-              <strong className="font-medium text-ink">{isMissing ? 'Not addressed' : 'Addressed'}</strong>{' '}
-              <span className="text-[#9ca3af]">on Magnesium Glycinate Complex</span>
+            <span className="text-[12px] text-[#9ca3af]">PDP support</span>
+            <span className="text-[13px] text-ink">
+              <strong className="font-medium">{isMissing ? 'Not addressed' : 'Addressed'}</strong> on Magnesium Glycinate Complex
             </span>
           </div>
           <div className="grid grid-cols-[180px_1fr] py-3 items-center">
-            <span className="text-[12px] text-[#6b7280]">Validated by</span>
+            <span className="text-[12px] text-[#9ca3af]">Validated by</span>
             <div className="flex gap-1.5 flex-wrap">
               {VALIDATOR_BRANDS.map(b => (
                 <span key={b.name} className="bg-[#f7f8fa] px-2.5 py-[3px] rounded-xl flex items-center gap-1.5 text-[12px] font-medium text-ink">
@@ -1204,7 +1200,7 @@ function AngleDetailView({
               </div>
               <div className="px-3 py-2.5">
                 <div className="text-[12px] font-medium text-ink mb-px">{ad.hook}</div>
-                <div className="text-[10px] text-[#6b7280]">{ad.meta}</div>
+                <div className="text-[10px] text-ink">{ad.meta}</div>
               </div>
             </div>
           ))}
