@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 
 // ─── Types & data ────────────────────────────────────────────────────────────
 
@@ -45,10 +45,10 @@ const INITIAL_PRODUCTS: Product[] = [
     pdps: [
       {
         id: 'pdp1',
-        state: 'LIVE',
+        state: 'READY',
         version: 'v1',
         angle: 'Next-day calm',
-        time: '2.4% CVR · 32d live',
+        time: 'Drafted 4 days ago',
         img: '/uploads/Screenshot 2026-05-18 at 9.56.07 AM.png',
       },
     ],
@@ -122,13 +122,19 @@ function AdThumb({ ad, product }: { ad: Ad; product: Product }) {
 
 // ─── Generating modal ────────────────────────────────────────────────────────
 
-function GeneratingModal({ onDone }: { onDone: () => void }) {
+function GeneratingModal({ onDone, productName, angleName, variantCount, mode }: {
+  onDone: () => void
+  productName: string
+  angleName: string
+  variantCount: number
+  mode: 'ad' | 'pdp'
+}) {
   const [step, setStep] = useState(0)
   const STEPS = [
     'Pulled brand context from Shopify',
     'Loaded angle from finding · validated by 3 competitors',
-    'Drafted PDP variant',
-    'Generating 3 creative variants…',
+    mode === 'pdp' ? 'Drafted PDP outline' : 'Drafted creative brief',
+    `Generating ${variantCount} ${mode === 'pdp' ? 'PDP' : 'creative'} variants…`,
   ]
   useEffect(() => {
     const timers = [600, 1400, 2300, 3400]
@@ -152,9 +158,11 @@ function GeneratingModal({ onDone }: { onDone: () => void }) {
           </div>
         </div>
         <div className="text-center mb-5">
-          <div className="text-[9px] font-semibold tracking-[0.08em] uppercase text-ink mb-1.5">Generating Creative</div>
-          <div className="text-base font-medium text-ink mb-1">Magnesium Glycinate Complex</div>
-          <div className="text-[13px] text-ink">Next-day calm · 3 variants</div>
+          <div className="text-[9px] font-semibold tracking-[0.08em] uppercase text-ink mb-1.5">
+            Generating {mode === 'pdp' ? 'PDP' : 'Creative'}
+          </div>
+          <div className="text-base font-medium text-ink mb-1">{productName}</div>
+          <div className="text-[13px] text-ink">{angleName} · {variantCount} variants</div>
         </div>
         <div className="h-px bg-line mb-4" />
         <div className="flex flex-col gap-2.5 mb-4">
@@ -182,6 +190,359 @@ function GeneratingModal({ onDone }: { onDone: () => void }) {
           })}
         </div>
         <div className="text-[11px] text-ink text-center">This usually takes about 60 seconds.</div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Generation Wizard ──────────────────────────────────────────────────────
+
+type WizardMode = 'ad' | 'pdp'
+
+type WizardAngle = {
+  name: string
+  state: 'GAP' | 'BOTH RUN'
+  hook: string
+  highConfidence: boolean
+  rationale: ReactNode
+  recommended?: boolean
+}
+
+const WIZARD_ANGLES: WizardAngle[] = [
+  {
+    name: 'Sleep-Anxiety Crossover',
+    state: 'GAP',
+    hook: 'Sleep through the worry, not just the fatigue.',
+    highConfidence: true,
+    recommended: true,
+    rationale: (
+      <>
+        <strong className="font-medium">High confidence</strong> · Validated by 3 competitors · 18d avg longevity · 28% of their spend
+      </>
+    ),
+  },
+  {
+    name: 'Performance & Recovery',
+    state: 'BOTH RUN',
+    hook: 'Train harder. Recover faster. Sleep deeper.',
+    highConfidence: false,
+    rationale: (
+      <>
+        <strong className="font-medium">Refresh suggestion</strong> · You run at 42%, your creative is 16d old · time to refresh
+      </>
+    ),
+  },
+  {
+    name: 'Lifestyle & Wellness',
+    state: 'BOTH RUN',
+    hook: 'Wellness that actually fits your life.',
+    highConfidence: false,
+    rationale: (
+      <>
+        <strong className="font-medium">Established angle</strong> · You run at 18%, Olly at 26% · room to expand
+      </>
+    ),
+  },
+]
+
+type FormatOption = { key: string; label: string; desc: string; icon: ReactNode }
+
+const AD_FORMATS: FormatOption[] = [
+  {
+    key: 'Static',
+    label: 'Static',
+    desc: 'Designed image',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3" width="12" height="10" rx="1.2" />
+        <path d="M2 10l3.5-3 3 2.5L11 6l3 4" />
+        <circle cx="6" cy="6.5" r="0.9" />
+      </svg>
+    ),
+  },
+  {
+    key: 'UGC',
+    label: 'UGC',
+    desc: 'Creator-style video',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="8" cy="5.5" r="2.5" />
+        <path d="M3 13.5c0-2.5 2.2-4 5-4s5 1.5 5 4" />
+      </svg>
+    ),
+  },
+  {
+    key: 'Video',
+    label: 'Video',
+    desc: 'Animated explainer',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 2.5l9 5.5-9 5.5V2.5z" />
+      </svg>
+    ),
+  },
+]
+
+const PDP_FORMATS: FormatOption[] = [
+  {
+    key: 'Hero-led',
+    label: 'Hero-led',
+    desc: 'Big image hero',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="12" height="7" rx="1" />
+        <path d="M3 11h10M3 13h7" />
+      </svg>
+    ),
+  },
+  {
+    key: 'Story-led',
+    label: 'Story-led',
+    desc: 'Long-form scrollable',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="12" height="3" rx="0.8" />
+        <rect x="2" y="6.5" width="12" height="3" rx="0.8" />
+        <rect x="2" y="11" width="12" height="3" rx="0.8" />
+      </svg>
+    ),
+  },
+  {
+    key: 'Comparison-led',
+    label: 'Comparison-led',
+    desc: 'Feature comparison',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3" width="5.5" height="10" rx="1" />
+        <rect x="8.5" y="3" width="5.5" height="10" rx="1" />
+      </svg>
+    ),
+  },
+]
+
+type WizardResult = { angleName: string; format: string; variantCount: number }
+
+function GenerationWizard({ mode, product, onClose, onGenerate }: {
+  mode: WizardMode
+  product: Product
+  onClose: () => void
+  onGenerate: (r: WizardResult) => void
+}) {
+  const formats = mode === 'ad' ? AD_FORMATS : PDP_FORMATS
+  const variants = mode === 'ad' ? [1, 2, 3, 4, 5] : [1, 2, 3]
+  const defaultVariant = mode === 'ad' ? 3 : 2
+
+  const [selectedAngleIdx, setSelectedAngleIdx] = useState(0)
+  const [customAngleOpen, setCustomAngleOpen] = useState(false)
+  const [customAngleText, setCustomAngleText] = useState('')
+  const [selectedFormatIdx, setSelectedFormatIdx] = useState(0)
+  const [variantCount, setVariantCount] = useState(defaultVariant)
+
+  const isCustom = customAngleOpen && customAngleText.trim().length >= 3
+  const angleName = isCustom ? customAngleText.trim() : WIZARD_ANGLES[selectedAngleIdx].name
+  const format = formats[selectedFormatIdx]
+  const canGenerate = isCustom || selectedAngleIdx >= 0
+  const customValid = !customAngleOpen || customAngleText.trim().length >= 3
+
+  const buttonText = mode === 'pdp'
+    ? `Generate ${variantCount} ${format.label} PDP variants →`
+    : `Generate ${variantCount} ${format.label} variants →`
+
+  return (
+    <div className="fixed inset-0 z-[450] bg-black/40 flex items-center justify-center font-sans">
+      <div className="bg-surf rounded-xl px-7 py-6 w-[580px] max-w-[calc(100vw-32px)] max-h-[calc(100vh-32px)] overflow-y-auto">
+        <div className="flex items-start justify-between mb-[22px]">
+          <div>
+            <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-ink mb-1">
+              {mode === 'pdp' ? 'GENERATE PDP' : 'GENERATE AD'}
+            </div>
+            <div className="text-[18px] font-medium text-ink">
+              {mode === 'pdp' ? 'New product page for ' : 'New creative for '}
+              {product.name}
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="bg-transparent border-0 text-[18px] text-ink cursor-pointer leading-none hover:opacity-70"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2.5 bg-[#f7f8fa] rounded-lg px-3 py-2.5 mb-[22px]">
+          <div className="w-8 h-8 rounded-md overflow-hidden shrink-0 border-[0.5px] border-line">
+            <img src={product.img} alt="" className="w-full h-full object-cover" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[12px] text-ink mb-0.5">{product.name}</div>
+            <div className="text-[11px] text-ink">
+              {product.status} · {product.ads.length} active ads
+            </div>
+          </div>
+          <span className="text-[12px] font-medium text-ink cursor-pointer hover:opacity-70">Change →</span>
+        </div>
+
+        <div className="mb-[22px]">
+          <div className="text-[12px] font-medium tracking-[0.04em] uppercase text-ink mb-2.5">ANGLE</div>
+          <div className="flex flex-col gap-2">
+            {WIZARD_ANGLES.map((a, i) => {
+              const selected = !customAngleOpen && selectedAngleIdx === i
+              return (
+                <div
+                  key={a.name}
+                  onClick={() => {
+                    setSelectedAngleIdx(i)
+                    setCustomAngleOpen(false)
+                  }}
+                  className={`rounded-lg px-4 py-3.5 cursor-pointer transition-colors ${
+                    selected
+                      ? 'border border-[#1d9e75] bg-[#f0f9f4]'
+                      : 'border-[0.5px] border-[#e5e7eb] bg-surf hover:bg-[#fafafa]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-medium text-ink">{a.name}</span>
+                      <span
+                        className={`text-[9px] font-medium tracking-[0.03em] uppercase px-[7px] py-0.5 rounded-lg ${
+                          a.state === 'GAP' ? 'bg-[#fcebeb] text-[#791f1f]' : 'bg-[#eaf3de] text-[#27500a]'
+                        }`}
+                      >
+                        {a.state}
+                      </span>
+                    </div>
+                    {a.recommended && (
+                      <span className="text-[9px] font-medium tracking-[0.03em] uppercase bg-[#1d9e75] text-white px-2 py-0.5 rounded-[10px]">
+                        RECOMMENDED
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[12px] italic text-ink mb-2">"{a.hook}"</div>
+                  <div className="flex items-center gap-1.5">
+                    {a.highConfidence ? (
+                      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#1d9e75" strokeWidth="1.5">
+                        <circle cx="5.5" cy="5.5" r="4.5" />
+                        <path d="M3.5 5.5l1.5 1.5 3-3" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : (
+                      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#6b7280" strokeWidth="1.5">
+                        <circle cx="5.5" cy="5.5" r="4.5" />
+                      </svg>
+                    )}
+                    <span className="text-[11px] text-ink">{a.rationale}</span>
+                  </div>
+                </div>
+              )
+            })}
+
+            {customAngleOpen ? (
+              <div
+                className={`rounded-lg px-4 py-3 transition-colors ${
+                  customValid
+                    ? 'border border-[#1d9e75] bg-[#f0f9f4]'
+                    : 'border-[0.5px] border-[#e5e7eb] bg-surf'
+                }`}
+              >
+                <input
+                  autoFocus
+                  value={customAngleText}
+                  onChange={e => setCustomAngleText(e.target.value)}
+                  placeholder="Type a custom angle name (min 3 characters)…"
+                  className="w-full text-[13px] text-ink bg-transparent border-0 outline-none placeholder:text-ink/40"
+                />
+              </div>
+            ) : (
+              <div
+                onClick={() => setCustomAngleOpen(true)}
+                className="text-center text-[12px] font-medium text-ink cursor-pointer py-2.5 hover:opacity-70"
+              >
+                + Custom angle
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mb-[22px]">
+          <div className="text-[12px] font-medium tracking-[0.04em] uppercase text-ink mb-2.5">FORMAT</div>
+          <div className="grid grid-cols-3 gap-2">
+            {formats.map((f, i) => {
+              const selected = selectedFormatIdx === i
+              return (
+                <div
+                  key={f.key}
+                  onClick={() => setSelectedFormatIdx(i)}
+                  className={`rounded-lg px-4 py-3 text-center cursor-pointer relative ${
+                    selected
+                      ? 'border border-[#1d9e75] bg-[#f0f9f4]'
+                      : 'border-[0.5px] border-[#e5e7eb] bg-surf'
+                  }`}
+                >
+                  {selected && (
+                    <span className="absolute top-1.5 right-1.5 text-[8px] font-medium tracking-[0.03em] uppercase bg-[#1d9e75] text-white px-1.5 py-px rounded-lg">
+                      REC
+                    </span>
+                  )}
+                  <div
+                    className={`w-8 h-8 rounded-md mb-2 mx-auto flex items-center justify-center text-ink ${
+                      selected ? 'bg-white' : 'bg-[#f0f1f3]'
+                    }`}
+                  >
+                    {f.icon}
+                  </div>
+                  <div className="text-[12px] font-medium text-ink mb-0.5">{f.label}</div>
+                  <div className="text-[10px] text-ink">{f.desc}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mb-[22px]">
+          <div>
+            <div className="text-[12px] font-medium tracking-[0.04em] uppercase text-ink mb-1">VARIANTS</div>
+            <div className="text-[11px] text-ink">
+              {mode === 'pdp' ? 'Different layout variations' : 'Different creative interpretations'}
+            </div>
+          </div>
+          <div className="flex gap-1">
+            {variants.map(n => {
+              const sel = variantCount === n
+              return (
+                <button
+                  key={n}
+                  onClick={() => setVariantCount(n)}
+                  className={`text-[13px] px-3 py-1.5 rounded-md cursor-pointer transition-colors ${
+                    sel
+                      ? 'bg-ink text-white border-[0.5px] border-ink font-medium'
+                      : 'bg-surf text-ink border-[0.5px] border-[#d1d5db] font-normal hover:bg-[#fafafa]'
+                  }`}
+                >
+                  {n}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-[18px] border-t-[0.5px] border-[#f0f1f3]">
+          <button
+            onClick={onClose}
+            className="text-[12px] font-medium text-ink bg-transparent border-0 cursor-pointer hover:opacity-70"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              if (!canGenerate || !customValid) return
+              onGenerate({ angleName, format: format.label, variantCount })
+            }}
+            disabled={!canGenerate || !customValid}
+            className="text-[13px] font-medium text-white bg-[#1d9e75] border-0 rounded-md px-4 py-2 cursor-pointer hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {buttonText}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -288,21 +649,89 @@ function LiveBadge() {
 
 type AssetFilter = 'All' | 'Live' | 'Drafts'
 
+type GenContext = {
+  mode: 'ad' | 'pdp'
+  productName: string
+  productIdx: number
+  angleName: string
+  format: string
+  variantCount: number
+}
+
+const PLACEHOLDER_AD_IMAGES = [
+  '/uploads/IMG_3495.PNG',
+  '/uploads/IMG_3497.PNG',
+  '/uploads/IMG_3499.PNG',
+  '/uploads/IMG_3486.jpg',
+  '/uploads/IMG_3488.jpg',
+]
+
+function formatSpec(format: string): string {
+  if (format === 'UGC') return '9:16 vertical'
+  if (format === 'Video') return '15s · 9:16'
+  if (format === 'Static') return '1:1 square'
+  return format
+}
+
 function Studio() {
   const [selectedProduct, setSelectedProduct] = useState(0)
   const [assetFilter, setAssetFilter] = useState<AssetFilter>('All')
-  const [assets] = useState<Product[]>(INITIAL_PRODUCTS)
-  const [showGenerating, setShowGenerating] = useState(false)
-  const [justGenerated, setJustGenerated] = useState(false)
+  const [assets, setAssets] = useState<Product[]>(INITIAL_PRODUCTS)
+  const [wizardMode, setWizardMode] = useState<WizardMode | null>(null)
+  const [genContext, setGenContext] = useState<GenContext | null>(null)
+  const [justGenerated, setJustGenerated] = useState<{ count: number; angle: string } | null>(null)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 
   const product = assets[selectedProduct]
   const totalNew = assets.reduce((s, p) => s + p.newCount, 0)
 
+  const handleWizardGenerate = (mode: WizardMode, r: WizardResult) => {
+    setWizardMode(null)
+    setGenContext({
+      mode,
+      productName: product.name,
+      productIdx: selectedProduct,
+      angleName: r.angleName,
+      format: r.format,
+      variantCount: r.variantCount,
+    })
+  }
+
   const handleGeneratingDone = () => {
-    setShowGenerating(false)
-    setJustGenerated(true)
-    setTimeout(() => setJustGenerated(false), 8000)
+    if (!genContext) return
+    const { mode, productIdx, angleName, format, variantCount } = genContext
+    const ts = Date.now()
+
+    setAssets(prev =>
+      prev.map((p, pi) => {
+        if (pi !== productIdx) return p
+        if (mode === 'ad') {
+          const fmt: AdFormat = format === 'UGC' ? 'UGC' : format === 'Video' ? 'VIDEO' : 'STATIC'
+          const newAds: Ad[] = Array.from({ length: variantCount }).map((_, i) => ({
+            id: `gen-ad-${ts}-${i}`,
+            state: 'NEW',
+            fmt,
+            desc: `${angleName} · v${i + 1}`,
+            spec: formatSpec(format),
+            img: PLACEHOLDER_AD_IMAGES[(p.ads.length + i) % PLACEHOLDER_AD_IMAGES.length],
+          }))
+          return { ...p, ads: [...newAds, ...p.ads], newCount: p.newCount + variantCount }
+        } else {
+          const newPdps: Pdp[] = Array.from({ length: variantCount }).map((_, i) => ({
+            id: `gen-pdp-${ts}-${i}`,
+            state: 'NEW',
+            version: `v${p.pdps.length + i + 1}`,
+            angle: angleName,
+            time: `${format} · just now`,
+            img: '/uploads/Screenshot 2026-05-18 at 9.56.07 AM.png',
+          }))
+          return { ...p, pdps: [...newPdps, ...p.pdps], newCount: p.newCount + variantCount }
+        }
+      }),
+    )
+    setGenContext(null)
+    setJustGenerated({ count: variantCount, angle: angleName })
+    setTimeout(() => setJustGenerated(null), 8000)
   }
 
   const filterPdps = (pdps: Pdp[]) =>
@@ -363,7 +792,8 @@ function Studio() {
               Just generated
             </span>
             <span className="text-[12px] text-[#27500a]">
-              4 new creatives from <span className="underline cursor-pointer">'Start running next-day calm as a new angle'</span> finding
+              {justGenerated.count} new {justGenerated.count === 1 ? 'creative' : 'creatives'} for{' '}
+              <span className="underline cursor-pointer">'{justGenerated.angle}'</span> angle
             </span>
           </div>
         )}
@@ -424,13 +854,13 @@ function Studio() {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setShowGenerating(true)}
+                  onClick={() => setWizardMode('ad')}
                   className="text-[12px] text-ink bg-surf border-[0.5px] border-line rounded-[7px] px-3.5 py-1.5 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-line-soft"
                 >
                   + Generate ad
                 </button>
                 <button
-                  onClick={() => setShowGenerating(true)}
+                  onClick={() => setWizardMode('pdp')}
                   className="text-[12px] font-medium text-white bg-brand border-0 rounded-[7px] px-3.5 py-1.5 cursor-pointer hover:opacity-90"
                 >
                   + Generate PDP
@@ -484,14 +914,16 @@ function Studio() {
                           {pdp.version} · {pdp.angle}
                         </div>
                         <div className="text-[10px] text-ink">{pdp.time}</div>
-                        <div className="flex gap-1.5 mt-2" onClick={e => e.stopPropagation()}>
-                          <button className="flex-1 text-[10px] font-medium text-brand bg-transparent border-[0.5px] border-brand rounded px-0 py-1 cursor-pointer flex items-center justify-center gap-1 hover:bg-brand-bg">
-                            View in Shopify
-                            <svg width="8" height="8" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M1.5 7.5l6-6M7.5 1.5h-5M7.5 1.5v5" />
-                            </svg>
-                          </button>
-                        </div>
+                        {pdp.state === 'LIVE' && (
+                          <div className="flex gap-1.5 mt-2" onClick={e => e.stopPropagation()}>
+                            <button className="flex-1 text-[10px] font-medium text-brand bg-transparent border-[0.5px] border-brand rounded px-0 py-1 cursor-pointer flex items-center justify-center gap-1 hover:bg-brand-bg">
+                              View in Shopify
+                              <svg width="8" height="8" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M1.5 7.5l6-6M7.5 1.5h-5M7.5 1.5v5" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -558,7 +990,23 @@ function Studio() {
         </div>
       </div>
 
-      {showGenerating && <GeneratingModal onDone={handleGeneratingDone} />}
+      {wizardMode && (
+        <GenerationWizard
+          mode={wizardMode}
+          product={product}
+          onClose={() => setWizardMode(null)}
+          onGenerate={r => handleWizardGenerate(wizardMode, r)}
+        />
+      )}
+      {genContext && (
+        <GeneratingModal
+          mode={genContext.mode}
+          productName={genContext.productName}
+          angleName={genContext.angleName}
+          variantCount={genContext.variantCount}
+          onDone={handleGeneratingDone}
+        />
+      )}
       {lightbox && <Lightbox state={lightbox} onClose={() => setLightbox(null)} />}
     </div>
   )
