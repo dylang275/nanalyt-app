@@ -5,6 +5,7 @@ import Findings from './pages/Findings'
 import Competitors from './pages/Competitors'
 import ActiveProducts from './pages/ActiveProducts'
 import Studio from './pages/Studio'
+import PdpEditor from './pages/PdpEditor'
 import Research from './pages/Research'
 import ResearchAnalysis from './pages/ResearchAnalysis'
 import Tests from './pages/Tests'
@@ -13,6 +14,7 @@ import Settings from './pages/Settings'
 function App() {
   return (
     <Routes>
+      <Route path="studio/pdp/edit" element={<PdpEditor />} />
       <Route element={<AppLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="findings" element={<Findings />} />

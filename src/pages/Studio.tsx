@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // ─── Types & data ────────────────────────────────────────────────────────────
 
@@ -659,6 +660,7 @@ type GenContext = {
 }
 
 function Studio() {
+  const navigate = useNavigate()
   const [selectedProduct, setSelectedProduct] = useState(0)
   const [assetFilter, setAssetFilter] = useState<AssetFilter>('All')
   const [assets] = useState<Product[]>(INITIAL_PRODUCTS)
@@ -833,7 +835,7 @@ function Studio() {
                   {filteredPdps.map(pdp => (
                     <div
                       key={pdp.id}
-                      onClick={() => setLightbox({ type: 'pdp', asset: pdp, product })}
+                      onClick={() => navigate('/studio/pdp/edit')}
                       className={`col-span-2 rounded-lg overflow-hidden cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] relative bg-surf border-[0.5px] border-[#e2deda] ${
                         pdp.state === 'PAUSED' ? 'opacity-60' : ''
                       }`}
