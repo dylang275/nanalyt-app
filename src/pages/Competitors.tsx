@@ -1014,7 +1014,7 @@ const ANGLE_DETAIL_ADS: ExampleAd[] = [
 
 function ExampleAdLightbox({ ad, onClose }: { ad: ExampleAd; onClose: () => void }) {
   const [playing, setPlaying] = useState(false)
-  const [progress, setProgress] = useState(22)
+  const [progress, setProgress] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const pause = () => {
