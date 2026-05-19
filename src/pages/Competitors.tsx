@@ -221,47 +221,49 @@ function ShareOfActivityChart() {
 
   return (
     <div className="font-sans mb-10">
-      <div className="flex items-center gap-2.5 mb-7">
-        <span className="text-[13px] font-medium text-ink tracking-[-0.01em]">Share of activity</span>
-        <span className="text-[11px] text-mid bg-surf border border-line rounded-[20px] px-2.5 py-[2px] whitespace-nowrap">
-          Weekly ad activity
-        </span>
-        <span className="text-[11px] text-dim ml-auto">Apr 15 – May 13</span>
+      <div className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-[10px] px-6 py-5">
+        <div className="flex items-center gap-2.5 mb-6">
+          <span className="text-[14px] font-medium text-ink tracking-[-0.01em]">Share of activity</span>
+          <span className="text-[11px] text-mid bg-surf border border-line rounded-[20px] px-2.5 py-[2px] whitespace-nowrap">
+            Weekly ad activity
+          </span>
+          <span className="text-[11px] text-dim ml-auto">Apr 15 – May 13</span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-0">
+          {SHARE_SERIES.map((s, i) => {
+            const last = s.values[s.values.length - 1]
+            const showRight = (i + 1) % 3 !== 0 && i < SHARE_SERIES.length - 1
+            const pl = i % 3 !== 0 ? 'pl-6' : ''
+            const pr = showRight ? 'pr-6' : ''
+            const pt = i >= 3 ? 'pt-6' : ''
+            return (
+              <div key={s.name} className={`pb-5 relative ${pl} ${pr} ${pt}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[13px] font-semibold text-ink">{s.name}</span>
+                  <span className={`text-[11px] font-semibold font-mono px-1.5 py-px rounded-[10px] ${deltaCls(s)}`}>
+                    {deltaStr(s)}
+                  </span>
+                </div>
+                <div className="text-[28px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-0.5">
+                  {last}%
+                </div>
+                <div className="text-[11px] text-dim mb-3.5">{s.lastPeriod} last period</div>
+                <div className="relative">
+                  <GridAreaSpark vals={s.values} color={s.shade} h={90} />
+                  {showRight && <div className="absolute top-0 -right-6 w-px h-full bg-line" />}
+                </div>
+                <div className="flex justify-between mt-1.5">
+                  <span className="text-[10px] text-dim font-mono">Apr 15</span>
+                  <span className="text-[10px] text-dim font-mono">May 13</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-0">
-        {SHARE_SERIES.map((s, i) => {
-          const last = s.values[s.values.length - 1]
-          const showRight = (i + 1) % 3 !== 0 && i < SHARE_SERIES.length - 1
-          const pl = i % 3 !== 0 ? 'pl-7' : ''
-          const pr = showRight ? 'pr-7' : ''
-          const pt = i >= 3 ? 'pt-7' : ''
-          return (
-            <div key={s.name} className={`pb-6 relative ${pl} ${pr} ${pt}`}>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[13px] font-semibold text-ink">{s.name}</span>
-                <span className={`text-[11px] font-semibold font-mono px-1.5 py-px rounded-[10px] ${deltaCls(s)}`}>
-                  {deltaStr(s)}
-                </span>
-              </div>
-              <div className="text-[30px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-0.5">
-                {last}%
-              </div>
-              <div className="text-[11px] text-dim mb-4">{s.lastPeriod} last period</div>
-              <div className="relative">
-                <GridAreaSpark vals={s.values} color={s.shade} h={100} />
-                {showRight && <div className="absolute top-0 -right-7 w-px h-full bg-line" />}
-              </div>
-              <div className="flex justify-between mt-1.5">
-                <span className="text-[10px] text-dim font-mono">Apr 15</span>
-                <span className="text-[10px] text-dim font-mono">May 13</span>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      <div className="text-[12px] text-mid mt-4 leading-[1.6]">
+      <div className="text-[12px] text-mid mt-3.5 leading-[1.6]">
         <strong className="text-ink font-semibold">Olly's share climbed from 25% → 33%</strong> over the last 4 weeks.{' '}
         <strong className="text-ink font-semibold">Pure Encapsulations slipped from 15% → 11%</strong>.
       </div>
