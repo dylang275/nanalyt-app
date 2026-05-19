@@ -993,138 +993,221 @@ function AngleSelectorView({
   )
 }
 
+// ─── Angle Detail data ───────────────────────────────────────────────────────
+
+const ANGLE_DETAIL_ADS = [
+  { format: 'UGC', img: '/uploads/IMG_3486.jpg', hook: '"Couldn\'t shut my brain off"', meta: '42 days running · 9:16 vertical', hasPlay: true },
+  { format: 'STATIC', img: '/uploads/Screenshot 2026-05-13 at 10.15.26 PM.png', hook: 'Lifestyle composition', meta: '38 days running · 1:1 square', hasPlay: false },
+  { format: 'VIDEO', img: '/uploads/IMG_3488.jpg', hook: '"Tried everything for sleep"', meta: '23 days running · 15s · 9:16', hasPlay: true },
+]
+
+const VALIDATOR_BRANDS = [
+  { name: 'Olly', dotGrad: 'linear-gradient(135deg, #fb923c, #ea580c)' },
+  { name: 'Beam', dotGrad: 'linear-gradient(135deg, #a78bfa, #7c3aed)' },
+  { name: 'Moon Juice', dotGrad: 'linear-gradient(135deg, #34d399, #059669)' },
+]
+
+const CARD_CLS = 'bg-surf border-[0.5px] border-[#e5e7eb] rounded-[10px]'
+
 function AngleDetailView({
   comp,
   product,
   angle,
+  onBackToWatchlist,
   onBackToProfile,
-  onBackToProducts,
-  onSelectAngle,
+  onBackToAngles,
 }: {
   comp: Competitor
   product: ProductPick
   angle: Angle
+  onBackToWatchlist: () => void
   onBackToProfile: () => void
-  onBackToProducts: () => void
-  onSelectAngle: (a: Angle) => void
+  onBackToAngles: () => void
 }) {
   const isMissing = angle.coverage === 'MISSING'
   const read = ANGLE_READS[angle.name]
 
   return (
-    <div className="flex flex-col h-full font-sans">
-      <ProfileHero
-        comp={comp}
-        onCompetitorsClick={onBackToProfile}
-        onCompNameClick={onBackToProducts}
-        showCompName
-      />
-      <ProductContextStrip product={product} onAllProducts={onBackToProducts} onSwitchProduct={onBackToProducts} />
+    <div className="px-6 pt-5 pb-12 font-sans">
+      <div className="text-[12px] text-[#6b7280] mb-[18px]">
+        <button onClick={onBackToWatchlist} className="bg-transparent border-0 p-0 cursor-pointer underline decoration-[#e5e7eb] hover:text-ink hover:decoration-[#9ca3af]">
+          Competitors
+        </button>
+        <span className="mx-1.5 text-[#9ca3af]">/</span>
+        <button onClick={onBackToProfile} className="bg-transparent border-0 p-0 cursor-pointer underline decoration-[#e5e7eb] hover:text-ink hover:decoration-[#9ca3af]">
+          {comp.name}
+        </button>
+        <span className="mx-1.5 text-[#9ca3af]">/</span>
+        <button onClick={onBackToAngles} className="bg-transparent border-0 p-0 cursor-pointer underline decoration-[#e5e7eb] hover:text-ink hover:decoration-[#9ca3af]">
+          {product.name}
+        </button>
+        <span className="mx-1.5 text-[#9ca3af]">/</span>
+        <span className="text-ink">{angle.name}</span>
+      </div>
 
-      <div className="flex-1 grid grid-cols-[190px_1fr] overflow-hidden min-h-0">
-        <div className="border-r-[0.5px] border-line px-2.5 py-3.5 flex flex-col gap-0.5 overflow-y-auto">
-          <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-dim mb-2 pl-1.5">Angles</div>
-          {comp.angles.map((an, i) => {
-            const isSelected = an.name === angle.name
-            return (
-              <button
-                key={i}
-                onClick={() => onSelectAngle(an)}
-                className={`w-full text-left px-2.5 py-2 rounded-md border-0 cursor-pointer transition-colors ${
-                  isSelected ? 'bg-surf-2' : 'bg-transparent hover:bg-surf-2'
-                }`}
-              >
-                <div className={`text-[12px] mb-1 leading-[1.3] ${isSelected ? 'font-medium text-ink' : 'font-normal text-mid'}`}>
-                  {an.name}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className={`text-[9px] font-bold tracking-[0.04em] uppercase px-1.5 py-px rounded-[3px] ${
-                    an.coverage === 'MISSING' ? 'bg-alert-bg text-alert' : 'bg-brand-bg text-brand'
-                  }`}>
-                    {an.coverage === 'MISSING' ? 'Missing' : 'You run it'}
-                  </span>
-                  <span className={`text-[10px] font-semibold font-mono ${an.trendPos ? 'text-brand' : 'text-danger'}`}>
-                    {an.trendPos ? '+' : ''}{an.trend}
-                  </span>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-
-        <div className="overflow-y-auto px-8 py-7">
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-dim mb-1.5">Angle</div>
-              <div className="text-[20px] font-medium text-ink tracking-[-0.02em] leading-[1.15] max-w-[300px]">{angle.name}</div>
-            </div>
+      <div className={`${CARD_CLS} px-6 py-5 flex items-start gap-4 mb-[18px]`}>
+        <div className="flex-1 min-w-0">
+          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-1.5">
+            ANGLE · {comp.name.toUpperCase()} {product.name.toUpperCase()}
+          </div>
+          <div className="flex items-start gap-3 mb-2.5 flex-wrap">
+            <div className="text-[24px] font-medium text-ink leading-[1.15]">{angle.name}</div>
             <span
-              className={`text-[9px] font-bold tracking-[0.05em] uppercase px-2.5 py-1 rounded shrink-0 mt-1 ${
-                isMissing ? 'bg-alert-bg text-alert' : 'bg-brand-bg text-brand'
+              className={`text-[11px] font-medium tracking-[0.03em] uppercase px-2.5 py-[3px] rounded-xl mt-1 ${
+                isMissing ? 'bg-[#fcebeb] text-[#791f1f]' : 'bg-[#f0f9f4] text-[#27500a]'
               }`}
             >
               {isMissing ? 'Missing from your ads' : 'You also run this'}
             </span>
           </div>
-
-          <div className="flex gap-0 mb-8">
-            {[
-              { l: 'Share of budget', v: `${angle.share}%`, sub: 'of their creative spend' },
-              { l: 'Avg longevity', v: `${angle.longevity}d`, sub: 'median days running' },
-              { l: '30d momentum', v: (angle.trendPos ? '+' : '') + angle.trend, sub: 'share point change', positive: angle.trendPos },
-            ].map((m, i) => (
-              <div key={i} className={`flex-1 ${i < 2 ? 'pr-6 mr-6 border-r-[0.5px] border-line' : ''}`}>
-                <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-dim mb-1.5">{m.l}</div>
-                <div
-                  className={`text-[26px] font-medium font-mono tracking-[-0.04em] leading-none mb-1 ${
-                    m.positive === false ? 'text-danger' : m.positive === true ? 'text-brand' : 'text-ink'
-                  }`}
-                >
-                  {m.v}
-                </div>
-                <div className="text-[11px] text-dim">{m.sub}</div>
-              </div>
-            ))}
+          <div className="text-[13px] text-[#6b7280] leading-[1.5] max-w-[540px]">
+            {read?.positioning ?? `A positioning angle ${comp.name} has scaled aggressively over the last 30 days. Validated by 3 of your tracked competitors.`}
           </div>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <button className="bg-surf border-[0.5px] border-[#d1d5db] rounded-md px-3.5 py-1.5 text-[12px] text-ink cursor-pointer hover:bg-[#f7f8fa]">
+            Generate PDP →
+          </button>
+          <button className="bg-[#1d9e75] text-white border-0 rounded-md px-3.5 py-1.5 text-[12px] font-medium cursor-pointer hover:opacity-90">
+            Generate creative →
+          </button>
+        </div>
+      </div>
 
-          <div className="mb-7">
-            <div className="text-[10px] font-medium tracking-[0.08em] uppercase text-ink mb-3">What this angle is</div>
-            <div className="text-[14px] italic text-ink leading-[1.65] mb-3 tracking-[-0.01em]">
-              "{read?.corePromise || 'A positioning angle their buyers are responding to.'}"
+      <div className="grid grid-cols-3 gap-2.5 mb-[18px]">
+        <div className={`${CARD_CLS} px-[18px] py-4`}>
+          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-2">SHARE OF BUDGET</div>
+          <div className="text-[26px] font-medium text-ink leading-none mb-1">{angle.share}%</div>
+          <div className="text-[11px] text-[#9ca3af] mb-3">of their creative spend</div>
+          <div className="h-1 bg-[#f0f1f3] rounded-[2px] overflow-hidden">
+            <div className="h-full bg-[#1f2937] rounded-[2px]" style={{ width: `${Math.min(angle.share, 100)}%` }} />
+          </div>
+        </div>
+        <div className={`${CARD_CLS} px-[18px] py-4`}>
+          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-2">AVG LONGEVITY</div>
+          <div className="text-[26px] font-medium text-ink leading-none mb-1">{angle.longevity}d</div>
+          <div className="text-[11px] text-[#9ca3af] mb-3">median days running</div>
+          <div className="text-[11px] text-[#6b7280]">
+            <strong className="font-medium text-ink">+{Math.max(0, Math.round(((angle.longevity - 11) / 11) * 100))}%</strong> above 11d category avg
+          </div>
+        </div>
+        <div className={`${CARD_CLS} px-[18px] py-4`}>
+          <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-[#9ca3af] mb-2">30D MOMENTUM</div>
+          <div
+            className="text-[26px] font-medium leading-none mb-1"
+            style={{ color: angle.trendPos ? '#1d9e75' : '#dc2626' }}
+          >
+            {angle.trendPos ? '▲' : '▼'} {angle.trend}
+          </div>
+          <div className="text-[11px] text-[#9ca3af] mb-3">share point change</div>
+          <div className="text-[11px] text-[#6b7280]">
+            {angle.trendPos ? 'Fastest-growing in category' : 'Slowing across the category'}
+          </div>
+        </div>
+      </div>
+
+      <div className={`${CARD_CLS} px-6 py-5 mb-[18px]`}>
+        <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-[#9ca3af] mb-4">ANGLE OVERVIEW</div>
+        <div>
+          {[
+            { label: 'Positioning', content: read?.positioning ?? 'Connects with buyers at a key moment in their decision process.', bold: false },
+            { label: 'Target buyer', content: 'Working professionals 25-45 with high cognitive stress disrupting sleep. Skews female.', bold: false },
+            { label: 'Core promise', content: read?.corePromise ?? 'A positioning angle their buyers are responding to.', bold: true },
+          ].map((row, i, arr) => (
+            <div key={i} className={`grid grid-cols-[160px_1fr] py-3 ${i < arr.length - 1 ? 'border-b-[0.5px] border-[#f0f1f3]' : ''}`}>
+              <span className="text-[12px] text-[#6b7280]">{row.label}</span>
+              <span className={`text-[13px] text-ink leading-[1.5] ${row.bold ? 'font-semibold' : ''}`}>{row.content}</span>
             </div>
-            <div className="text-[13px] text-mid leading-[1.7]">
-              {read?.positioning || 'This angle connects with buyers at a key moment in their decision process. Competitors are validating it with sustained spend.'}
+          ))}
+        </div>
+      </div>
+
+      <div className={`${CARD_CLS} px-6 py-5 mb-[22px]`}>
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-[#9ca3af]">NANALYT'S READ</div>
+          <span className="text-[11px] font-medium text-[#27500a] bg-[#f0f9f4] px-2.5 py-[3px] rounded-xl">Recommended to run</span>
+        </div>
+        <div>
+          <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
+            <span className="text-[12px] text-[#6b7280]">Their performance</span>
+            <div className="flex gap-[18px] text-[13px] flex-wrap">
+              <span>
+                <strong className="font-medium text-ink">{angle.longevity}d</strong>{' '}
+                <span className="text-[#9ca3af]">longevity</span>
+              </span>
+              <span>
+                <strong className="font-medium text-ink">{angle.share}%</strong>{' '}
+                <span className="text-[#9ca3af]">spend</span>
+              </span>
+              <strong className="font-medium text-ink">
+                {angle.trendPos ? '▲ Growing' : '▼ Declining'}
+              </strong>
             </div>
           </div>
+          <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
+            <span className="text-[12px] text-[#6b7280]">Your coverage</span>
+            <span className="text-[13px]">
+              <strong className="font-medium text-ink">
+                {isMissing ? '0 of 6' : '3 of 6'}
+              </strong>{' '}
+              <span className="text-[#9ca3af]">active ads address this</span>
+            </span>
+          </div>
+          <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
+            <span className="text-[12px] text-[#6b7280]">PDP support</span>
+            <span className="text-[13px]">
+              <strong className="font-medium text-ink">{isMissing ? 'Not addressed' : 'Addressed'}</strong>{' '}
+              <span className="text-[#9ca3af]">on Magnesium Glycinate Complex</span>
+            </span>
+          </div>
+          <div className="grid grid-cols-[180px_1fr] py-3 items-center">
+            <span className="text-[12px] text-[#6b7280]">Validated by</span>
+            <div className="flex gap-1.5 flex-wrap">
+              {VALIDATOR_BRANDS.map(b => (
+                <span key={b.name} className="bg-[#f7f8fa] px-2.5 py-[3px] rounded-xl flex items-center gap-1.5 text-[12px] font-medium text-ink">
+                  <span className="w-3 h-3 rounded-full block" style={{ background: b.dotGrad }} />
+                  {b.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <div className="mb-7">
-            <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-dim mb-3.5">What it means for you</div>
-            {[
-              { l: 'Their performance', v: read?.perf || 'Strong — sustained spend, growing share, above-average longevity.' },
-              { l: 'Your coverage', v: read?.coverageText || '0 of your active ads address this angle.' },
-              { l: 'PDP support', v: read?.pdpText || 'Not addressed on your current product page.' },
-              { l: 'Recommendation', v: read?.rec || 'Generate creative and a PDP variant to test this angle.' },
-            ].map((row, j) => (
-              <div key={j} className="grid grid-cols-[120px_1fr] gap-4 pt-2.5">
-                <span className="text-[10px] font-semibold tracking-[0.05em] uppercase text-dim pt-0.5">{row.l}</span>
-                <span className="text-[13px] text-ink leading-[1.65]">{row.v}</span>
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-[#9ca3af]">
+            EXAMPLE ADS IN THIS ANGLE · {ANGLE_DETAIL_ADS.length}
+          </div>
+          <span className="text-[11px] text-[#6b7280] cursor-pointer hover:text-ink">
+            View all on Meta Ad Library →
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-2.5">
+          {ANGLE_DETAIL_ADS.map((ad, i) => (
+            <div key={i} className={`${CARD_CLS} overflow-hidden`}>
+              <div className="aspect-[4/5] relative bg-[#111]">
+                <img src={ad.img} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/[0.12]" />
+                <span className="absolute top-2 left-2 text-[9px] font-medium tracking-[0.03em] bg-[rgba(15,30,60,0.9)] text-white px-[7px] py-[2px] rounded-[3px]">
+                  {ad.format}
+                </span>
+                {ad.hasPlay && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-11 h-11 rounded-full bg-black/50 flex items-center justify-center">
+                      <svg width="14" height="16" viewBox="0 0 14 16" fill="white">
+                        <path d="M2 1l11 7L2 15V1z" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-
-          <div className="flex gap-2 mb-7">
-            {['Generate PDP →', 'Generate creative →'].map(btn => (
-              <button
-                key={btn}
-                className="text-[12px] text-mid bg-transparent border-[0.5px] border-line rounded-md px-4 py-1.5 cursor-pointer transition-colors hover:bg-brand hover:text-white hover:border-brand"
-              >
-                {btn}
-              </button>
-            ))}
-          </div>
-
-          <div className="text-[10px] font-semibold tracking-[0.06em] uppercase text-dim mb-3.5">Example ads in this angle</div>
-          <ExampleAds />
+              <div className="px-3 py-2.5">
+                <div className="text-[12px] font-medium text-ink mb-px">{ad.hook}</div>
+                <div className="text-[10px] text-[#6b7280]">{ad.meta}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -1145,16 +1228,18 @@ function ProfilePage({ comp, onBack }: { comp: Competitor; onBack: () => void })
         comp={comp}
         product={selectedProduct}
         angle={selectedAngle}
-        onBackToProfile={() => {
+        onBackToWatchlist={() => {
           setSelectedProduct(null)
           setSelectedAngle(null)
           onBack()
         }}
-        onBackToProducts={() => {
+        onBackToProfile={() => {
           setSelectedProduct(null)
           setSelectedAngle(null)
         }}
-        onSelectAngle={setSelectedAngle}
+        onBackToAngles={() => {
+          setSelectedAngle(null)
+        }}
       />
     )
   }
