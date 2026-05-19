@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, useRef, type ReactNode } from 'react'
 
 // ─── Types & data ────────────────────────────────────────────────────────────
 
@@ -997,11 +997,150 @@ function AngleSelectorView({
 
 // ─── Angle Detail data ───────────────────────────────────────────────────────
 
-const ANGLE_DETAIL_ADS = [
-  { format: 'UGC', img: '/uploads/IMG_3486.jpg', hook: '"Couldn\'t shut my brain off"', meta: '42 days running · 9:16 vertical', hasPlay: true },
-  { format: 'STATIC', img: '/uploads/Screenshot 2026-05-13 at 10.15.26 PM.png', hook: 'Lifestyle composition', meta: '38 days running · 1:1 square', hasPlay: false },
-  { format: 'VIDEO', img: '/uploads/IMG_3488.jpg', hook: '"Tried everything for sleep"', meta: '23 days running · 15s · 9:16', hasPlay: true },
+type ExampleAd = {
+  format: 'UGC' | 'STATIC' | 'VIDEO'
+  img: string
+  hook: string
+  meta: string
+  hasPlay: boolean
+  durationSec: number
+}
+
+const ANGLE_DETAIL_ADS: ExampleAd[] = [
+  { format: 'UGC', img: '/uploads/IMG_3486.jpg', hook: '"Couldn\'t shut my brain off"', meta: '42 days running · 9:16 vertical', hasPlay: true, durationSec: 18 },
+  { format: 'STATIC', img: '/uploads/Screenshot 2026-05-13 at 10.15.26 PM.png', hook: 'Lifestyle composition', meta: '38 days running · 1:1 square', hasPlay: false, durationSec: 0 },
+  { format: 'VIDEO', img: '/uploads/IMG_3488.jpg', hook: '"Tried everything for sleep"', meta: '23 days running · 15s · 9:16', hasPlay: true, durationSec: 15 },
 ]
+
+function ExampleAdLightbox({ ad, onClose }: { ad: ExampleAd; onClose: () => void }) {
+  const [playing, setPlaying] = useState(false)
+  const [progress, setProgress] = useState(22)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const pause = () => {
+    setPlaying(false)
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  }
+
+  const startPlay = () => {
+    setPlaying(true)
+    timerRef.current = setInterval(() => {
+      setProgress(p => {
+        if (p >= 100) {
+          if (timerRef.current) clearInterval(timerRef.current)
+          setPlaying(false)
+          return 100
+        }
+        return p + 0.5
+      })
+    }, 80)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        pause()
+        onClose()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  const handleClose = () => {
+    pause()
+    onClose()
+  }
+
+  const isVideo = ad.hasPlay
+  const aspectRatio = ad.format === 'STATIC' ? '1 / 1' : '9 / 16'
+  const elapsedSec = Math.floor((progress * ad.durationSec) / 100)
+
+  return (
+    <div
+      onClick={e => { if (e.target === e.currentTarget) handleClose() }}
+      className="fixed inset-0 z-[300] bg-black/85 flex items-center justify-center font-sans"
+    >
+      <div onClick={e => e.stopPropagation()} className="relative w-[340px] rounded-xl overflow-hidden bg-black shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
+        <div className="relative" style={{ aspectRatio }}>
+          <img src={ad.img} alt="" className="w-full h-full object-cover block" />
+          <div className="absolute inset-0 bg-black/20" />
+
+          {isVideo && (
+            <div
+              onClick={() => (playing ? pause() : startPlay())}
+              className="absolute inset-0 flex items-center justify-center cursor-pointer"
+            >
+              <div className="w-14 h-14 rounded-full bg-black/45 border-2 border-white/70 flex items-center justify-center transition-transform hover:scale-110">
+                {playing ? (
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
+                    <rect x="2" y="2" width="4" height="12" rx="1" />
+                    <rect x="10" y="2" width="4" height="12" rx="1" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="18" viewBox="0 0 16 18" fill="white">
+                    <path d="M2 1l13 8L2 17V1z" />
+                  </svg>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="absolute top-0 left-0 right-0 px-3.5 pt-3.5 flex items-center justify-between">
+            <span className="text-[10px] font-bold tracking-[0.05em] bg-black/50 text-white px-2 py-[3px] rounded-[3px]">
+              {ad.format}
+            </span>
+            <button
+              onClick={handleClose}
+              className="bg-black/50 border-0 rounded-full w-7 h-7 cursor-pointer flex items-center justify-center text-white text-sm leading-none hover:bg-black/65"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <div className="px-3.5 pt-3 pb-4 bg-[#111]">
+          <div className="text-[11px] text-white/80 mb-2.5">{ad.hook}</div>
+          {isVideo && (
+            <>
+              <div
+                onClick={e => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100))
+                  setProgress(pct)
+                }}
+                className="relative h-[3px] bg-white/20 rounded-[2px] cursor-pointer mb-2"
+              >
+                <div
+                  className="h-full bg-white rounded-[2px]"
+                  style={{ width: `${progress}%`, transition: playing ? 'none' : 'width 0.1s' }}
+                />
+                <div
+                  className="absolute top-1/2 w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_4px_rgba(0,0,0,0.4)]"
+                  style={{ left: `${progress}%`, transform: 'translate(-50%, -50%)' }}
+                />
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[10px] text-white/50 font-mono">{elapsedSec}s</span>
+                <span className="text-[10px] text-white/50 font-mono">{ad.durationSec}s</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const VALIDATOR_BRANDS = [
   { name: 'Olly', dotGrad: 'linear-gradient(135deg, #fb923c, #ea580c)' },
@@ -1028,6 +1167,7 @@ function AngleDetailView({
 }) {
   const isMissing = angle.coverage === 'MISSING'
   const read = ANGLE_READS[angle.name]
+  const [openAd, setOpenAd] = useState<ExampleAd | null>(null)
 
   return (
     <div className="px-6 pt-5 pb-12 font-sans">
@@ -1183,7 +1323,11 @@ function AngleDetailView({
         </div>
         <div className="grid grid-cols-3 gap-2.5">
           {ANGLE_DETAIL_ADS.map((ad, i) => (
-            <div key={i} className={`${CARD_CLS} overflow-hidden`}>
+            <div
+              key={i}
+              onClick={() => setOpenAd(ad)}
+              className={`${CARD_CLS} overflow-hidden cursor-pointer transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]`}
+            >
               <div className="aspect-[4/5] relative bg-[#111]">
                 <img src={ad.img} alt="" className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/[0.12]" />
@@ -1208,6 +1352,8 @@ function AngleDetailView({
           ))}
         </div>
       </div>
+
+      {openAd && <ExampleAdLightbox ad={openAd} onClose={() => setOpenAd(null)} />}
     </div>
   )
 }
