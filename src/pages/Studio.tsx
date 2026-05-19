@@ -463,9 +463,9 @@ function Studio() {
                     <div
                       key={pdp.id}
                       onClick={() => setLightbox({ type: 'pdp', asset: pdp, product })}
-                      className={`col-span-2 rounded-lg overflow-hidden cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] relative bg-surf border ${
-                        pdp.state === 'NEW' ? 'border border-brand' : 'border-[0.5px] border-[#e2deda]'
-                      } ${pdp.state === 'PAUSED' ? 'opacity-60' : ''}`}
+                      className={`col-span-2 rounded-lg overflow-hidden cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] relative bg-surf border-[0.5px] border-[#e2deda] ${
+                        pdp.state === 'PAUSED' ? 'opacity-60' : ''
+                      }`}
                     >
                       <div className="aspect-[3/2] overflow-hidden relative">
                         <img
@@ -516,9 +516,7 @@ function Studio() {
                   <div
                     key={ad.id}
                     onClick={() => setLightbox({ type: 'ad', asset: ad, product })}
-                    className={`rounded-lg overflow-hidden cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] bg-surf border ${
-                      ad.state === 'NEW' ? 'border border-brand' : 'border-[0.5px] border-[#e2deda]'
-                    }`}
+                    className="rounded-lg overflow-hidden cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] bg-surf border-[0.5px] border-[#e2deda]"
                   >
                     <div className="aspect-square overflow-hidden relative">
                       <AdThumb ad={ad} product={product} />
