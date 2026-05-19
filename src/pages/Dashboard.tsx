@@ -32,16 +32,20 @@ function SectionHead({ title, badge, link }: {
 
 function SignalCard({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex-1 min-w-0 bg-surf border-[0.5px] border-[#e5e7eb] rounded-lg px-4 py-3.5 flex flex-col gap-2">
+    <div className="flex-1 min-w-0 flex flex-col gap-2">
       <div className="text-[10px] font-medium text-[#9ca3af] uppercase tracking-[0.04em]">{label}</div>
       <div className="flex-1">{children}</div>
     </div>
   )
 }
 
+function SignalDivider() {
+  return <div className="w-[0.5px] h-9 bg-[#e5e7eb] self-center shrink-0" />
+}
+
 function MarketSignals() {
   return (
-    <div className="flex gap-2.5">
+    <div className="flex items-stretch gap-4">
       <SignalCard label="FINDINGS · 7D">
         <div className="text-[26px] font-medium text-ink leading-none mb-1.5">14</div>
         <div className="text-[11px]">
@@ -50,6 +54,8 @@ function MarketSignals() {
         </div>
       </SignalCard>
 
+      <SignalDivider />
+
       <SignalCard label="MER">
         <div className="text-[26px] font-medium text-ink leading-none mb-1.5">3.42</div>
         <div className="text-[11px]">
@@ -57,6 +63,8 @@ function MarketSignals() {
           <span className="text-[#6b7280]"> vs prior</span>
         </div>
       </SignalCard>
+
+      <SignalDivider />
 
       <SignalCard label="TOP PRODUCT">
         <div className="flex items-center gap-2.5">
@@ -72,6 +80,8 @@ function MarketSignals() {
         </div>
       </SignalCard>
 
+      <SignalDivider />
+
       <SignalCard label="TOP CREATIVE">
         <div className="flex items-center gap-2.5">
           <img
@@ -85,6 +95,8 @@ function MarketSignals() {
           </div>
         </div>
       </SignalCard>
+
+      <SignalDivider />
 
       <SignalCard label="ACTIVE TESTS">
         <div className="text-[26px] font-medium text-ink leading-none mb-1.5">3</div>
@@ -329,11 +341,11 @@ const ATTENTION = [
 
 function NeedsAttention() {
   return (
-    <div className="flex flex-col gap-[2px]">
+    <div className="flex flex-col gap-2.5">
       {ATTENTION.map((a, i) => (
         <div
           key={i}
-          className="flex items-center gap-2.5 px-[14px] py-[9px] bg-surf rounded-lg cursor-pointer border border-[#e8e5e0] shadow-card hover:bg-black/[0.025]"
+          className="flex items-center gap-2.5 px-[14px] py-[9px] bg-surf rounded-[10px] cursor-pointer shadow-lift hover:bg-black/[0.025]"
         >
           <span className="w-[5px] h-[5px] rounded-full block shrink-0" style={{ background: a.dot }} />
           <div className="flex-1 min-w-0">
@@ -378,7 +390,7 @@ function DashFindingCards() {
       {DASH_FINDINGS.map((f, i) => (
         <div
           key={i}
-          className="bg-surf border border-line rounded-[10px] overflow-hidden flex flex-col p-[14px] pb-3 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+          className="bg-surf rounded-[10px] overflow-hidden flex flex-col p-[14px] pb-3 shadow-lift"
         >
           <div className="flex items-center justify-between mb-3">
             <span
