@@ -353,7 +353,7 @@ function FindingCard({ finding, onOpen, onTakeAction }: {
       >
         <div>
           {finding.related > 0 && (
-            <button className="text-[12px] font-medium text-white bg-ink border-0 rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap hover:opacity-90">
+            <button className="text-[12px] font-medium text-mid bg-surf border border-line rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap transition-colors hover:bg-ink hover:text-white hover:border-ink">
               {finding.related} related signals →
             </button>
           )}
