@@ -567,13 +567,13 @@ function NewAngleDetail() {
       <div>
         <div className="text-[11px] font-medium text-ink mb-2.5">Go deeper</div>
         <div className="flex flex-col gap-2.5">
-          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:shadow-card-hover`}>
+          <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
             <span>Run full intelligence pass on Magnesium Glycinate Complex</span>
-            <span className="text-dim ml-3 shrink-0">→</span>
+            <span className="text-dim ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
-          <button className="w-full flex items-center justify-between px-3.5 py-[11px] bg-transparent border border-line rounded-lg text-[12px] text-ink cursor-pointer text-left transition-colors hover:border-brand">
+          <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
             <span>Ask Nanalyt about this finding</span>
-            <span className="text-dim ml-3 shrink-0">→</span>
+            <span className="text-dim ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
         </div>
       </div>
@@ -753,13 +753,13 @@ function NewProductDetail() {
       <div>
         <SubLabel label="Go deeper" />
         <div className="flex flex-col gap-2.5">
-          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:shadow-card-hover`}>
+          <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
             <span>Run full intelligence pass on magnesium + ashwagandha gummies</span>
-            <span className="text-dim ml-3 shrink-0">→</span>
+            <span className="text-dim ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
-          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:shadow-card-hover`}>
+          <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
             <span>Ask Nanalyt about this finding</span>
-            <span className="text-dim ml-3 shrink-0">→</span>
+            <span className="text-dim ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
         </div>
       </div>
