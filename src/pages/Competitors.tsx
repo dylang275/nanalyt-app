@@ -219,50 +219,48 @@ function ShareOfActivityChart() {
   }
 
   return (
-    <div className="font-sans">
-      <div className="bg-surf rounded-[10px] px-6 py-5">
-        <div className="flex items-center gap-2.5 mb-6">
-          <span className="text-[14px] font-medium text-ink">Share of activity</span>
-          <span className="text-[11px] font-medium text-mid bg-surf-2 rounded-md px-2.5 py-1 whitespace-nowrap">
-            Weekly ad activity
-          </span>
-          <span className="text-[11px] text-mid ml-auto">Apr 15 – May 13</span>
-        </div>
-
-        <div className="grid grid-cols-3 gap-0">
-          {SHARE_SERIES.map((s, i) => {
-            const last = s.values[s.values.length - 1]
-            const showRight = (i + 1) % 3 !== 0 && i < SHARE_SERIES.length - 1
-            const pl = i % 3 !== 0 ? 'pl-5' : ''
-            const pr = showRight ? 'pr-5' : ''
-            const pt = i >= 3 ? 'pt-6' : ''
-            return (
-              <div key={s.name} className={`pb-5 relative ${pl} ${pr} ${pt}`}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[13px] font-semibold text-ink">{s.name}</span>
-                  <span className={`text-[11px] font-semibold font-mono px-1.5 py-px rounded-[10px] ${deltaCls(s)}`}>
-                    {deltaStr(s)}
-                  </span>
-                </div>
-                <div className="text-[26px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-0.5">
-                  {last}%
-                </div>
-                <div className="text-[11px] text-mid mb-3.5">{s.lastPeriod} last period</div>
-                <div className="relative">
-                  <GridAreaSpark vals={s.values} color={s.shade} h={80} />
-                  {showRight && <div className="absolute top-0 -right-5 w-px h-full bg-line" />}
-                </div>
-                <div className="flex justify-between mt-1.5">
-                  <span className="text-[10px] text-mid font-mono">Apr 15</span>
-                  <span className="text-[10px] text-mid font-mono">May 13</span>
-                </div>
-              </div>
-            )
-          })}
-        </div>
+    <div className="bg-surf rounded-[10px] px-6 py-5 h-full flex flex-col font-sans">
+      <div className="flex items-center gap-2.5 mb-6">
+        <span className="text-[14px] font-medium text-ink">Share of activity</span>
+        <span className="text-[11px] font-medium text-mid bg-surf-2 rounded-md px-2.5 py-1 whitespace-nowrap">
+          Weekly ad activity
+        </span>
+        <span className="text-[11px] text-mid ml-auto">Apr 15 – May 13</span>
       </div>
 
-      <div className="text-[12px] text-ink leading-[1.5] mt-3 pl-1">
+      <div className="grid grid-cols-3 gap-0">
+        {SHARE_SERIES.map((s, i) => {
+          const last = s.values[s.values.length - 1]
+          const showRight = (i + 1) % 3 !== 0 && i < SHARE_SERIES.length - 1
+          const pl = i % 3 !== 0 ? 'pl-5' : ''
+          const pr = showRight ? 'pr-5' : ''
+          const pt = i >= 3 ? 'pt-6' : ''
+          return (
+            <div key={s.name} className={`pb-5 relative ${pl} ${pr} ${pt}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[13px] font-semibold text-ink">{s.name}</span>
+                <span className={`text-[11px] font-semibold font-mono px-1.5 py-px rounded-[10px] ${deltaCls(s)}`}>
+                  {deltaStr(s)}
+                </span>
+              </div>
+              <div className="text-[26px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-0.5">
+                {last}%
+              </div>
+              <div className="text-[11px] text-mid mb-3.5">{s.lastPeriod} last period</div>
+              <div className="relative">
+                <GridAreaSpark vals={s.values} color={s.shade} h={80} />
+                {showRight && <div className="absolute top-0 -right-5 w-px h-full bg-line" />}
+              </div>
+              <div className="flex justify-between mt-1.5">
+                <span className="text-[10px] text-mid font-mono">Apr 15</span>
+                <span className="text-[10px] text-mid font-mono">May 13</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="text-[12px] text-ink leading-[1.5] mt-auto pt-5">
         <strong className="font-semibold">Olly's share climbed from 25% → 33%</strong> over the last 4 weeks.{' '}
         <strong className="font-semibold">Pure Encapsulations slipped from 15% → 11%</strong>.
       </div>
@@ -458,7 +456,7 @@ function WatchlistView({ onOpen }: { onOpen: (c: Competitor) => void }) {
         <div className="text-[20px] font-medium text-ink tracking-[-0.025em]">Competitors</div>
       </div>
 
-      <div className="grid grid-cols-[1.8fr_1fr] gap-[18px] mb-8 items-start">
+      <div className="grid grid-cols-[1.8fr_1fr] gap-[18px] mb-8">
         <ShareOfActivityChart />
         <div>
           <CompetitorsSectionHead title="Recent alerts" link={{ label: 'View all', fn: () => {} }} />
