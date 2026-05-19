@@ -86,7 +86,7 @@ function LeftNav() {
           </div>
           <div>
             <div className="text-[14px] font-medium text-ink leading-none tracking-[-0.03em]">Nanalyt</div>
-            <div className="text-[9px] text-dim tracking-[0.03em] mt-[2px]">Sleep supplements</div>
+            <div className="text-[9px] text-ink tracking-[0.03em] mt-[2px]">Sleep supplements</div>
           </div>
         </div>
       </div>
@@ -101,18 +101,18 @@ function LeftNav() {
               `flex items-center gap-[9px] pl-[14px] pr-3 py-2 rounded-md text-[12px] transition-colors ${
                 isActive
                   ? 'bg-ink text-white font-medium'
-                  : 'text-mid hover:bg-black/[0.04]'
+                  : 'text-ink hover:bg-black/[0.04]'
               }`
             }
           >
             {({ isActive }) => (
               <>
-                <span className={`flex shrink-0 ${isActive ? 'text-white' : 'text-dim'}`}>{icon}</span>
+                <span className={`flex shrink-0 ${isActive ? 'text-white' : 'text-ink'}`}>{icon}</span>
                 <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{label}</span>
                 {badge && (
                   <span
                     className={`text-[9px] font-semibold font-mono px-[5px] py-[1px] rounded-[3px] ${
-                      isActive ? 'bg-white/20 text-white' : 'bg-surf-2 text-dim'
+                      isActive ? 'bg-white/20 text-white' : 'bg-surf-2 text-ink'
                     }`}
                   >
                     {badge}
@@ -130,7 +130,7 @@ function LeftNav() {
         </div>
         <div className="min-w-0">
           <div className="text-[11px] font-medium text-ink">Dylan</div>
-          <div className="text-[10px] text-dim truncate">Free plan</div>
+          <div className="text-[10px] text-ink truncate">Free plan</div>
         </div>
       </div>
     </div>
@@ -142,22 +142,22 @@ function TopBar() {
     <div className="h-[46px] flex items-center px-5 gap-4 shrink-0 font-sans">
       <div className="flex-1" />
       <div className="flex items-center gap-2 bg-white border border-line rounded-lg px-3 h-[30px] w-[460px] cursor-text shrink-0">
-        <span className="flex-1 text-[12px] text-dim">Ask Nanalyt anything…</span>
-        <span className="text-dim flex">
+        <span className="flex-1 text-[12px] text-ink">Ask Nanalyt anything…</span>
+        <span className="text-ink flex">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.2">
             <rect x="4" y="1" width="5" height="7" rx="2.5" />
             <path d="M2 6.5a4.5 4.5 0 009 0" strokeLinecap="round" />
             <path d="M6.5 11V13" strokeLinecap="round" />
           </svg>
         </span>
-        <span className="text-[9px] text-dim font-mono bg-surf-2 px-[5px] py-[1px] rounded-[3px] shrink-0">⌘K</span>
+        <span className="text-[9px] text-ink font-mono bg-surf-2 px-[5px] py-[1px] rounded-[3px] shrink-0">⌘K</span>
       </div>
       <div className="flex-1 flex items-center justify-end gap-3">
         <div className="flex items-center gap-1.5 bg-brand-bg border border-brand-dim rounded-md px-[11px] py-1 cursor-pointer">
           <span className="w-[5px] h-[5px] bg-brand rounded-full block shrink-0 animate-soft-pulse" />
           <span className="text-[10px] font-medium text-brand whitespace-nowrap">Your agent</span>
         </div>
-        <span className="text-dim cursor-pointer flex relative">
+        <span className="text-ink cursor-pointer flex relative">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
             <path d="M7.5 1.5A4 4 0 013.5 5.5v3.5l-1.5 2h11L11.5 9V5.5a4 4 0 01-4-4z" />
             <path d="M6 12.5a1.5 1.5 0 003 0" strokeLinecap="round" />

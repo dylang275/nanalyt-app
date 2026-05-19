@@ -16,7 +16,7 @@ function SectionHead({ title, badge, link }: {
       {link && (
         <span
           onClick={link.fn}
-          className="text-[11px] text-dim cursor-pointer flex items-center gap-1 whitespace-nowrap ml-auto hover:text-ink"
+          className="text-[11px] text-ink cursor-pointer flex items-center gap-1 whitespace-nowrap ml-auto hover:text-ink"
         >
           {link.label}
           <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
@@ -33,7 +33,7 @@ function SectionHead({ title, badge, link }: {
 function SignalCard({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex-1 min-w-0 flex flex-col gap-2">
-      <div className="text-[10px] font-medium text-[#9ca3af] uppercase tracking-[0.04em]">{label}</div>
+      <div className="text-[10px] font-medium text-ink uppercase tracking-[0.04em]">{label}</div>
       <div className="flex-1">{children}</div>
     </div>
   )
@@ -50,7 +50,7 @@ function MarketSignals() {
         <div className="text-[26px] font-medium text-ink leading-none mb-1.5">14</div>
         <div className="text-[11px]">
           <span className="text-[#1d9e75] font-medium">↑ +5</span>
-          <span className="text-[#6b7280]"> vs prior</span>
+          <span className="text-ink"> vs prior</span>
         </div>
       </SignalCard>
 
@@ -60,7 +60,7 @@ function MarketSignals() {
         <div className="text-[26px] font-medium text-ink leading-none mb-1.5">3.42</div>
         <div className="text-[11px]">
           <span className="text-[#1d9e75] font-medium">↑ +0.18</span>
-          <span className="text-[#6b7280]"> vs prior</span>
+          <span className="text-ink"> vs prior</span>
         </div>
       </SignalCard>
 
@@ -91,7 +91,7 @@ function MarketSignals() {
           />
           <div className="min-w-0 flex-1">
             <div className="text-base font-medium text-ink leading-[1.1]">82</div>
-            <div className="text-[10px] text-[#6b7280]">CTR 4.8%</div>
+            <div className="text-[10px] text-ink">CTR 4.8%</div>
           </div>
         </div>
       </SignalCard>
@@ -100,7 +100,7 @@ function MarketSignals() {
 
       <SignalCard label="ACTIVE TESTS">
         <div className="text-[26px] font-medium text-ink leading-none mb-1.5">3</div>
-        <div className="text-[11px] text-[#6b7280]">2 completed 7d</div>
+        <div className="text-[11px] text-ink">2 completed 7d</div>
       </SignalCard>
     </div>
   )
@@ -219,8 +219,8 @@ function TrendDateRow({ range }: { range: Range }) {
   const [s, e] = L[range]
   return (
     <div className="flex justify-between mt-[5px]">
-      <span className="text-[9px] text-dim font-mono">{s}</span>
-      <span className="text-[9px] text-dim font-mono">{e}</span>
+      <span className="text-[9px] text-ink font-mono">{s}</span>
+      <span className="text-[9px] text-ink font-mono">{e}</span>
     </div>
   )
 }
@@ -254,7 +254,7 @@ function TrendChart() {
               key={rv}
               onClick={() => setRange(rv)}
               className={`px-[10px] py-[3px] border-0 rounded-[5px] text-[11px] cursor-pointer font-mono transition-all ${
-                range === rv ? 'bg-surf text-ink font-medium shadow-[0_1px_3px_rgba(0,0,0,0.08)]' : 'bg-transparent text-dim font-normal'
+                range === rv ? 'bg-surf text-ink font-medium shadow-[0_1px_3px_rgba(0,0,0,0.08)]' : 'bg-transparent text-ink font-normal'
               }`}
             >
               {rv}
@@ -268,7 +268,7 @@ function TrendChart() {
         <div className="grid grid-cols-2">
           {cat.map((ch, i) => (
             <div key={i} className={i === 0 ? 'pr-5 border-r border-line' : 'pl-5'}>
-              <div className="text-[11px] text-mid mb-[6px]">{ch.label}</div>
+              <div className="text-[11px] text-ink mb-[6px]">{ch.label}</div>
               <div className="flex items-baseline gap-2 mb-3">
                 <span className="text-[22px] font-medium text-ink font-mono tracking-[-0.03em]">{ch.value}</span>
                 <span className={`text-[10px] font-semibold px-[7px] py-[2px] rounded-[10px] ${ch.pos ? 'text-brand bg-brand-bg' : 'text-danger bg-danger-bg'}`}>
@@ -289,7 +289,7 @@ function TrendChart() {
             <div key={i} className={`${i < 2 ? 'pr-4 border-r border-line' : ''} ${i > 0 ? 'pl-4' : ''}`}>
               <div className="flex items-center gap-2 mb-2">
                 <img src={ch.img} className="w-[26px] h-[26px] rounded-[5px] object-cover shrink-0 border border-line" alt="" />
-                <div className="text-[11px] text-mid">{ch.label}</div>
+                <div className="text-[11px] text-ink">{ch.label}</div>
               </div>
               <div className="flex items-baseline gap-1.5 mb-[10px]">
                 <span className="text-[18px] font-medium text-ink font-mono tracking-[-0.03em]">{ch.value}</span>
@@ -316,7 +316,7 @@ function TrendChart() {
                 <svg width="16" height="8" viewBox="0 0 16 8">
                   <line x1="0" y1="4" x2="16" y2="4" stroke={l.color} strokeWidth="2" />
                 </svg>
-                <span className="text-[11px] text-mid">{l.label}</span>
+                <span className="text-[11px] text-ink">{l.label}</span>
                 <span className="text-[11px] font-medium text-ink font-mono">{l.val}</span>
               </div>
             ))}
@@ -350,9 +350,9 @@ function NeedsAttention() {
           <span className="w-[5px] h-[5px] rounded-full block shrink-0" style={{ background: a.dot }} />
           <div className="flex-1 min-w-0">
             <div className="text-[12px] font-medium text-ink">{a.title}</div>
-            <div className="text-[11px] text-dim">{a.sub}</div>
+            <div className="text-[11px] text-ink">{a.sub}</div>
           </div>
-          <span className="text-[10px] text-dim font-mono whitespace-nowrap shrink-0">{a.time}</span>
+          <span className="text-[10px] text-ink font-mono whitespace-nowrap shrink-0">{a.time}</span>
         </div>
       ))}
     </div>
@@ -399,13 +399,13 @@ function DashFindingCards() {
             >
               {f.type}
             </span>
-            <span className="text-[11px] text-dim font-mono">{f.time}</span>
+            <span className="text-[11px] text-ink font-mono">{f.time}</span>
           </div>
           <div className="text-[13px] font-medium text-ink leading-[1.5] mb-[14px] flex-1">{f.rec}</div>
           <div className="flex gap-3 mb-[14px]">
             {[f.m1, f.m2].map((m, j) => (
               <div key={j} className="flex-1 min-w-0">
-                <div className="text-[9px] font-semibold tracking-[0.05em] uppercase text-dim mb-[3px] truncate">{m.label}</div>
+                <div className="text-[9px] font-semibold tracking-[0.05em] uppercase text-ink mb-[3px] truncate">{m.label}</div>
                 <div className="text-[12px] font-medium text-ink tracking-[-0.01em] leading-[1.3]">{m.value}</div>
               </div>
             ))}
@@ -449,7 +449,7 @@ function TopAds() {
             <div className="text-[13px] font-medium text-ink mb-2 leading-[1.3]">{ad.product}</div>
             <div className="flex items-end justify-between mb-2">
               <div>
-                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">ROAS</div>
+                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-0.5">ROAS</div>
                 <div className="text-base font-medium text-ink">{ad.roas}</div>
               </div>
               <span
@@ -462,11 +462,11 @@ function TopAds() {
             </div>
             <div className="flex gap-4">
               <div>
-                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">CPA</div>
+                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-0.5">CPA</div>
                 <div className={`text-[13px] ${ad.cpaRed ? 'text-[#993556]' : 'text-ink'}`}>{ad.cpa}</div>
               </div>
               <div>
-                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">SPEND</div>
+                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-0.5">SPEND</div>
                 <div className="text-[13px] text-ink">{ad.spend}</div>
               </div>
             </div>
@@ -484,7 +484,7 @@ function Dashboard() {
     <div className="pt-6 px-12 pb-[72px] flex flex-col gap-6 font-sans">
       <div>
         <div className="text-[22px] font-medium text-ink tracking-[-0.03em] leading-none">Dashboard</div>
-        <div className="text-[11px] text-dim mt-[5px]">Welcome back, Dylan · May 5, 2026</div>
+        <div className="text-[11px] text-ink mt-[5px]">Welcome back, Dylan · May 5, 2026</div>
       </div>
 
       <div>

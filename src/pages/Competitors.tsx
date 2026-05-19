@@ -215,17 +215,17 @@ function ShareOfActivityChart() {
     const d = deltaNum(s)
     if (d > 0) return 'text-brand bg-brand-bg'
     if (d < 0) return 'text-danger bg-danger-bg'
-    return 'text-dim bg-surf-2'
+    return 'text-ink bg-surf-2'
   }
 
   return (
     <div className="bg-surf rounded-[10px] px-6 py-5 h-full flex flex-col font-sans">
       <div className="flex items-center gap-2.5 mb-6">
         <span className="text-[14px] font-medium text-ink">Share of activity</span>
-        <span className="text-[11px] font-medium text-mid bg-surf-2 rounded-md px-2.5 py-1 whitespace-nowrap">
+        <span className="text-[11px] font-medium text-ink bg-surf-2 rounded-md px-2.5 py-1 whitespace-nowrap">
           Weekly ad activity
         </span>
-        <span className="text-[11px] text-mid ml-auto">Apr 15 – May 13</span>
+        <span className="text-[11px] text-ink ml-auto">Apr 15 – May 13</span>
       </div>
 
       <div className="grid grid-cols-3 gap-0">
@@ -246,14 +246,14 @@ function ShareOfActivityChart() {
               <div className="text-[26px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-0.5">
                 {last}%
               </div>
-              <div className="text-[11px] text-mid mb-3.5">{s.lastPeriod} last period</div>
+              <div className="text-[11px] text-ink mb-3.5">{s.lastPeriod} last period</div>
               <div className="relative">
                 <GridAreaSpark vals={s.values} color={s.shade} h={80} />
                 {showRight && <div className="absolute top-0 -right-5 w-px h-full bg-line" />}
               </div>
               <div className="flex justify-between mt-1.5">
-                <span className="text-[10px] text-mid font-mono">Apr 15</span>
-                <span className="text-[10px] text-mid font-mono">May 13</span>
+                <span className="text-[10px] text-ink font-mono">Apr 15</span>
+                <span className="text-[10px] text-ink font-mono">May 13</span>
               </div>
             </div>
           )
@@ -280,7 +280,7 @@ function CompetitorsSectionHead({ title, link }: {
       {link && (
         <span
           onClick={link.fn}
-          className="text-[11px] text-dim cursor-pointer flex items-center gap-1 whitespace-nowrap ml-auto hover:text-ink"
+          className="text-[11px] text-ink cursor-pointer flex items-center gap-1 whitespace-nowrap ml-auto hover:text-ink"
         >
           {link.label}
           <ArrowR />
@@ -301,9 +301,9 @@ function RecentAlerts() {
           <span className="w-[5px] h-[5px] rounded-full block shrink-0" style={{ background: a.dot }} />
           <div className="flex-1 min-w-0">
             <div className="text-[12px] font-medium text-ink">{a.title}</div>
-            <div className="text-[11px] text-dim">{a.sub}</div>
+            <div className="text-[11px] text-ink">{a.sub}</div>
           </div>
-          <span className="text-[10px] text-dim font-mono whitespace-nowrap shrink-0">{a.time}</span>
+          <span className="text-[10px] text-ink font-mono whitespace-nowrap shrink-0">{a.time}</span>
         </div>
       ))}
     </div>
@@ -342,13 +342,13 @@ function TopMovingAngles() {
 
 function MoveIcon({ type }: { type: MoveType }) {
   if (type === 'up') return <span className="text-[13px] text-brand font-bold leading-none">↑</span>
-  if (type === 'plus') return <span className="text-[13px] text-mid font-bold leading-none">+</span>
+  if (type === 'plus') return <span className="text-[13px] text-ink font-bold leading-none">+</span>
   return <span className="text-[13px] text-danger font-bold leading-none">×</span>
 }
 
 function CompetitorCard({ comp, onOpen }: { comp: Competitor; onOpen: (c: Competitor) => void }) {
   const actLevelCls =
-    comp.activityLevel === 'High' ? 'text-brand' : comp.activityLevel === 'Medium' ? 'text-warn' : 'text-dim'
+    comp.activityLevel === 'High' ? 'text-brand' : comp.activityLevel === 'Medium' ? 'text-warn' : 'text-ink'
 
   return (
     <div
@@ -381,7 +381,7 @@ function CompetitorCard({ comp, onOpen }: { comp: Competitor; onOpen: (c: Compet
             { label: 'ACTIVE ANGLES', value: String(comp.activeAngles) },
           ].map(m => (
             <div key={m.label}>
-              <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-[3px]">{m.label}</div>
+              <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-[3px]">{m.label}</div>
               <div className={`text-[14px] font-medium ${m.label === 'ACTIVE ADS' ? actLevelCls : 'text-ink'}`}>
                 {m.value}
               </div>
@@ -390,14 +390,14 @@ function CompetitorCard({ comp, onOpen }: { comp: Competitor; onOpen: (c: Compet
         </div>
 
         <div>
-          <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-1.5">Top Product</div>
+          <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-1.5">Top Product</div>
           <div className="flex items-center gap-2 bg-surf-2 rounded-md px-2 py-[7px]">
             <div className="w-7 h-7 rounded shrink-0 overflow-hidden bg-white border-[0.5px] border-line">
               <img src={comp.heroImg} alt="" className="w-full h-full object-cover block" />
             </div>
             <div className="min-w-0">
               <div className="text-[12px] font-medium text-ink truncate">{comp.topProduct.name}</div>
-              <div className="text-[10px] text-dim mt-px">
+              <div className="text-[10px] text-ink mt-px">
                 {comp.topProduct.ads} active ads · {comp.topProduct.spendShare}% of their spend
               </div>
             </div>
@@ -405,7 +405,7 @@ function CompetitorCard({ comp, onOpen }: { comp: Competitor; onOpen: (c: Compet
         </div>
 
         <div className="mt-auto border-[0.5px] border-line rounded-md px-2 py-[7px]">
-          <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-2">Recent Moves</div>
+          <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-2">Recent Moves</div>
           {comp.recentMoves.slice(0, 2).map((a, i) => {
             const parts = a.text.split(' · ')
             return (
@@ -416,7 +416,7 @@ function CompetitorCard({ comp, onOpen }: { comp: Competitor; onOpen: (c: Compet
                 <span className="flex items-center justify-center">
                   <MoveIcon type={a.type} />
                 </span>
-                <span className="text-[10px] text-dim font-mono">{a.time}</span>
+                <span className="text-[10px] text-ink font-mono">{a.time}</span>
                 <span className="text-[11px] text-ink leading-[1.4]">
                   {parts.map((part, pi) => (
                     <span key={pi}>
@@ -525,7 +525,7 @@ function ProductPickerCard({ product, showCompetes, onSelect }: {
               )}
             </div>
           </div>
-          <div className="text-dim flex shrink-0 mt-0.5">
+          <div className="text-ink flex shrink-0 mt-0.5">
             <ArrowR />
           </div>
         </div>
@@ -536,7 +536,7 @@ function ProductPickerCard({ product, showCompetes, onSelect }: {
             { label: 'ANGLES', val: String(product.angles) },
           ].map(m => (
             <div key={m.label}>
-              <div className="text-[9px] font-semibold tracking-[0.05em] uppercase text-dim mb-0.5">{m.label}</div>
+              <div className="text-[9px] font-semibold tracking-[0.05em] uppercase text-ink mb-0.5">{m.label}</div>
               <div className="text-[14px] font-medium text-ink font-mono">{m.val}</div>
             </div>
           ))}
@@ -562,16 +562,16 @@ const COMPARE_ANGLES: CompareAngle[] = [
 function MetricTile({ label, compVal, yourVal, compName }: { label: string; compVal: string; yourVal: string; compName: string }) {
   return (
     <div className="flex-1 bg-surf rounded-lg shadow-lift px-3.5 py-3">
-      <div className="text-[9px] font-semibold tracking-[0.05em] uppercase text-dim mb-2.5">{label}</div>
+      <div className="text-[9px] font-semibold tracking-[0.05em] uppercase text-ink mb-2.5">{label}</div>
       <div className="flex items-end gap-2.5">
         <div className="text-center">
           <div className="text-[18px] font-medium text-ink font-mono tracking-[-0.03em] leading-none mb-[3px]">{compVal}</div>
-          <div className="text-[10px] text-dim">{compName}</div>
+          <div className="text-[10px] text-ink">{compName}</div>
         </div>
-        <div className="text-[11px] text-dim pb-3.5">vs</div>
+        <div className="text-[11px] text-ink pb-3.5">vs</div>
         <div className="text-center">
           <div className="text-[18px] font-medium text-ink font-mono tracking-[-0.03em] leading-none mb-[3px]">{yourVal}</div>
-          <div className="text-[10px] text-dim">You</div>
+          <div className="text-[10px] text-ink">You</div>
         </div>
       </div>
     </div>
@@ -603,7 +603,7 @@ function ShareBar({ pct }: { pct: number }) {
 function FormatBar({ ugc, stat, vid, label }: { ugc: number; stat: number; vid: number; label: string }) {
   return (
     <div className="flex items-center gap-2.5">
-      <span className="text-[11px] text-mid min-w-[30px] shrink-0">{label}</span>
+      <span className="text-[11px] text-ink min-w-[30px] shrink-0">{label}</span>
       <div className="flex-1 flex h-[14px] rounded-[3px] overflow-hidden gap-px">
         <div style={{ flex: ugc, background: '#1a3d26' }} className="flex items-center justify-center">
           <span className="text-[9px] font-semibold text-white">{ugc}%</span>
@@ -661,7 +661,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
   return (
     <div className="font-sans flex flex-col gap-7">
       <div className="flex items-center gap-2.5 flex-wrap">
-        <span className="text-[12px] text-dim">Compare</span>
+        <span className="text-[12px] text-ink">Compare</span>
         <div className="flex bg-surf-2 rounded-md p-0.5 gap-px">
           {(['product', 'brand'] as const).map(m => (
             <button
@@ -670,7 +670,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
               className={`text-[12px] px-3 py-1 border-0 rounded-[5px] cursor-pointer transition-all ${
                 mode === m
                   ? 'bg-brand text-white font-medium shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
-                  : 'bg-transparent text-dim font-normal'
+                  : 'bg-transparent text-ink font-normal'
               }`}
             >
               {m === 'product' ? 'Product vs Product' : 'Brand vs Brand'}
@@ -679,7 +679,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
         </div>
         {mode === 'product' && (
           <>
-            <span className="text-[11px] text-dim">{comp.name}</span>
+            <span className="text-[11px] text-ink">{comp.name}</span>
             <select
               value={compProduct}
               onChange={e => setCompProduct(e.target.value)}
@@ -687,7 +687,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
             >
               {COMP_PRODUCTS.map(p => <option key={p}>{p}</option>)}
             </select>
-            <span className="text-[11px] text-dim">You</span>
+            <span className="text-[11px] text-ink">You</span>
             <select
               value={yourProduct}
               onChange={e => setYourProduct(e.target.value)}
@@ -698,7 +698,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
           </>
         )}
         {mode === 'brand' && (
-          <span className="text-[12px] text-mid">{comp.name} vs Your brand</span>
+          <span className="text-[12px] text-ink">{comp.name} vs Your brand</span>
         )}
       </div>
 
@@ -712,9 +712,9 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
               <img src={p.img} alt="" className="w-full h-full object-cover opacity-80" />
             </div>
             <div>
-              <div className="text-[10px] font-semibold tracking-[0.05em] uppercase text-dim mb-1">{p.label}</div>
+              <div className="text-[10px] font-semibold tracking-[0.05em] uppercase text-ink mb-1">{p.label}</div>
               <div className="text-[14px] font-medium text-ink mb-[3px]">{p.name}</div>
-              <div className="text-[11px] text-dim">{p.detail}</div>
+              <div className="text-[11px] text-ink">{p.detail}</div>
             </div>
           </div>
         ))}
@@ -741,7 +741,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
           </div>
           {fundamentals.map((row, i) => (
             <div key={i} className={`grid grid-cols-[1fr_1.2fr_1.2fr] px-4 py-2.5 items-center ${i > 0 ? 'border-t border-line-soft' : ''}`}>
-              <span className="text-[12px] text-mid">{row.l}</span>
+              <span className="text-[12px] text-ink">{row.l}</span>
               <span className="text-[13px] text-ink">{row.c}</span>
               <span className={`text-[13px] text-ink ${row.yBold ? 'font-semibold' : ''}`}>{row.y}</span>
             </div>
@@ -757,7 +757,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
           <MetricTile label="CREATIVE REFRESH" compVal="2/wk" yourVal="0.5/wk" compName={comp.name} />
         </div>
         <div className="bg-surf rounded-lg shadow-lift px-4 py-3.5">
-          <div className="text-[10px] font-semibold tracking-[0.05em] uppercase text-dim mb-3">Format Mix</div>
+          <div className="text-[10px] font-semibold tracking-[0.05em] uppercase text-ink mb-3">Format Mix</div>
           <div className="flex flex-col gap-2.5">
             <FormatBar ugc={60} stat={28} vid={12} label={comp.name} />
             <FormatBar ugc={30} stat={55} vid={15} label="You" />
@@ -765,7 +765,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
               {[{ c: '#1a3d26', l: 'UGC' }, { c: '#2d5c3a', l: 'Static' }, { c: '#85be90', l: 'Video' }].map(f => (
                 <div key={f.l} className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-sm" style={{ background: f.c }} />
-                  <span className="text-[10px] text-dim">{f.l}</span>
+                  <span className="text-[10px] text-ink">{f.l}</span>
                 </div>
               ))}
             </div>
@@ -781,16 +781,16 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
               <div className="flex items-center gap-2.5 mb-2">
                 <span className="text-[13px] font-medium text-ink flex-1">{a.name}</span>
                 <AnglePill state={a.state} />
-                <span className="text-[12px] text-mid shrink-0">
-                  {comp.name}: <strong className={a.yourPct > a.compPct ? 'text-dim' : 'text-ink'}>{a.compPct}%</strong>
+                <span className="text-[12px] text-ink shrink-0">
+                  {comp.name}: <strong className={a.yourPct > a.compPct ? 'text-ink' : 'text-ink'}>{a.compPct}%</strong>
                   {' · '}
-                  You: <strong className={a.yourPct >= a.compPct ? 'text-ink' : a.yourPct === 0 ? 'text-dim' : 'text-ink'}>{a.yourPct}%</strong>
+                  You: <strong className={a.yourPct >= a.compPct ? 'text-ink' : a.yourPct === 0 ? 'text-ink' : 'text-ink'}>{a.yourPct}%</strong>
                 </span>
               </div>
               <div className="flex flex-col gap-1.5">
                 {[{ l: comp.name, p: a.compPct }, { l: 'You', p: a.yourPct }].map((b, j) => (
                   <div key={j} className="flex items-center gap-2">
-                    <span className="text-[10px] text-dim min-w-[40px]">{b.l}</span>
+                    <span className="text-[10px] text-ink min-w-[40px]">{b.l}</span>
                     <ShareBar pct={b.p} />
                   </div>
                 ))}
@@ -805,10 +805,10 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
         <div className="grid grid-cols-2 gap-3">
           {pdpCards.map((card, i) => (
             <div key={i} className="bg-surf rounded-lg shadow-lift px-4 py-3.5">
-              <div className="text-[10px] font-semibold tracking-[0.05em] uppercase text-dim mb-3">{card.label}</div>
+              <div className="text-[10px] font-semibold tracking-[0.05em] uppercase text-ink mb-3">{card.label}</div>
               {card.rows.map((row, j) => (
                 <div key={j} className={j < card.rows.length - 1 ? 'mb-2.5' : ''}>
-                  <div className="text-[10px] font-semibold tracking-[0.04em] uppercase text-dim mb-[3px]">{row.l}</div>
+                  <div className="text-[10px] font-semibold tracking-[0.04em] uppercase text-ink mb-[3px]">{row.l}</div>
                   <div className="text-[12px] text-ink leading-[1.5]">{row.v}</div>
                 </div>
               ))}
@@ -833,7 +833,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
             <div key={item.n} className="flex items-start gap-3.5 bg-surf rounded-lg shadow-lift px-4 py-3">
               <span className="text-[13px] font-medium text-brand min-w-[18px] shrink-0 pt-px">{item.n}</span>
               <span className="text-[13px] text-ink leading-[1.55] flex-1">{item.text}</span>
-              <button className="text-[11px] text-mid bg-surf border-[0.5px] border-line rounded-md px-2.5 py-1 cursor-pointer shrink-0 transition-colors hover:bg-brand hover:text-white hover:border-brand">
+              <button className="text-[11px] text-ink bg-surf border-[0.5px] border-line rounded-md px-2.5 py-1 cursor-pointer shrink-0 transition-colors hover:bg-brand hover:text-white hover:border-brand">
                 Generate →
               </button>
             </div>
@@ -935,7 +935,7 @@ function ExampleAds() {
           </div>
           <div>
             <div className="text-[12px] font-medium text-ink mb-px">{ad.title}</div>
-            <div className="text-[10px] text-dim">{ad.sub} · 18d running</div>
+            <div className="text-[10px] text-ink">{ad.sub} · 18d running</div>
           </div>
         </div>
       ))}
@@ -998,7 +998,7 @@ function ProductContextStrip({
 }) {
   return (
     <div className="px-6 py-2.5 flex items-center gap-2.5 shrink-0">
-      <button onClick={onAllProducts} className="text-[11px] text-mid bg-transparent border-0 cursor-pointer p-0 hover:text-ink">
+      <button onClick={onAllProducts} className="text-[11px] text-ink bg-transparent border-0 cursor-pointer p-0 hover:text-ink">
         ← All products
       </button>
       <span className="text-line">·</span>
@@ -1007,13 +1007,13 @@ function ProductContextStrip({
       </div>
       <span className="text-[12px] font-medium text-ink">{product.name}</span>
       {product.competesWith && (
-        <span className="text-[11px] text-dim">
+        <span className="text-[11px] text-ink">
           · vs <strong className="text-ink font-medium">{product.competesWith}</strong>
         </span>
       )}
       <button
         onClick={onSwitchProduct}
-        className="ml-auto text-[11px] text-mid bg-transparent border-[0.5px] border-line rounded-md px-2.5 py-1 cursor-pointer hover:bg-line-soft"
+        className="ml-auto text-[11px] text-ink bg-transparent border-[0.5px] border-line rounded-md px-2.5 py-1 cursor-pointer hover:bg-line-soft"
       >
         Switch product
       </button>
@@ -1040,7 +1040,7 @@ function AngleSelectorView({
       <ProductContextStrip product={product} onAllProducts={onBackToProducts} onSwitchProduct={onBackToProducts} />
       <div className="flex-1 overflow-y-auto min-h-0 px-6 py-5">
         <div className="text-[15px] font-medium text-ink mb-1">Choose an angle to analyze</div>
-        <div className="text-[12px] text-mid mb-5">Select an angle to see how {comp.name} is using it and what it means for your ads.</div>
+        <div className="text-[12px] text-ink mb-5">Select an angle to see how {comp.name} is using it and what it means for your ads.</div>
         <div className="flex flex-col gap-2">
           {comp.angles.map((angle, i) => (
             <div
@@ -1051,10 +1051,10 @@ function AngleSelectorView({
               <div className="flex-1 min-w-0">
                 <div className="text-[14px] font-medium text-ink mb-1">{angle.name}</div>
                 <div className="flex gap-4">
-                  <span className="text-[11px] text-mid">
+                  <span className="text-[11px] text-ink">
                     <strong className="text-ink">{angle.share}%</strong> share
                   </span>
-                  <span className="text-[11px] text-mid">
+                  <span className="text-[11px] text-ink">
                     <strong className="text-ink">{angle.longevity}d</strong> avg
                   </span>
                   <span className={`text-[11px] font-semibold ${angle.trendPos ? 'text-brand' : 'text-danger'}`}>
@@ -1069,7 +1069,7 @@ function AngleSelectorView({
               >
                 {angle.coverage === 'MISSING' ? 'Missing' : 'You run it'}
               </span>
-              <span className="text-dim shrink-0">
+              <span className="text-ink shrink-0">
                 <ArrowR />
               </span>
             </div>
@@ -1527,7 +1527,7 @@ function ProfilePage({ comp, onBack }: { comp: Competitor; onBack: () => void })
             { label: 'ACTIVITY LEVEL', value: comp.activityLevel, small: true },
           ].map((kpi, i) => (
             <div key={i} className={`flex-1 ${i < 3 ? 'border-r-[0.5px] border-line' : ''} ${i < 3 ? 'pr-4 mr-4' : ''}`}>
-              <div className="text-[9px] font-semibold tracking-[0.05em] uppercase text-dim mb-1">{kpi.label}</div>
+              <div className="text-[9px] font-semibold tracking-[0.05em] uppercase text-ink mb-1">{kpi.label}</div>
               <div className={`font-medium text-ink ${kpi.small ? 'text-[15px]' : 'text-[20px]'}`}>{kpi.value}</div>
             </div>
           ))}
@@ -1542,7 +1542,7 @@ function ProfilePage({ comp, onBack }: { comp: Competitor; onBack: () => void })
                 className={`px-3.5 py-1 border-0 rounded-[5px] text-[12px] cursor-pointer transition-all ${
                   subTab === tab
                     ? 'bg-brand text-white font-medium shadow-[0_1px_3px_rgba(0,0,0,0.12)]'
-                    : 'bg-transparent text-dim font-normal'
+                    : 'bg-transparent text-ink font-normal'
                 }`}
               >
                 {tab}
@@ -1557,7 +1557,7 @@ function ProfilePage({ comp, onBack }: { comp: Competitor; onBack: () => void })
               <div className="flex items-start justify-between mb-5">
                 <div>
                   <div className="text-base font-medium text-ink tracking-[-0.01em] mb-1">Choose a product to analyze</div>
-                  <div className="text-[12px] text-mid">See how {comp.name} is marketing their key products.</div>
+                  <div className="text-[12px] text-ink">See how {comp.name} is marketing their key products.</div>
                 </div>
                 <button className="text-[11px] text-white bg-brand border-0 rounded-md px-3 py-1.5 cursor-pointer whitespace-nowrap mt-0.5 hover:opacity-90">
                   + Add competing product
@@ -1565,14 +1565,14 @@ function ProfilePage({ comp, onBack }: { comp: Competitor; onBack: () => void })
               </div>
 
               <div className="mb-6">
-                <div className="text-[11px] font-medium tracking-[0.04em] uppercase text-dim mb-2.5">Competing Products</div>
+                <div className="text-[11px] font-medium tracking-[0.04em] uppercase text-ink mb-2.5">Competing Products</div>
                 <div className="flex flex-col gap-2.5">
                   {COMPETING_PRODUCTS.map(p => <ProductPickerCard key={p.id} product={p} showCompetes onSelect={setSelectedProduct} />)}
                 </div>
               </div>
 
               <div>
-                <div className="text-[11px] font-medium tracking-[0.04em] uppercase text-dim mb-2.5">Top Products</div>
+                <div className="text-[11px] font-medium tracking-[0.04em] uppercase text-ink mb-2.5">Top Products</div>
                 <div className="flex flex-col gap-2.5">
                   {TOP_PRODUCTS.map(p => <ProductPickerCard key={p.id} product={p} showCompetes={false} onSelect={setSelectedProduct} />)}
                 </div>

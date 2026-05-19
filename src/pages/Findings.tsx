@@ -293,8 +293,8 @@ function FindingCard({ finding, onOpen, onTakeAction }: {
     >
       <div className="flex items-center gap-2 px-4 pt-3 pb-2 flex-wrap">
         <TypeBadge type={finding.type} />
-        <span className="text-[11px] text-dim whitespace-nowrap">{finding.time}</span>
-        <span className="text-[11px] text-dim whitespace-nowrap">{finding.confidence} confidence</span>
+        <span className="text-[11px] text-ink whitespace-nowrap">{finding.time}</span>
+        <span className="text-[11px] text-ink whitespace-nowrap">{finding.confidence} confidence</span>
         <span
           className={`text-[13px] font-medium whitespace-nowrap ml-auto ${
             finding.impact.kind === 'risk' ? 'text-danger' : 'text-ink'
@@ -303,7 +303,7 @@ function FindingCard({ finding, onOpen, onTakeAction }: {
           {finding.impact.kind === 'risk' ? '⚠ ' : '↑ '}
           {finding.impact.label}
         </span>
-        <span onClick={e => e.stopPropagation()} className="text-dim cursor-pointer flex">
+        <span onClick={e => e.stopPropagation()} className="text-ink cursor-pointer flex">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
             <circle cx="6.5" cy="2.5" r="1.1" />
             <circle cx="6.5" cy="6.5" r="1.1" />
@@ -316,7 +316,7 @@ function FindingCard({ finding, onOpen, onTakeAction }: {
         <BoldHeadline text={finding.headline} />
       </div>
 
-      <div className="px-4 pb-2.5 text-[12px] text-mid leading-[1.5]">{finding.action}</div>
+      <div className="px-4 pb-2.5 text-[12px] text-ink leading-[1.5]">{finding.action}</div>
 
       <div className="px-4 pb-3 flex gap-1.5 flex-wrap items-center">
         {finding.sources.map((s, i) => (
@@ -326,7 +326,7 @@ function FindingCard({ finding, onOpen, onTakeAction }: {
           >
             <PlatformLogo platform={s.platform} />
             <span className="text-[11px] font-semibold text-ink whitespace-nowrap">{s.platform}</span>
-            <span className="text-[11px] text-mid ml-0.5 whitespace-nowrap">{s.metric}</span>
+            <span className="text-[11px] text-ink ml-0.5 whitespace-nowrap">{s.metric}</span>
           </div>
         ))}
       </div>
@@ -337,18 +337,18 @@ function FindingCard({ finding, onOpen, onTakeAction }: {
       >
         <div>
           {finding.related > 0 && (
-            <button className="text-[12px] font-medium text-mid bg-surf border border-line rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap transition-colors hover:bg-ink hover:text-white hover:border-ink">
+            <button className="text-[12px] font-medium text-ink bg-surf border border-line rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap transition-colors hover:bg-ink hover:text-white hover:border-ink">
               {finding.related} related signals →
             </button>
           )}
         </div>
         <div className="flex items-center gap-1.5">
-          <button className="text-[12px] text-mid bg-surf border border-line rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap hover:bg-line-soft">
+          <button className="text-[12px] text-ink bg-surf border border-line rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap hover:bg-line-soft">
             Dismiss
           </button>
           <button
             onClick={() => onOpen(finding)}
-            className="text-[12px] text-mid bg-surf border border-line rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap hover:bg-line-soft"
+            className="text-[12px] text-ink bg-surf border border-line rounded-md px-[13px] py-[5px] cursor-pointer whitespace-nowrap hover:bg-line-soft"
           >
             Open finding
           </button>
@@ -414,8 +414,8 @@ function NewAngleDetail() {
       <div className="mb-5">
         <div className="flex items-center gap-1.5 mb-3 flex-wrap">
           <span className="text-[10px] font-bold tracking-[0.09em] uppercase bg-brand-bg text-brand px-2 py-[2px] rounded">New Angle</span>
-          <span className="text-[11px] text-dim">3h ago · High confidence · 4 sources</span>
-          <span className="ml-auto text-[11px] font-semibold text-dim whitespace-nowrap">↑ Angle opportunity</span>
+          <span className="text-[11px] text-ink">3h ago · High confidence · 4 sources</span>
+          <span className="ml-auto text-[11px] font-semibold text-ink whitespace-nowrap">↑ Angle opportunity</span>
         </div>
         <p className="text-[15px] font-medium leading-[1.55] tracking-[-0.01em] text-ink m-0">
           Buyers are shifting from <b className="font-semibold">"fall asleep fast"</b> to{' '}
@@ -428,14 +428,14 @@ function NewAngleDetail() {
         <div className={`${cardCls} px-4 py-3.5 mb-2`}>
           <div className="text-[34px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-1.5">3.2×</div>
           <div className="text-[13px] font-medium text-ink mb-[3px]">Buyer attention growth in 30 days</div>
-          <div className="text-[12px] text-dim">Across r/sleep, r/insomnia, Amazon, and YouTube</div>
+          <div className="text-[12px] text-ink">Across r/sleep, r/insomnia, Amazon, and YouTube</div>
         </div>
         <div className="grid grid-cols-3 gap-3">
           {supporting.map((s, i) => (
             <div key={i} className={`${cardCls} px-3 py-[11px]`}>
               <div className="text-[18px] font-medium text-ink font-mono tracking-[-0.03em] leading-none mb-1">{s.num}</div>
               <div className="text-[11px] font-medium text-ink mb-[2px]">{s.label}</div>
-              <div className="text-[10px] text-dim leading-[1.3]">{s.sub}</div>
+              <div className="text-[10px] text-ink leading-[1.3]">{s.sub}</div>
             </div>
           ))}
         </div>
@@ -461,9 +461,9 @@ function NewAngleDetail() {
                 </div>
                 <div>
                   <span className="text-[20px] font-medium text-ink font-mono tracking-[-0.03em] leading-none">{e.metric}</span>
-                  <span className="text-[11px] text-mid ml-1.5">{e.unit}</span>
+                  <span className="text-[11px] text-ink ml-1.5">{e.unit}</span>
                 </div>
-                <div className="text-[11px] text-dim">{e.detail}</div>
+                <div className="text-[11px] text-ink">{e.detail}</div>
               </div>
             ))}
           </div>
@@ -481,13 +481,13 @@ function NewAngleDetail() {
               <div key={i} className={`px-[13px] py-3 ${i < 2 ? 'border-r border-line-soft' : ''}`}>
                 <div className="text-[22px] font-medium text-ink font-mono tracking-[-0.03em] leading-none mb-1">{m.num}</div>
                 <div className="text-[11px] font-medium text-ink mb-[2px]">{m.label}</div>
-                <div className="text-[10px] text-dim">{m.sub}</div>
+                <div className="text-[10px] text-ink">{m.sub}</div>
               </div>
             ))}
           </div>
           <div className="px-3.5 pt-3 pb-2.5">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] text-dim">Buyer attention trend — last 90 days</span>
+              <span className="text-[11px] text-ink">Buyer attention trend — last 90 days</span>
               <span className="text-[12px] font-semibold text-ink font-mono">+3.2×</span>
             </div>
             <div className="relative">
@@ -508,9 +508,9 @@ function NewAngleDetail() {
                 <circle cx="400" cy="2" r="7" fill="#2d5c3a" opacity="0.15" />
               </svg>
               <div className="flex justify-between mt-1">
-                <span className="text-[9px] text-dim font-mono">Feb 5</span>
-                <span className="text-[9px] text-dim font-mono">Mar 5</span>
-                <span className="text-[9px] text-dim font-mono">Apr 5</span>
+                <span className="text-[9px] text-ink font-mono">Feb 5</span>
+                <span className="text-[9px] text-ink font-mono">Mar 5</span>
+                <span className="text-[9px] text-ink font-mono">Apr 5</span>
                 <span className="text-[9px] text-ink font-mono font-medium">May 5</span>
               </div>
             </div>
@@ -530,17 +530,17 @@ function NewAngleDetail() {
           </div>
           <div className="px-3.5 py-3 flex flex-col gap-[7px]">
             <div className="flex items-baseline gap-2">
-              <span className="text-[12px] text-dim min-w-[90px] shrink-0">Active ads</span>
+              <span className="text-[12px] text-ink min-w-[90px] shrink-0">Active ads</span>
               <span className="text-[12px] text-ink">6 running</span>
-              <span className="text-[12px] text-dim">· none use this angle</span>
+              <span className="text-[12px] text-ink">· none use this angle</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-[12px] text-dim min-w-[90px] shrink-0">PDP</span>
-              <span className="text-[12px] text-mid">Not addressed — "fast-acting" ×4, "morning" ×0</span>
+              <span className="text-[12px] text-ink min-w-[90px] shrink-0">PDP</span>
+              <span className="text-[12px] text-ink">Not addressed — "fast-acting" ×4, "morning" ×0</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-[12px] text-dim min-w-[90px] shrink-0">Last creative</span>
-              <span className="text-[12px] text-dim">23 days ago</span>
+              <span className="text-[12px] text-ink min-w-[90px] shrink-0">Last creative</span>
+              <span className="text-[12px] text-ink">23 days ago</span>
             </div>
           </div>
         </div>
@@ -551,12 +551,12 @@ function NewAngleDetail() {
         <div className={cardCls}>
           {actions.map((a, i) => (
             <div key={i} className={`flex items-center gap-3 px-3.5 py-3 ${i === 0 ? 'border-b border-line-soft' : ''}`}>
-              <span className="text-[10px] text-dim font-mono min-w-[18px]">{a.n}</span>
+              <span className="text-[10px] text-ink font-mono min-w-[18px]">{a.n}</span>
               <div className="flex-1 min-w-0">
                 <div className="text-[12px] font-medium text-ink mb-[2px]">{a.title}</div>
-                <div className="text-[11px] text-dim">{a.sub}</div>
+                <div className="text-[11px] text-ink">{a.sub}</div>
               </div>
-              <button className="text-[11px] text-mid bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer whitespace-nowrap shrink-0 transition-colors hover:bg-brand hover:text-white hover:border-brand">
+              <button className="text-[11px] text-ink bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer whitespace-nowrap shrink-0 transition-colors hover:bg-brand hover:text-white hover:border-brand">
                 {a.btn}
               </button>
             </div>
@@ -569,11 +569,11 @@ function NewAngleDetail() {
         <div className="flex flex-col gap-2.5">
           <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
             <span>Run full intelligence pass on Magnesium Glycinate Complex</span>
-            <span className="text-dim ml-3 shrink-0 group-hover:text-white">→</span>
+            <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
           <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
             <span>Ask Nanalyt about this finding</span>
-            <span className="text-dim ml-3 shrink-0 group-hover:text-white">→</span>
+            <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
         </div>
       </div>
@@ -611,7 +611,7 @@ function NewProductDetail() {
       <div className="mb-5">
         <div className="flex items-center gap-1.5 mb-3 flex-wrap">
           <span className="text-[10px] font-bold tracking-[0.09em] uppercase bg-info-bg text-info px-2 py-[2px] rounded">New Product</span>
-          <span className="text-[11px] text-dim">Yesterday · Medium confidence · 3 sources</span>
+          <span className="text-[11px] text-ink">Yesterday · Medium confidence · 3 sources</span>
           <span className="ml-auto text-[11px] font-semibold text-[#0369a1] bg-[#e0f2fe] border border-[#7dd3fc] px-[9px] py-[3px] rounded-[5px] whitespace-nowrap">↑ Whitespace opportunity</span>
         </div>
         <div className="flex items-start gap-3.5">
@@ -620,7 +620,7 @@ function NewProductDetail() {
           </p>
           <div className="shrink-0 text-center">
             <img src="/uploads/IMG_3476.jpg" alt="" className="w-[72px] h-[72px] rounded-lg object-cover border border-line block" />
-            <div className="text-[9px] text-dim mt-1">Representative</div>
+            <div className="text-[9px] text-ink mt-1">Representative</div>
           </div>
         </div>
       </div>
@@ -632,20 +632,20 @@ function NewProductDetail() {
         <div className={`${cardCls} px-4 py-3.5 mb-2`}>
           <div className="text-[34px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-1.5">4.1×</div>
           <div className="text-[13px] font-medium text-ink mb-[3px]">Buyer attention growth in 60 days</div>
-          <div className="text-[12px] text-dim">Search volume for "magnesium ashwagandha gummies" · TikTok sentiment trending positive</div>
+          <div className="text-[12px] text-ink">Search volume for "magnesium ashwagandha gummies" · TikTok sentiment trending positive</div>
         </div>
         <div className="grid grid-cols-3 gap-3 mb-2">
           {stats.map((s, i) => (
             <div key={i} className={`${cardCls} px-3 py-[11px]`}>
               <div className="text-[18px] font-medium text-ink font-mono tracking-[-0.03em] leading-none mb-1">{s.num}</div>
               <div className="text-[11px] font-medium text-ink mb-[2px]">{s.label}</div>
-              <div className="text-[10px] text-dim leading-[1.3]">{s.sub}</div>
+              <div className="text-[10px] text-ink leading-[1.3]">{s.sub}</div>
             </div>
           ))}
         </div>
         <div className={`${cardCls} px-3.5 py-2.5 flex items-baseline gap-2`}>
           <span className="text-base font-semibold text-ink font-mono whitespace-nowrap">~45 days</span>
-          <span className="text-[12px] text-mid">into competitive cycle — early wave, category still defensible</span>
+          <span className="text-[12px] text-ink">into competitive cycle — early wave, category still defensible</span>
         </div>
       </div>
 
@@ -669,7 +669,7 @@ function NewProductDetail() {
                 </div>
                 <div>
                   <span className="text-[20px] font-medium text-ink font-mono tracking-[-0.03em] leading-none">{e.metric}</span>
-                  <span className="text-[11px] text-mid ml-1.5">{e.unit}</span>
+                  <span className="text-[11px] text-ink ml-1.5">{e.unit}</span>
                 </div>
               </div>
             ))}
@@ -695,9 +695,9 @@ function NewProductDetail() {
               <div className="w-[5px] h-[5px] rounded-full bg-brand shrink-0" />
               <div className="flex-1">
                 <span className="text-[12px] font-medium text-ink">{r.signal}</span>
-                <span className="text-[11px] text-dim ml-2">{r.fact}</span>
+                <span className="text-[11px] text-ink ml-2">{r.fact}</span>
               </div>
-              <span className="text-[11px] font-medium text-mid whitespace-nowrap">{r.verdict}</span>
+              <span className="text-[11px] font-medium text-ink whitespace-nowrap">{r.verdict}</span>
             </div>
           ))}
         </div>
@@ -707,26 +707,26 @@ function NewProductDetail() {
         <SubLabel label="Opportunity context" />
         <div className="flex flex-col gap-2.5">
           <div className={`${cardCls} px-3.5 py-3`}>
-            <div className="text-[9px] font-bold tracking-[0.09em] uppercase text-dim mb-2.5">Bundle potential</div>
+            <div className="text-[9px] font-bold tracking-[0.09em] uppercase text-ink mb-2.5">Bundle potential</div>
             <div className="flex items-center gap-2.5 mb-2.5">
               <img src="/uploads/IMG_3472.jpg" alt="" className="w-12 h-12 rounded-[7px] object-cover border border-line shrink-0" />
-              <span className="text-base text-dim font-light">+</span>
+              <span className="text-base text-ink font-light">+</span>
               <img src="/uploads/IMG_3476.jpg" alt="" className="w-12 h-12 rounded-[7px] object-cover border border-line shrink-0" />
-              <span className="text-base text-dim font-light">→</span>
+              <span className="text-base text-ink font-light">→</span>
               <div className="ml-auto text-right">
-                <div className="text-[10px] text-dim mb-[2px]">Estimated AOV</div>
+                <div className="text-[10px] text-ink mb-[2px]">Estimated AOV</div>
                 <div className="text-base font-medium text-ink font-mono">
-                  <span className="text-dim line-through text-[13px]">$40</span>{' '}
+                  <span className="text-ink line-through text-[13px]">$40</span>{' '}
                   <span className="text-brand">$65</span>
                 </div>
               </div>
             </div>
-            <div className="text-[11px] text-mid">
+            <div className="text-[11px] text-ink">
               Pairs with <span className="text-brand cursor-pointer font-medium">Magnesium Glycinate Complex</span> — same buyer segment, complementary use case.
             </div>
           </div>
           <div className={`${cardCls} px-3.5 py-3`}>
-            <div className="text-[9px] font-bold tracking-[0.09em] uppercase text-dim mb-1.5">Supplier overlap</div>
+            <div className="text-[9px] font-bold tracking-[0.09em] uppercase text-ink mb-1.5">Supplier overlap</div>
             <div className="text-[12px] text-ink">Same supplier category as 3 of your active SKUs — sourcing friction likely low.</div>
           </div>
         </div>
@@ -737,12 +737,12 @@ function NewProductDetail() {
         <div className={cardCls}>
           {actions.map((a, i) => (
             <div key={i} className={`flex items-center gap-3 px-3.5 py-3 ${i === 0 ? 'border-b border-line-soft' : ''}`}>
-              <span className="text-[10px] text-dim font-mono min-w-[18px]">{a.n}</span>
+              <span className="text-[10px] text-ink font-mono min-w-[18px]">{a.n}</span>
               <div className="flex-1 min-w-0">
                 <div className="text-[12px] font-medium text-ink mb-[2px]">{a.title}</div>
-                <div className="text-[11px] text-dim">{a.sub}</div>
+                <div className="text-[11px] text-ink">{a.sub}</div>
               </div>
-              <button className="text-[11px] text-mid bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer whitespace-nowrap shrink-0 transition-colors hover:bg-brand hover:text-white hover:border-brand">
+              <button className="text-[11px] text-ink bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer whitespace-nowrap shrink-0 transition-colors hover:bg-brand hover:text-white hover:border-brand">
                 {a.btn}
               </button>
             </div>
@@ -755,11 +755,11 @@ function NewProductDetail() {
         <div className="flex flex-col gap-2.5">
           <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
             <span>Run full intelligence pass on magnesium + ashwagandha gummies</span>
-            <span className="text-dim ml-3 shrink-0 group-hover:text-white">→</span>
+            <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
           <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
             <span>Ask Nanalyt about this finding</span>
-            <span className="text-dim ml-3 shrink-0 group-hover:text-white">→</span>
+            <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
         </div>
       </div>
@@ -797,15 +797,15 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
           <>
             <div className="h-11 px-4 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-                <span className="text-[12px] text-dim shrink-0">Findings</span>
-                <span className="text-[12px] text-dim shrink-0">›</span>
+                <span className="text-[12px] text-ink shrink-0">Findings</span>
+                <span className="text-[12px] text-ink shrink-0">›</span>
                 <span className="text-[12px] text-ink font-medium whitespace-nowrap overflow-hidden text-ellipsis">
                   {isNewAngle ? 'New angle · Next-day calm' : 'New product · Mag + Ashwagandha Gummies'}
                 </span>
               </div>
               <button
                 onClick={onClose}
-                className="bg-transparent border-0 text-dim flex p-1 cursor-pointer text-sm hover:text-ink"
+                className="bg-transparent border-0 text-ink flex p-1 cursor-pointer text-sm hover:text-ink"
                 aria-label="Close"
               >
                 ✕
@@ -815,14 +815,14 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
               {isNewAngle ? <NewAngleDetail /> : <NewProductDetail />}
             </div>
             <div className="px-5 py-3 flex gap-2 items-center shrink-0">
-              <button className="bg-transparent text-mid border border-line px-3 py-[5px] rounded-md text-[11px] cursor-pointer whitespace-nowrap hover:bg-line-soft">
+              <button className="bg-transparent text-ink border border-line px-3 py-[5px] rounded-md text-[11px] cursor-pointer whitespace-nowrap hover:bg-line-soft">
                 Remind me in 7 days
               </button>
               <div className="ml-auto flex gap-2">
-                <button className="bg-transparent text-mid border border-line px-3 py-[5px] rounded-md text-[11px] cursor-pointer hover:bg-line-soft">
+                <button className="bg-transparent text-ink border border-line px-3 py-[5px] rounded-md text-[11px] cursor-pointer hover:bg-line-soft">
                   Dismiss
                 </button>
-                <button className="bg-transparent text-mid border border-line px-3 py-[5px] rounded-md text-[11px] cursor-pointer hover:bg-line-soft">
+                <button className="bg-transparent text-ink border border-line px-3 py-[5px] rounded-md text-[11px] cursor-pointer hover:bg-line-soft">
                   Mark complete
                 </button>
                 <button
@@ -845,7 +845,7 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
                       Time-sensitive
                     </span>
                   )}
-                  <span className="text-[10px] text-dim font-mono ml-auto">{f.time}</span>
+                  <span className="text-[10px] text-ink font-mono ml-auto">{f.time}</span>
                 </div>
                 <div className="text-[15px] font-medium text-ink leading-[1.5]">
                   <BoldHeadline text={f.headline} />
@@ -853,7 +853,7 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
               </div>
               <button
                 onClick={onClose}
-                className="bg-transparent border-0 text-dim flex p-1 cursor-pointer shrink-0 hover:text-ink"
+                className="bg-transparent border-0 text-ink flex p-1 cursor-pointer shrink-0 hover:text-ink"
                 aria-label="Close"
               >
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -864,14 +864,14 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
 
             <div className="flex-1 overflow-y-auto p-5">
               <div className="mb-6">
-                <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-dim mb-2.5">
+                <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-ink mb-2.5">
                   Why this surfaced
                 </div>
                 <div className="grid grid-cols-2 gap-3 mb-3">
                   {f.sources.map((s, i) => (
                     <div key={i} className="bg-surf rounded-lg shadow-lift px-3 py-2.5">
                       <div className="text-[11px] font-medium text-ink mb-[3px]">{s.platform}</div>
-                      <div className="text-[11px] text-mid">{s.metric}</div>
+                      <div className="text-[11px] text-ink">{s.metric}</div>
                       <span className="text-[10px] text-brand cursor-pointer inline-flex items-center gap-[3px] mt-1.5">
                         View source
                         <ArrowR />
@@ -879,19 +879,19 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
                     </div>
                   ))}
                 </div>
-                <div className="text-[12px] text-mid leading-[1.6] bg-surf rounded-lg shadow-lift px-3.5 py-3">
+                <div className="text-[12px] text-ink leading-[1.6] bg-surf rounded-lg shadow-lift px-3.5 py-3">
                   {f.why}
                 </div>
               </div>
 
               <div className="mb-6">
-                <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-dim mb-2.5">
+                <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-ink mb-2.5">
                   What the agent recommends
                 </div>
                 <div className="flex flex-col gap-2.5">
                   {f.steps.map((step, i) => (
                     <div key={i} className="flex items-center gap-2.5 bg-surf rounded-lg shadow-lift px-3 py-2.5">
-                      <span className="w-5 h-5 bg-canvas border border-line rounded-full flex items-center justify-center text-[10px] font-medium text-mid font-mono shrink-0">
+                      <span className="w-5 h-5 bg-canvas border border-line rounded-full flex items-center justify-center text-[10px] font-medium text-ink font-mono shrink-0">
                         {i + 1}
                       </span>
                       <span className="flex-1 text-[12px] text-ink">{step.label}</span>
@@ -906,20 +906,20 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
 
               {(f.linkedProduct || f.linkedCompetitors.length > 0) && (
                 <div className="mb-6">
-                  <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-dim mb-2.5">
+                  <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-ink mb-2.5">
                     Linked context
                   </div>
                   <div className="flex flex-col gap-2.5">
                     {f.linkedProduct && (
                       <div className="flex items-center gap-2 px-3 py-2 bg-surf rounded-lg shadow-lift cursor-pointer hover:bg-black/[0.025]">
-                        <span className="text-[11px] text-dim">Product</span>
+                        <span className="text-[11px] text-ink">Product</span>
                         <span className="text-[12px] font-medium text-ink">{f.linkedProduct}</span>
                         <span className="ml-auto text-brand flex">→</span>
                       </div>
                     )}
                     {f.linkedCompetitors.length > 0 && (
                       <div className="flex items-center gap-2 px-3 py-2 bg-surf rounded-lg shadow-lift cursor-pointer hover:bg-black/[0.025]">
-                        <span className="text-[11px] text-dim">Competitors</span>
+                        <span className="text-[11px] text-ink">Competitors</span>
                         <span className="text-[12px] font-medium text-ink">{f.linkedCompetitors.join(', ')}</span>
                         <span className="ml-auto text-brand flex">→</span>
                       </div>
@@ -936,7 +936,7 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
               >
                 Take action
               </button>
-              <button className="bg-surf text-mid border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
+              <button className="bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
                 Mark as completed
               </button>
               <button className="ml-auto bg-surf text-danger border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
@@ -1027,7 +1027,7 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
       <div className="bg-surf border border-line rounded-xl w-[560px] max-w-[calc(100vw-48px)] max-h-[calc(100vh-80px)] flex flex-col shadow-[0_8px_48px_rgba(0,0,0,0.14)] overflow-hidden">
         <div className="px-5 py-4 border-b border-line flex items-start justify-between gap-3 shrink-0">
           <div>
-            <div className="text-[9px] font-semibold tracking-[0.1em] uppercase text-dim mb-1.5">
+            <div className="text-[9px] font-semibold tracking-[0.1em] uppercase text-ink mb-1.5">
               {state === 'confirm' ? 'State 1 · Confirmation' : state === 'progress' ? 'State 2 · In progress' : 'State 3 · Output'}
             </div>
             <div className="text-[15px] font-medium text-ink leading-[1.3]">
@@ -1036,22 +1036,22 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
               {state === 'output' && 'Launch package ready'}
             </div>
             {state === 'confirm' && (
-              <div className="text-[11px] text-mid mt-1">Pre-configured based on the finding · Est. 8 minutes</div>
+              <div className="text-[11px] text-ink mt-1">Pre-configured based on the finding · Est. 8 minutes</div>
             )}
             {state === 'progress' && (
-              <div className="text-[11px] text-mid mt-1">
+              <div className="text-[11px] text-ink mt-1">
                 {progress.step} · {Math.max(0, Math.round(100 - (progress.pct / 100) * 95))} sec remaining
               </div>
             )}
             {state === 'output' && (
-              <div className="text-[11px] text-mid mt-1">
+              <div className="text-[11px] text-ink mt-1">
                 Generated for 'Magnesium + Ashwagandha Gummies' · Sleep-Anxiety Crossover angle
               </div>
             )}
           </div>
           <button
             onClick={onClose}
-            className="bg-transparent border-0 text-dim flex p-1 cursor-pointer shrink-0 hover:text-ink"
+            className="bg-transparent border-0 text-ink flex p-1 cursor-pointer shrink-0 hover:text-ink"
             aria-label="Close"
           >
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -1068,9 +1068,9 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
                   key={field.label}
                   className={`flex items-start gap-3 py-2.5 ${i < PACKAGE_FIELDS.length - 1 ? 'border-b border-line-soft' : ''}`}
                 >
-                  <div className="text-[11px] text-dim w-[140px] shrink-0 pt-px">{field.label}</div>
+                  <div className="text-[11px] text-ink w-[140px] shrink-0 pt-px">{field.label}</div>
                   <div className="flex-1 text-[12px] text-ink leading-[1.4]">{field.value}</div>
-                  <span className="text-dim cursor-pointer flex shrink-0 pt-px">
+                  <span className="text-ink cursor-pointer flex shrink-0 pt-px">
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
                       <circle cx="6.5" cy="2.5" r="1.1" />
                       <circle cx="6.5" cy="6.5" r="1.1" />
@@ -1095,13 +1095,13 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
                     style={{ width: `${progress.pct}%` }}
                   />
                 </div>
-                <div className="text-[11px] text-mid mt-2">{progress.step}</div>
+                <div className="text-[11px] text-ink mt-2">{progress.step}</div>
               </div>
               {perAsset.map((a, i) => (
                 <div key={i} className="flex items-center gap-2.5 px-3 py-2 bg-surf-2 border border-line rounded-lg">
                   <span
                     className={`text-[9px] font-semibold tracking-[0.08em] px-1.5 py-[2px] rounded-sm shrink-0 w-[46px] text-center ${
-                      a.pct >= 100 ? 'bg-brand-bg text-brand' : 'bg-line text-dim'
+                      a.pct >= 100 ? 'bg-brand-bg text-brand' : 'bg-line text-ink'
                     }`}
                   >
                     {a.pct >= 100 ? 'DONE' : a.label}
@@ -1115,7 +1115,7 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
                       />
                     </div>
                   </div>
-                  <span className="text-[10px] text-dim font-mono shrink-0 w-7 text-right">{a.pct}%</span>
+                  <span className="text-[10px] text-ink font-mono shrink-0 w-7 text-right">{a.pct}%</span>
                 </div>
               ))}
             </div>
@@ -1123,7 +1123,7 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
 
           {state === 'output' && (
             <div>
-              <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-dim mb-2.5">Product page</div>
+              <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-ink mb-2.5">Product page</div>
               <div className="bg-surf-2 border border-line rounded-lg px-4 py-3.5 mb-5 flex items-center gap-3">
                 <div className="w-20 h-[60px] bg-brand-bg border border-brand-dim rounded-md flex items-center justify-center shrink-0">
                   <span className="text-[9px] font-bold text-brand tracking-[0.08em]">PDP</span>
@@ -1133,7 +1133,7 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
                     <span className="text-[12px] font-medium text-ink">Magnesium + Ashwagandha Gummies PDP</span>
                     <span className="text-[11px] font-medium text-brand font-mono">Score: 84</span>
                   </div>
-                  <div className="text-[11px] text-mid">Hero · Testimonials · Feature breakdown · FAQ · Trust badges · Risk reversal</div>
+                  <div className="text-[11px] text-ink">Hero · Testimonials · Feature breakdown · FAQ · Trust badges · Risk reversal</div>
                 </div>
                 <span className="text-[11px] text-brand cursor-pointer flex items-center gap-[3px] shrink-0">
                   Preview
@@ -1141,7 +1141,7 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
                 </span>
               </div>
 
-              <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-dim mb-2.5">Creatives</div>
+              <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-ink mb-2.5">Creatives</div>
               <div className="grid grid-cols-2 gap-2">
                 {OUTPUT_CREATIVES.map((c, i) => (
                   <div key={i} className="bg-surf-2 border border-line rounded-lg overflow-hidden">
@@ -1160,7 +1160,7 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
                       </span>
                     </div>
                     <div className="px-2.5 py-2">
-                      <div className="text-[11px] text-dim mb-[2px]">{c.desc}</div>
+                      <div className="text-[11px] text-ink mb-[2px]">{c.desc}</div>
                       <div className="text-[11px] font-medium text-ink italic">"{c.hook}"</div>
                     </div>
                   </div>
@@ -1179,12 +1179,12 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
               >
                 Generate package
               </button>
-              <button className="bg-surf text-mid border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
+              <button className="bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
                 Customize fully
               </button>
               <button
                 onClick={onClose}
-                className="ml-auto bg-surf text-mid border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
+                className="ml-auto bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
               >
                 Cancel
               </button>
@@ -1193,7 +1193,7 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
           {state === 'progress' && (
             <button
               onClick={onClose}
-              className="ml-auto bg-surf text-mid border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
+              className="ml-auto bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
             >
               Close · continue in background
             </button>
@@ -1203,12 +1203,12 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
               <button className="bg-brand text-white border-0 rounded-md px-3.5 py-1.5 text-[12px] font-medium cursor-pointer hover:opacity-90">
                 Add to library + start validation test
               </button>
-              <button className="bg-surf text-mid border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
+              <button className="bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
                 Add to library only
               </button>
               <button
                 onClick={onClose}
-                className="ml-auto bg-surf text-mid border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
+                className="ml-auto bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
               >
                 Save and exit
               </button>
@@ -1236,27 +1236,27 @@ function Findings() {
         <div className="flex items-start justify-between mb-4">
           <div>
             <div className="text-[20px] font-medium text-ink tracking-[-0.025em]">Findings</div>
-            <div className="text-[12px] text-dim mt-[3px]">Surfaced by the agent over the last 7 days</div>
+            <div className="text-[12px] text-ink mt-[3px]">Surfaced by the agent over the last 7 days</div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-dim font-mono">12 new · 47 total</span>
+            <span className="text-[11px] text-ink font-mono">12 new · 47 total</span>
             <button className="flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-mid">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-ink">
                 <path d="M2 3h7M3 5.5h5M4 8h3" />
               </svg>
-              <span className="text-[11px] text-mid">Most recent</span>
+              <span className="text-[11px] text-ink">Most recent</span>
             </button>
             <button className="flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-mid">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-ink">
                 <path d="M5.5 1v6m0 0L3.5 5m2 2L7.5 5M2 9.5h7" />
               </svg>
-              <span className="text-[11px] text-mid">Export</span>
+              <span className="text-[11px] text-ink">Export</span>
             </button>
             <button className="flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer hover:bg-line-soft">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-mid">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-ink">
                 <path d="M1.5 2.5h8M3 5.5h5M4.5 8.5h2" />
               </svg>
-              <span className="text-[11px] text-mid">All products</span>
+              <span className="text-[11px] text-ink">All products</span>
             </button>
           </div>
         </div>
@@ -1271,7 +1271,7 @@ function Findings() {
                 className={`text-[11px] px-3 py-[5px] rounded-md cursor-pointer transition-colors whitespace-nowrap border ${
                   isActive
                     ? 'bg-ink text-[#f5f4f2] border-ink font-medium'
-                    : 'bg-surf text-mid border-line font-normal hover:bg-line-soft'
+                    : 'bg-surf text-ink border-line font-normal hover:bg-line-soft'
                 }`}
               >
                 {f}
@@ -1283,7 +1283,7 @@ function Findings() {
 
       <div className="flex-1 overflow-y-auto px-6 pt-4 pb-12 flex flex-col gap-4">
         {filtered.length === 0 ? (
-          <div className="text-center py-12 text-dim">No findings of this type in the last 7 days.</div>
+          <div className="text-center py-12 text-ink">No findings of this type in the last 7 days.</div>
         ) : (
           filtered.map(f => (
             <FindingCard

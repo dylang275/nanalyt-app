@@ -120,9 +120,9 @@ function Dropdown({ label, value, options, onChange }: {
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer select-none hover:bg-line-soft"
       >
-        <span className="text-[11px] text-dim">{label}:</span>
+        <span className="text-[11px] text-ink">{label}:</span>
         <span className="text-[11px] text-ink font-medium">{value}</span>
-        <span className="text-mid"><ChevDown /></span>
+        <span className="text-ink"><ChevDown /></span>
       </button>
       {open && (
         <div className="absolute top-[calc(100%+4px)] left-0 bg-surf rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.1)] z-50 min-w-[180px] overflow-hidden">
@@ -131,7 +131,7 @@ function Dropdown({ label, value, options, onChange }: {
               key={opt}
               onClick={() => { onChange(opt); setOpen(false) }}
               className={`px-3.5 py-2 text-[12px] cursor-pointer hover:bg-surf-2 ${
-                opt === value ? 'text-ink font-medium bg-surf-2' : 'text-mid'
+                opt === value ? 'text-ink font-medium bg-surf-2' : 'text-ink'
               }`}
             >
               {opt}
@@ -153,7 +153,7 @@ function TableHeader() {
   return (
     <div className={`grid ${GRID_COLS} gap-4 px-6 py-2.5 border-b border-line-soft bg-surf rounded-t-[10px]`}>
       {labels.map((h, i) => (
-        <div key={i} className={`text-[9px] font-bold tracking-[0.08em] text-dim ${HEADER_ALIGN[i]}`}>
+        <div key={i} className={`text-[9px] font-bold tracking-[0.08em] text-ink ${HEADER_ALIGN[i]}`}>
           {h}
         </div>
       ))}
@@ -176,18 +176,18 @@ function ProductRow({ product, last }: { product: Product; last: boolean }) {
 
       <div className="min-w-0">
         <div className="text-[14px] font-medium text-ink mb-[3px] truncate">{name}</div>
-        <div className="text-[11px] text-dim mb-[5px]">
+        <div className="text-[11px] text-ink mb-[5px]">
           {platList.map((p, i) => (
             <span key={p}>
               <span className="inline-flex items-center gap-[3px]">
                 <span className="w-[5px] h-[5px] rounded-full inline-block shrink-0 align-middle" style={{ background: PLATFORM_DOT[p] || '#a09d98' }} />
-                <span className="text-dim">{p}</span>
+                <span className="text-ink">{p}</span>
               </span>
               {i < platList.length - 1 && <span className="text-line-soft mx-1">·</span>}
             </span>
           ))}
-          <span className="text-dim mx-1.5">·</span>
-          <span className="text-dim">{price}</span>
+          <span className="text-ink mx-1.5">·</span>
+          <span className="text-ink">{price}</span>
         </div>
         {findings > 0 && (
           <span className="text-[10px] font-semibold bg-brand-bg text-brand px-[7px] py-px rounded-[3px]">
@@ -201,18 +201,18 @@ function ProductRow({ product, last }: { product: Product; last: boolean }) {
       </div>
 
       <div className="text-center">
-        <div className={`text-[13px] font-medium font-mono tabular-nums ${rev === '—' ? 'text-dim' : 'text-ink'}`}>{rev}</div>
-        {rev !== '—' && <div className="text-[10px] text-dim mt-px">30d</div>}
+        <div className={`text-[13px] font-medium font-mono tabular-nums ${rev === '—' ? 'text-ink' : 'text-ink'}`}>{rev}</div>
+        {rev !== '—' && <div className="text-[10px] text-ink mt-px">30d</div>}
       </div>
 
       <div className="text-center">
         <div className="text-[12px] font-mono text-ink font-medium">{margin}</div>
-        <div className="text-[10px] text-dim mt-px">margin</div>
+        <div className="text-[10px] text-ink mt-px">margin</div>
       </div>
 
       <div className="text-center">
         <div className="text-[12px] font-medium" style={{ color: adSatColor }}>{adSat}</div>
-        <div className="text-[10px] text-dim font-mono mt-px">{adCount}</div>
+        <div className="text-[10px] text-ink font-mono mt-px">{adCount}</div>
       </div>
 
       <div className="flex justify-center">
@@ -229,7 +229,7 @@ function ProductRow({ product, last }: { product: Product; last: boolean }) {
       <div className="flex justify-center">
         <span
           onClick={e => e.stopPropagation()}
-          className="text-dim cursor-pointer flex p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="text-ink cursor-pointer flex p-1 opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
             <circle cx="6.5" cy="2.5" r="1.1" />
@@ -277,7 +277,7 @@ function ActiveProducts() {
       <div className="px-6 pt-5 pb-4 flex items-center justify-between shrink-0">
         <div>
           <div className="text-[20px] font-medium text-ink tracking-[-0.025em]">Active Products</div>
-          <div className="text-[12px] text-dim mt-[3px]">{ALL_PRODUCTS.length} products tracked</div>
+          <div className="text-[12px] text-ink mt-[3px]">{ALL_PRODUCTS.length} products tracked</div>
         </div>
         <button className="flex items-center gap-1.5 bg-brand text-white border-0 rounded-md px-3.5 py-[7px] text-[12px] font-medium cursor-pointer hover:opacity-90">
           <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -304,7 +304,7 @@ function ActiveProducts() {
           onChange={v => setSort(v as Sort)}
         />
         <div className="ml-auto flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] w-[240px]">
-          <span className="text-dim flex">
+          <span className="text-ink flex">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.3">
               <circle cx="5.5" cy="5.5" r="3.5" />
               <path d="M8.5 8.5L11 11" strokeLinecap="round" />
@@ -314,7 +314,7 @@ function ActiveProducts() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search products…"
-            className="border-0 bg-transparent outline-none text-[11px] text-ink w-full placeholder:text-dim"
+            className="border-0 bg-transparent outline-none text-[11px] text-ink w-full placeholder:text-ink"
           />
         </div>
       </div>
@@ -323,7 +323,7 @@ function ActiveProducts() {
         <div className="bg-surf rounded-[10px] shadow-lift overflow-hidden">
           <TableHeader />
           {filtered.length === 0 ? (
-            <div className="px-6 py-12 text-center text-dim text-[13px]">No products match your filters.</div>
+            <div className="px-6 py-12 text-center text-ink text-[13px]">No products match your filters.</div>
           ) : (
             filtered.map((p, i) => (
               <ProductRow key={p.id} product={p} last={i === filtered.length - 1} />
