@@ -210,67 +210,41 @@ function BoldHeadline({ text }: { text: string }) {
   )
 }
 
+const cdnIcon = (slug: string, color: string) => (
+  <img
+    src={`https://cdn.simpleicons.org/${slug}/${color}`}
+    width="14"
+    height="14"
+    alt=""
+    className="block shrink-0"
+  />
+)
+
+const GoogleG = (
+  <svg width="14" height="14" viewBox="0 0 24 24" className="block shrink-0">
+    <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.46c-.28 1.48-1.12 2.73-2.38 3.58v2.99h3.85c2.25-2.08 3.56-5.14 3.56-8.81z" />
+    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.94-2.91l-3.85-2.99c-1.07.72-2.44 1.15-4.09 1.15-3.13 0-5.78-2.11-6.72-4.96H1.31v3.09C3.3 21.3 7.34 24 12 24z" />
+    <path fill="#FBBC05" d="M5.28 14.29c-.24-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.62H1.31C.48 8.27 0 10.09 0 12c0 1.91.48 3.73 1.31 5.38l3.97-3.09z" />
+    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.3 2.7 1.31 6.62l3.97 3.09c.94-2.85 3.59-4.96 6.72-4.96z" />
+  </svg>
+)
+
+const MetaIcon = cdnIcon('meta', '0866FF')
+const TikTokIcon = cdnIcon('tiktok', '000000')
+
 const PLATFORM_LOGOS: Record<string, ReactNode> = {
-  Amazon: (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <path d="M2 9.5c2 1.5 6 2 9 0.5" stroke="#ff9900" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-      <path d="M3 11c2.5 1.5 6 2 8 0.5" stroke="#ff9900" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-      <text x="3" y="6" fontSize="5" fontWeight="700" fill="#232f3e" fontFamily="sans-serif">am</text>
-    </svg>
-  ),
-  Reddit: (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <circle cx="7" cy="7" r="5.5" fill="#ff4500" />
-      <circle cx="5" cy="7.5" r="0.8" fill="#fff" />
-      <circle cx="9" cy="7.5" r="0.8" fill="#fff" />
-      <path d="M5 9.5c.5.5 1.2.8 2 .8s1.5-.3 2-.8" stroke="#fff" strokeWidth="0.8" fill="none" strokeLinecap="round" />
-    </svg>
-  ),
-  YouTube: (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <rect x="1" y="3" width="12" height="8" rx="2" fill="#ff0000" />
-      <path d="M6 5.5v3l2.5-1.5z" fill="#fff" />
-    </svg>
-  ),
-  Meta: (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <path d="M1.5 7C1.5 4.5 3 3 5 3c1.5 0 2.5 1 3.5 2.5C9.5 7 10.5 8 11.5 8c1 0 1.5-.5 1.5-1.5" stroke="#0866ff" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-    </svg>
-  ),
-  'Meta Ads': (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <path d="M1.5 7C1.5 4.5 3 3 5 3c1.5 0 2.5 1 3.5 2.5C9.5 7 10.5 8 11.5 8c1 0 1.5-.5 1.5-1.5" stroke="#0866ff" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-    </svg>
-  ),
-  'Meta Ad Library': (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <path d="M1.5 7C1.5 4.5 3 3 5 3c1.5 0 2.5 1 3.5 2.5C9.5 7 10.5 8 11.5 8c1 0 1.5-.5 1.5-1.5" stroke="#0866ff" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-    </svg>
-  ),
-  TikTok: (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <path d="M8 1.5v7.5a2 2 0 11-2-2" stroke="#000" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-      <path d="M8 1.5c0 1.5 1 2.5 2.5 2.5" stroke="#ff0050" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-    </svg>
-  ),
-  'TikTok Creative': (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <path d="M8 1.5v7.5a2 2 0 11-2-2" stroke="#000" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-      <path d="M8 1.5c0 1.5 1 2.5 2.5 2.5" stroke="#ff0050" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-    </svg>
-  ),
-  'Google Trends': (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <path d="M1.5 10l2.5-3 2 2 3-5 2.5 2.5" stroke="#4285f4" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  ),
-  Shopify: (
-    <svg width="14" height="14" viewBox="0 0 14 14">
-      <path d="M10.2 3.1c-.1-.1-.2-.1-.3 0l-.7.2c-.2-.5-.6-.9-1.1-.9-.1 0-.1 0-.2.1-.2-.3-.5-.4-.7-.4-1.2 0-1.8 1.5-2 2.4l-.9.3c-.3.1-.3.1-.3.4L3.2 12l6.3 1.2 3.4-.8-2.7-9.3z" fill="#96bf48" />
-    </svg>
-  ),
+  Amazon: cdnIcon('amazon', 'FF9900'),
+  Reddit: cdnIcon('reddit', 'FF4500'),
+  YouTube: cdnIcon('youtube', 'FF0000'),
+  Meta: MetaIcon,
+  'Meta Ads': MetaIcon,
+  'Meta Ad Library': MetaIcon,
+  TikTok: TikTokIcon,
+  'TikTok Creative': TikTokIcon,
+  'Google Trends': GoogleG,
+  Shopify: cdnIcon('shopify', '96BF48'),
   'Your PDP': (
-    <svg width="14" height="14" viewBox="0 0 14 14">
+    <svg width="14" height="14" viewBox="0 0 14 14" className="block shrink-0">
       <rect x="2" y="1.5" width="10" height="11" rx="1.5" stroke="#6b6860" strokeWidth="1.2" fill="none" />
       <path d="M4.5 5h5M4.5 7h5M4.5 9h3" stroke="#6b6860" strokeWidth="1" strokeLinecap="round" />
     </svg>
