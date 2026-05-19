@@ -17,12 +17,13 @@ const ALT_IMAGES = [
 ]
 const DEFAULT_IMAGE = ALT_IMAGES[0]
 
-const FEATURES = [
+const DEFAULT_FEATURES = [
   { title: '400mg glycinate form', desc: 'Calms the nervous system at clinical dose' },
   { title: 'No melatonin grogginess', desc: 'Wake up clear-headed, not foggy' },
   { title: 'NSF Certified', desc: 'Third-party tested for purity' },
   { title: 'Vegan, non-GMO', desc: 'Clean formulation' },
 ]
+type Feature = { title: string; desc: string }
 
 type SectionId =
   | 'hero'
@@ -49,12 +50,14 @@ function PdpCanvas({
   headline,
   subHeadline,
   heroImg,
+  features,
   onEditHeadline,
   onEditSubHead,
 }: {
   headline: string
   subHeadline: string
   heroImg: string
+  features: Feature[]
   onEditHeadline: () => void
   onEditSubHead: () => void
 }) {
@@ -94,70 +97,99 @@ function PdpCanvas({
 
           <h1
             onClick={onEditHeadline}
-            className={`text-[24px] font-semibold leading-[1.2] text-ink mb-4 ${editClass}`}
+            className={`text-[26px] font-semibold leading-[1.15] text-[#1b3654] mb-3 ${editClass}`}
           >
             {headline}
           </h1>
 
           <p
             onClick={onEditSubHead}
-            className={`text-[13px] leading-[1.5] text-ink mb-5 ${editClass}`}
+            className={`text-[13px] leading-[1.5] text-ink mb-4 ${editClass}`}
           >
             {subHeadline}
           </p>
 
-          <div className="bg-[#f0f4f8] rounded-lg px-3.5 py-3 mb-4">
-            <div className="flex items-center justify-between mb-2">
+          <div className="relative bg-white border-[1.5px] border-[#0066a0] rounded-lg px-3.5 py-3 mb-2.5">
+            <span className="absolute -top-2.5 right-3 text-[9px] font-semibold text-white bg-[#0066a0] px-2 py-0.5 rounded-md">
+              Save up to 15%
+            </span>
+            <div className="flex items-start justify-between mb-2.5">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full border-[1.5px] border-[#0066a0] bg-[#0066a0] flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                <div className="w-4 h-4 rounded-full border-[1.5px] border-[#0066a0] bg-white flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-[#0066a0]" />
                 </div>
-                <span className="text-[12px] font-semibold text-ink">Subscribe &amp; Save</span>
+                <span className="text-[13px] font-semibold text-ink">Subscribe &amp; Save</span>
+                <span className="text-[10px] text-ink">ⓘ</span>
               </div>
               <div className="text-right">
                 <div className="text-[10px] text-ink line-through">$27.99</div>
-                <div className="text-[13px] font-semibold text-ink">$23.79</div>
+                <div className="text-[14px] font-semibold text-ink">$23.79</div>
               </div>
             </div>
-            <div className="text-[10px] text-ink space-y-0.5 mb-2">
-              <div>✓ Save 15%</div>
-              <div>✓ Free Shipping On Orders &gt; $30</div>
-              <div>✓ No commitment — Cancel any time</div>
+            <div className="text-[11px] text-ink space-y-1 mb-3">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#0066a0]">✓</span> Save 15%
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#0066a0]">✓</span> Free Shipping On Orders &gt; $30
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#0066a0]">✓</span> No commitment — Cancel any time
+              </div>
             </div>
             <div>
-              <div className="text-[9px] text-ink mb-1">Deliver every</div>
-              <div className="bg-white border-[0.5px] border-[#e5e7eb] rounded px-2 py-1 text-[10px] text-ink flex items-center justify-between">
+              <div className="text-[10px] font-semibold text-ink mb-1">Deliver every</div>
+              <div className="bg-white border-[0.5px] border-[#0066a0] rounded px-2.5 py-1.5 text-[11px] text-ink flex items-center justify-between">
                 <span>30 Days: Save 15%</span>
-                <span>▾</span>
+                <span className="text-[#0066a0]">▾</span>
               </div>
             </div>
           </div>
 
-          <div className="flex gap-2 mb-2">
-            <input
-              type="number"
-              defaultValue={1}
-              className="w-[60px] border-[0.5px] border-[#e5e7eb] rounded px-2 py-2 text-[12px] text-ink outline-none text-center"
-            />
-            <button className="flex-1 bg-[#1b3654] text-white rounded py-2 text-[12px] font-semibold hover:opacity-90">
+          <div className="bg-white border-[0.5px] border-[#d1d5db] rounded-lg px-3.5 py-2.5 mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full border-[1.5px] border-[#d1d5db] bg-white" />
+              <span className="text-[13px] font-semibold text-ink">One-time Purchase</span>
+            </div>
+            <span className="text-[13px] text-ink">$27.99</span>
+          </div>
+
+          <div className="text-[11px] text-ink mb-3">
+            <span className="underline cursor-pointer text-[#0066a0]">Shipping</span> calculated at checkout.
+          </div>
+
+          <div className="flex gap-2 mb-3">
+            <div className="flex items-center border-[0.5px] border-[#d1d5db] rounded-full">
+              <button className="px-2.5 py-1.5 text-[14px] text-ink leading-none cursor-pointer">−</button>
+              <span className="px-2 py-1.5 text-[12px] text-ink leading-none">1</span>
+              <button className="px-2.5 py-1.5 text-[14px] text-ink leading-none cursor-pointer">+</button>
+            </div>
+            <button className="flex-1 bg-[#1b3654] text-white rounded-full py-2 text-[14px] font-semibold hover:opacity-90">
               Add to Cart
             </button>
           </div>
 
-          <div className="text-[9px] text-ink">
-            <span className="text-brand">●</span> IN STOCK · HSA/FSA eligible · Save an average of 30%
+          <div className="flex items-center gap-3 text-[10px] text-ink flex-wrap">
+            <span className="flex items-center gap-1">
+              <span className="text-brand">●</span> IN STOCK
+            </span>
+            <span className="font-semibold">HSA/FSA eligible</span>
+            <span className="flex items-center gap-1">
+              <span>ⓘ</span> Save an average of 30%
+            </span>
+            <span className="underline cursor-pointer">Learn more</span>
           </div>
         </div>
       </div>
 
-      <div className="px-7 border-b-[0.5px] border-[#e5e7eb] flex gap-6">
+      <div className="px-7 pt-3 pb-2 border-b-[0.5px] border-[#e5e7eb] flex gap-2">
         {['Description', 'Directions', 'Ingredients', 'Supplement Facts'].map(t => (
           <div
             key={t}
-            className={`pb-2 text-[12px] cursor-pointer ${
+            className={`text-[12px] cursor-pointer px-3 py-1.5 rounded-md ${
               t === 'Description'
-                ? 'border-b-2 border-[#0066a0] text-[#0066a0] font-medium -mb-px'
-                : 'text-ink'
+                ? 'text-[#0066a0] font-semibold'
+                : 'bg-[#dbeafe] text-[#0066a0]'
             }`}
           >
             {t}
@@ -170,8 +202,8 @@ function PdpCanvas({
 
         <div className="text-[11px] font-medium tracking-[0.04em] uppercase text-ink mb-3">WHY IT WORKS</div>
         <div className="grid grid-cols-2 gap-3">
-          {FEATURES.map(f => (
-            <div key={f.title} className="border-[0.5px] border-[#e5e7eb] rounded-md px-3 py-2.5">
+          {features.map((f, i) => (
+            <div key={i} className="border-[0.5px] border-[#e5e7eb] rounded-md px-3 py-2.5">
               <div className="text-[12px] font-medium text-ink mb-1">{f.title}</div>
               <div className="text-[10px] text-ink">{f.desc}</div>
             </div>
@@ -254,6 +286,7 @@ function PdpEditor() {
   const [headline, setHeadline] = useState(DEFAULT_HEADLINE)
   const [subHeadline, setSubHeadline] = useState(DEFAULT_SUBHEAD)
   const [heroImg, setHeroImg] = useState(DEFAULT_IMAGE)
+  const [features, setFeatures] = useState<Feature[]>(DEFAULT_FEATURES)
   const [expandedSection, setExpandedSection] = useState<SectionId | null>('hero')
   const [replaceMenuOpen, setReplaceMenuOpen] = useState(false)
   const [regenSpinning, setRegenSpinning] = useState(false)
@@ -282,8 +315,13 @@ function PdpEditor() {
     setHeadline(DEFAULT_HEADLINE)
     setSubHeadline(DEFAULT_SUBHEAD)
     setHeroImg(DEFAULT_IMAGE)
+    setFeatures(DEFAULT_FEATURES)
     setShowDiscardConfirm(false)
     navigate('/studio')
+  }
+
+  const updateFeature = (i: number, patch: Partial<Feature>) => {
+    setFeatures(prev => prev.map((f, j) => (j === i ? { ...f, ...patch } : f)))
   }
 
   return (
@@ -331,6 +369,7 @@ function PdpEditor() {
             headline={headline}
             subHeadline={subHeadline}
             heroImg={heroImg}
+            features={features}
             onEditHeadline={() => editFromCanvas('headline')}
             onEditSubHead={() => editFromCanvas('sub')}
           />
@@ -417,6 +456,29 @@ function PdpEditor() {
                           </div>
                         )}
                       </div>
+                    </>
+                  )}
+                  {s.id === 'why' && (
+                    <>
+                      <div className="text-[10px] text-ink leading-[1.5] -mt-0.5">
+                        Four feature tiles render in the Description tab. Edit titles and descriptions below.
+                      </div>
+                      {features.map((f, i) => (
+                        <div key={i} className="border-[0.5px] border-[#e5e7eb] bg-white rounded-md p-2.5 flex flex-col gap-1.5">
+                          <FieldLabel>FEATURE {i + 1} · TITLE</FieldLabel>
+                          <input
+                            value={f.title}
+                            onChange={e => updateFeature(i, { title: e.target.value })}
+                            className="w-full text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 outline-none focus:border-brand"
+                          />
+                          <FieldLabel>FEATURE {i + 1} · DESCRIPTION</FieldLabel>
+                          <input
+                            value={f.desc}
+                            onChange={e => updateFeature(i, { desc: e.target.value })}
+                            className="w-full text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 outline-none focus:border-brand"
+                          />
+                        </div>
+                      ))}
                     </>
                   )}
                 </SectionCard>
