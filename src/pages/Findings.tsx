@@ -366,7 +366,7 @@ function FindingCard({ finding, onOpen, onTakeAction }: {
 
 // ─── Rich detail: shared atoms ───────────────────────────────────────────────
 
-const cardCls = 'bg-surf border border-[#e2deda] rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+const cardCls = 'bg-surf rounded-lg shadow-lift'
 
 function SubLabel({ label, right }: { label: string; right?: ReactNode }) {
   return (
@@ -430,7 +430,7 @@ function NewAngleDetail() {
           <div className="text-[13px] font-medium text-ink mb-[3px]">Buyer attention growth in 30 days</div>
           <div className="text-[12px] text-dim">Across r/sleep, r/insomnia, Amazon, and YouTube</div>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-3">
           {supporting.map((s, i) => (
             <div key={i} className={`${cardCls} px-3 py-[11px]`}>
               <div className="text-[18px] font-medium text-ink font-mono tracking-[-0.03em] leading-none mb-1">{s.num}</div>
@@ -566,8 +566,8 @@ function NewAngleDetail() {
 
       <div>
         <div className="text-[11px] font-medium text-ink mb-2.5">Go deeper</div>
-        <div className="flex flex-col gap-2">
-          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:border-brand`}>
+        <div className="flex flex-col gap-2.5">
+          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:shadow-card-hover`}>
             <span>Run full intelligence pass on Magnesium Glycinate Complex</span>
             <span className="text-dim ml-3 shrink-0">→</span>
           </button>
@@ -634,7 +634,7 @@ function NewProductDetail() {
           <div className="text-[13px] font-medium text-ink mb-[3px]">Buyer attention growth in 60 days</div>
           <div className="text-[12px] text-dim">Search volume for "magnesium ashwagandha gummies" · TikTok sentiment trending positive</div>
         </div>
-        <div className="grid grid-cols-3 gap-2 mb-2">
+        <div className="grid grid-cols-3 gap-3 mb-2">
           {stats.map((s, i) => (
             <div key={i} className={`${cardCls} px-3 py-[11px]`}>
               <div className="text-[18px] font-medium text-ink font-mono tracking-[-0.03em] leading-none mb-1">{s.num}</div>
@@ -705,7 +705,7 @@ function NewProductDetail() {
 
       <div className="mb-5">
         <SubLabel label="Opportunity context" />
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5">
           <div className={`${cardCls} px-3.5 py-3`}>
             <div className="text-[9px] font-bold tracking-[0.09em] uppercase text-dim mb-2.5">Bundle potential</div>
             <div className="flex items-center gap-2.5 mb-2.5">
@@ -752,12 +752,12 @@ function NewProductDetail() {
 
       <div>
         <SubLabel label="Go deeper" />
-        <div className="flex flex-col gap-2">
-          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:border-brand`}>
+        <div className="flex flex-col gap-2.5">
+          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:shadow-card-hover`}>
             <span>Run full intelligence pass on magnesium + ashwagandha gummies</span>
             <span className="text-dim ml-3 shrink-0">→</span>
           </button>
-          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:border-brand`}>
+          <button className={`${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:shadow-card-hover`}>
             <span>Ask Nanalyt about this finding</span>
             <span className="text-dim ml-3 shrink-0">→</span>
           </button>
@@ -789,13 +789,13 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
         }`}
       />
       <div
-        className={`fixed top-0 right-0 bottom-0 z-[201] w-1/2 min-w-[540px] max-w-[760px] bg-surf border-l border-line flex flex-col shadow-drawer transition-transform duration-200 ease-out font-sans ${
+        className={`fixed top-0 right-0 bottom-0 z-[201] w-1/2 min-w-[540px] max-w-[760px] bg-canvas border-l border-line flex flex-col shadow-drawer transition-transform duration-200 ease-out font-sans ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {isRich ? (
           <>
-            <div className="h-11 px-4 border-b border-line flex items-center justify-between shrink-0 bg-surf">
+            <div className="h-11 px-4 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
                 <span className="text-[12px] text-dim shrink-0">Findings</span>
                 <span className="text-[12px] text-dim shrink-0">›</span>
@@ -814,7 +814,7 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
             <div className="flex-1 overflow-y-auto px-7 pt-6 pb-4">
               {isNewAngle ? <NewAngleDetail /> : <NewProductDetail />}
             </div>
-            <div className="px-5 py-3 border-t border-line flex gap-2 items-center shrink-0 bg-surf">
+            <div className="px-5 py-3 flex gap-2 items-center shrink-0">
               <button className="bg-transparent text-mid border border-line px-3 py-[5px] rounded-md text-[11px] cursor-pointer whitespace-nowrap hover:bg-line-soft">
                 Remind me in 7 days
               </button>
@@ -836,7 +836,7 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
           </>
         ) : (
           <>
-            <div className="px-5 py-4 border-b border-line flex items-start justify-between gap-3 shrink-0">
+            <div className="px-5 py-4 flex items-start justify-between gap-3 shrink-0">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <TypeBadge type={f.type} />
@@ -867,9 +867,9 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
                 <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-dim mb-2.5">
                   Why this surfaced
                 </div>
-                <div className="grid grid-cols-2 gap-2 mb-3">
+                <div className="grid grid-cols-2 gap-3 mb-3">
                   {f.sources.map((s, i) => (
-                    <div key={i} className="bg-surf-2 border border-line rounded-lg px-3 py-2.5">
+                    <div key={i} className="bg-surf rounded-lg shadow-lift px-3 py-2.5">
                       <div className="text-[11px] font-medium text-ink mb-[3px]">{s.platform}</div>
                       <div className="text-[11px] text-mid">{s.metric}</div>
                       <span className="text-[10px] text-brand cursor-pointer inline-flex items-center gap-[3px] mt-1.5">
@@ -879,7 +879,7 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
                     </div>
                   ))}
                 </div>
-                <div className="text-[12px] text-mid leading-[1.6] bg-surf-2 border border-line rounded-lg px-3.5 py-3">
+                <div className="text-[12px] text-mid leading-[1.6] bg-surf rounded-lg shadow-lift px-3.5 py-3">
                   {f.why}
                 </div>
               </div>
@@ -888,10 +888,10 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
                 <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-dim mb-2.5">
                   What the agent recommends
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   {f.steps.map((step, i) => (
-                    <div key={i} className="flex items-center gap-2.5 bg-surf-2 border border-line rounded-lg px-3 py-2.5">
-                      <span className="w-5 h-5 bg-surf border border-line rounded-full flex items-center justify-center text-[10px] font-medium text-mid font-mono shrink-0">
+                    <div key={i} className="flex items-center gap-2.5 bg-surf rounded-lg shadow-lift px-3 py-2.5">
+                      <span className="w-5 h-5 bg-canvas border border-line rounded-full flex items-center justify-center text-[10px] font-medium text-mid font-mono shrink-0">
                         {i + 1}
                       </span>
                       <span className="flex-1 text-[12px] text-ink">{step.label}</span>
@@ -909,16 +909,16 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
                   <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-dim mb-2.5">
                     Linked context
                   </div>
-                  <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-col gap-2.5">
                     {f.linkedProduct && (
-                      <div className="flex items-center gap-2 px-3 py-2 bg-surf-2 border border-line rounded-lg cursor-pointer hover:bg-black/[0.025]">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-surf rounded-lg shadow-lift cursor-pointer hover:bg-black/[0.025]">
                         <span className="text-[11px] text-dim">Product</span>
                         <span className="text-[12px] font-medium text-ink">{f.linkedProduct}</span>
                         <span className="ml-auto text-brand flex">→</span>
                       </div>
                     )}
                     {f.linkedCompetitors.length > 0 && (
-                      <div className="flex items-center gap-2 px-3 py-2 bg-surf-2 border border-line rounded-lg cursor-pointer hover:bg-black/[0.025]">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-surf rounded-lg shadow-lift cursor-pointer hover:bg-black/[0.025]">
                         <span className="text-[11px] text-dim">Competitors</span>
                         <span className="text-[12px] font-medium text-ink">{f.linkedCompetitors.join(', ')}</span>
                         <span className="ml-auto text-brand flex">→</span>
@@ -929,7 +929,7 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
               )}
             </div>
 
-            <div className="px-5 py-3.5 border-t border-line flex gap-2 items-center shrink-0">
+            <div className="px-5 py-3.5 flex gap-2 items-center shrink-0">
               <button
                 onClick={() => onTakeAction(f)}
                 className="bg-brand text-white border-0 rounded-md px-3.5 py-1.5 text-[12px] font-medium cursor-pointer hover:opacity-90"
