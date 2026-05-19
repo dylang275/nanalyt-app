@@ -397,7 +397,7 @@ function GenerationWizard({ mode, product, onClose, onGenerate }: {
                   }}
                   className={`rounded-lg px-4 py-3.5 cursor-pointer transition-colors ${
                     selected
-                      ? 'border border-[#1d9e75] bg-[#f0f9f4]'
+                      ? 'border border-[#2d5c3a] bg-[#e4ede7]'
                       : 'border-[0.5px] border-[#e5e7eb] bg-surf hover:bg-[#fafafa]'
                   }`}
                 >
@@ -406,14 +406,14 @@ function GenerationWizard({ mode, product, onClose, onGenerate }: {
                       <span className="text-[13px] font-medium text-ink">{a.name}</span>
                       <span
                         className={`text-[9px] font-medium tracking-[0.03em] uppercase px-[7px] py-0.5 rounded-lg ${
-                          a.state === 'GAP' ? 'bg-[#fcebeb] text-[#791f1f]' : 'bg-[#eaf3de] text-[#27500a]'
+                          a.state === 'GAP' ? 'bg-[#fcebeb] text-[#791f1f]' : 'bg-[#eaf3de] text-[#2d5c3a]'
                         }`}
                       >
                         {a.state}
                       </span>
                     </div>
                     {a.recommended && (
-                      <span className="text-[9px] font-medium tracking-[0.03em] uppercase bg-[#1d9e75] text-white px-2 py-0.5 rounded-[10px]">
+                      <span className="text-[9px] font-medium tracking-[0.03em] uppercase bg-[#2d5c3a] text-white px-2 py-0.5 rounded-[10px]">
                         RECOMMENDED
                       </span>
                     )}
@@ -421,7 +421,7 @@ function GenerationWizard({ mode, product, onClose, onGenerate }: {
                   <div className="text-[12px] italic text-ink mb-2">"{a.hook}"</div>
                   <div className="flex items-center gap-1.5">
                     {a.highConfidence ? (
-                      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#1d9e75" strokeWidth="1.5">
+                      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#2d5c3a" strokeWidth="1.5">
                         <circle cx="5.5" cy="5.5" r="4.5" />
                         <path d="M3.5 5.5l1.5 1.5 3-3" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
@@ -440,7 +440,7 @@ function GenerationWizard({ mode, product, onClose, onGenerate }: {
               <div
                 className={`rounded-lg px-4 py-3 transition-colors ${
                   customValid
-                    ? 'border border-[#1d9e75] bg-[#f0f9f4]'
+                    ? 'border border-[#2d5c3a] bg-[#e4ede7]'
                     : 'border-[0.5px] border-[#e5e7eb] bg-surf'
                 }`}
               >
@@ -474,12 +474,12 @@ function GenerationWizard({ mode, product, onClose, onGenerate }: {
                   onClick={() => setSelectedFormatIdx(i)}
                   className={`rounded-lg px-4 py-3 text-center cursor-pointer relative ${
                     selected
-                      ? 'border border-[#1d9e75] bg-[#f0f9f4]'
+                      ? 'border border-[#2d5c3a] bg-[#e4ede7]'
                       : 'border-[0.5px] border-[#e5e7eb] bg-surf'
                   }`}
                 >
                   {selected && (
-                    <span className="absolute top-1.5 right-1.5 text-[8px] font-medium tracking-[0.03em] uppercase bg-[#1d9e75] text-white px-1.5 py-px rounded-lg">
+                    <span className="absolute top-1.5 right-1.5 text-[8px] font-medium tracking-[0.03em] uppercase bg-[#2d5c3a] text-white px-1.5 py-px rounded-lg">
                       REC
                     </span>
                   )}
@@ -538,7 +538,7 @@ function GenerationWizard({ mode, product, onClose, onGenerate }: {
               onGenerate({ angleName, format: format.label, variantCount })
             }}
             disabled={!canGenerate || !customValid}
-            className="text-[13px] font-medium text-white bg-[#1d9e75] border-0 rounded-md px-4 py-2 cursor-pointer hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-[13px] font-medium text-white bg-[#2d5c3a] border-0 rounded-md px-4 py-2 cursor-pointer hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {buttonText}
           </button>

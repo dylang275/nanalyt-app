@@ -327,7 +327,7 @@ function TopMovingAngles() {
             </div>
             <span
               className="text-[12px] font-medium shrink-0"
-              style={{ color: positive ? '#27500a' : '#791f1f' }}
+              style={{ color: positive ? '#2d5c3a' : '#791f1f' }}
             >
               {positive ? '▲' : '▼'} {positive ? '+' : ''}{a.delta}pts
             </span>
@@ -1281,7 +1281,7 @@ function AngleDetailView({
             <div className="text-[24px] font-medium text-ink leading-[1.15]">{angle.name}</div>
             <span
               className={`text-[11px] font-medium tracking-[0.03em] uppercase px-2.5 py-[3px] rounded-xl mt-1 ${
-                isMissing ? 'bg-[#fcebeb] text-[#791f1f]' : 'bg-[#f0f9f4] text-[#27500a]'
+                isMissing ? 'bg-[#fcebeb] text-[#791f1f]' : 'bg-[#e4ede7] text-[#2d5c3a]'
               }`}
             >
               {isMissing ? 'Missing from your ads' : 'You also run this'}
@@ -1295,7 +1295,7 @@ function AngleDetailView({
           <button className="bg-surf border-[0.5px] border-[#d1d5db] rounded-md px-3.5 py-1.5 text-[12px] text-ink cursor-pointer hover:bg-[#f7f8fa]">
             Generate PDP →
           </button>
-          <button className="bg-[#1d9e75] text-white border-0 rounded-md px-3.5 py-1.5 text-[12px] font-medium cursor-pointer hover:opacity-90">
+          <button className="bg-[#2d5c3a] text-white border-0 rounded-md px-3.5 py-1.5 text-[12px] font-medium cursor-pointer hover:opacity-90">
             Generate creative →
           </button>
         </div>
@@ -1322,7 +1322,7 @@ function AngleDetailView({
           <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink mb-2">30D MOMENTUM</div>
           <div
             className="text-[26px] font-medium leading-none mb-1"
-            style={{ color: angle.trendPos ? '#1d9e75' : '#dc2626' }}
+            style={{ color: angle.trendPos ? '#2d5c3a' : '#dc2626' }}
           >
             {angle.trendPos ? '▲' : '▼'} {angle.trend}
           </div>
@@ -1354,7 +1354,7 @@ function AngleDetailView({
       <div className={`${CARD_CLS} px-6 py-5 mb-[22px]`}>
         <div className="flex items-center justify-between mb-3.5">
           <div className="text-[11px] font-medium tracking-[0.05em] uppercase text-ink">NANALYT'S READ</div>
-          <span className="text-[11px] font-medium text-[#27500a] bg-[#f0f9f4] px-2.5 py-[3px] rounded-xl">Recommended to run</span>
+          <span className="text-[11px] font-medium text-[#2d5c3a] bg-[#e4ede7] px-2.5 py-[3px] rounded-xl">Recommended to run</span>
         </div>
         <div>
           <div className="grid grid-cols-[180px_1fr] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">

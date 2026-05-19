@@ -49,7 +49,7 @@ function MarketSignals() {
       <SignalCard label="FINDINGS · 7D">
         <div className="text-[26px] font-medium text-ink leading-none mb-1.5">14</div>
         <div className="text-[11px]">
-          <span className="text-[#1d9e75] font-medium">↑ +5</span>
+          <span className="text-[#2d5c3a] font-medium">↑ +5</span>
           <span className="text-ink"> vs prior</span>
         </div>
       </SignalCard>
@@ -59,7 +59,7 @@ function MarketSignals() {
       <SignalCard label="MER">
         <div className="text-[26px] font-medium text-ink leading-none mb-1.5">3.42</div>
         <div className="text-[11px]">
-          <span className="text-[#1d9e75] font-medium">↑ +0.18</span>
+          <span className="text-[#2d5c3a] font-medium">↑ +0.18</span>
           <span className="text-ink"> vs prior</span>
         </div>
       </SignalCard>
@@ -75,7 +75,7 @@ function MarketSignals() {
           />
           <div className="min-w-0 flex-1">
             <div className="text-[13px] font-medium text-ink truncate">Mag Glycinate</div>
-            <div className="text-[10px] font-medium text-[#1d9e75]">+23% rev</div>
+            <div className="text-[10px] font-medium text-[#2d5c3a]">+23% rev</div>
           </div>
         </div>
       </SignalCard>
