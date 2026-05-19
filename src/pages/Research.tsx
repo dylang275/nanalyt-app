@@ -167,12 +167,6 @@ function Research() {
     }, 180)
   }
 
-  const resetSearch = () => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    setSearching(false)
-    setSearchState(null)
-  }
-
   const minutes = searchState ? Math.floor(searchState.elapsed / 5) : 0
   const seconds = searchState ? String((searchState.elapsed % 5) * 12).padStart(2, '0') : '00'
 
@@ -341,22 +335,13 @@ function Research() {
             </div>
 
             {searchState.done && (
-              <div className="flex items-center justify-between pt-3.5 border-t-[0.5px] border-line">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle />
-                  <span className="text-[12px] font-medium text-brand">Research complete</span>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={resetSearch}
-                    className="text-[12px] text-ink bg-transparent border-[0.5px] border-line rounded-md px-3 py-[5px] cursor-pointer hover:bg-line-soft"
-                  >
-                    New search
-                  </button>
-                  <button className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-4 py-1.5 cursor-pointer hover:opacity-90">
-                    View analysis →
-                  </button>
-                </div>
+              <div className="flex justify-end pt-3.5">
+                <button
+                  onClick={() => console.log('Navigate to research analysis for:', searchState.query)}
+                  className="text-[13px] font-medium text-white bg-[#1d9e75] border-0 rounded-md px-4 py-2 cursor-pointer hover:opacity-90"
+                >
+                  View analysis →
+                </button>
               </div>
             )}
           </div>
@@ -380,43 +365,49 @@ function Research() {
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="text-[14px] font-medium text-ink">Recent research</div>
-          <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-1 bg-surf outline-none cursor-pointer">
-            <option>All types</option>
-            <option>Category</option>
-            <option>Product</option>
-            <option>URL</option>
-          </select>
-        </div>
-        <div className="grid grid-cols-[80px_minmax(0,1fr)_80px_auto_32px] gap-3 pb-2 border-b-[0.5px] border-line">
-          {['Type', 'Query', '', '', ''].map((h, i) => (
-            <div key={i} className="text-[9px] font-semibold tracking-[0.07em] uppercase text-ink">
-              {h}
+        <div className="text-[14px] font-medium text-ink mb-3.5">Recent research</div>
+        <div className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-[10px]">
+          <div className="flex justify-end px-[18px] py-3 border-b-[0.5px] border-[#f0f1f3]">
+            <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-1 bg-surf outline-none cursor-pointer">
+              <option>All types</option>
+              <option>Category</option>
+              <option>Product</option>
+              <option>URL</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-[120px_minmax(0,1fr)_90px_200px] gap-3 px-[18px] py-2.5 border-b-[0.5px] border-[#f0f1f3]">
+            {['TYPE', 'QUERY', '', ''].map((h, i) => (
+              <div key={i} className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink">
+                {h}
+              </div>
+            ))}
+          </div>
+          {RECENT.map((r, i) => (
+            <div
+              key={i}
+              className={`grid grid-cols-[120px_minmax(0,1fr)_90px_200px] gap-3 px-[18px] py-3.5 items-center ${
+                i < RECENT.length - 1 ? 'border-b-[0.5px] border-[#f0f1f3]' : ''
+              }`}
+            >
+              <span className="text-[12px] font-medium tracking-[0.025em] uppercase text-ink">{r.type}</span>
+              <div className="min-w-0">
+                <div className="text-[13px] font-medium text-ink truncate">{r.q}</div>
+                <div className="text-[11px] text-ink mt-0.5">
+                  <strong className="font-medium">{r.found}</strong> products found · <strong className="font-medium">{r.pipeline} in pipeline</strong>
+                </div>
+              </div>
+              <span className="text-[11px] text-ink whitespace-nowrap">{r.time}</span>
+              <div className="flex items-center justify-end gap-3">
+                <button className="text-[12px] font-medium text-white bg-[#1d9e75] border-0 rounded-md px-3 py-[5px] cursor-pointer whitespace-nowrap hover:opacity-90">
+                  + Pipeline ({r.pipeline})
+                </button>
+                <span className="text-ink cursor-pointer flex hover:opacity-70">
+                  <XIcon />
+                </span>
+              </div>
             </div>
           ))}
         </div>
-        {RECENT.map((r, i) => (
-          <div
-            key={i}
-            className="grid grid-cols-[80px_minmax(0,1fr)_80px_auto_32px] gap-3 py-3 border-b-[0.5px] border-line-soft items-center"
-          >
-            <span className="text-[10px] font-semibold tracking-[0.04em] uppercase text-ink">{r.type}</span>
-            <div className="min-w-0">
-              <div className="text-[13px] font-medium text-ink truncate">{r.q}</div>
-              <div className="text-[11px] text-ink mt-0.5">
-                <strong className="font-medium">{r.found}</strong> products found · <strong className="font-medium">{r.pipeline} in pipeline</strong>
-              </div>
-            </div>
-            <span className="text-[10px] text-ink font-mono whitespace-nowrap">{r.time}</span>
-            <button className="text-[11px] font-medium text-white bg-brand border-0 rounded-md px-3 py-1 cursor-pointer whitespace-nowrap hover:opacity-90">
-              + Pipeline ({r.pipeline})
-            </button>
-            <span className="text-ink cursor-pointer flex justify-center">
-              <XIcon />
-            </span>
-          </div>
-        ))}
       </div>
     </div>
   )
