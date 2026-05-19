@@ -338,7 +338,7 @@ function Research() {
               <div className="flex justify-end pt-3.5">
                 <button
                   onClick={() => console.log('Navigate to research analysis for:', searchState.query)}
-                  className="text-[13px] font-medium text-white bg-[#1d9e75] border-0 rounded-md px-4 py-2 cursor-pointer hover:opacity-90"
+                  className="text-[13px] font-medium text-white bg-brand border-0 rounded-md px-4 py-2 cursor-pointer hover:opacity-90"
                 >
                   View analysis →
                 </button>
@@ -367,20 +367,18 @@ function Research() {
       <div>
         <div className="text-[14px] font-medium text-ink mb-3.5">Recent research</div>
         <div className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-[10px]">
-          <div className="flex justify-end px-[18px] py-3 border-b-[0.5px] border-[#f0f1f3]">
-            <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-1 bg-surf outline-none cursor-pointer">
-              <option>All types</option>
-              <option>Category</option>
-              <option>Product</option>
-              <option>URL</option>
-            </select>
-          </div>
-          <div className="grid grid-cols-[120px_minmax(0,1fr)_90px_200px] gap-3 px-[18px] py-2.5 border-b-[0.5px] border-[#f0f1f3]">
-            {['TYPE', 'QUERY', '', ''].map((h, i) => (
-              <div key={i} className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink">
-                {h}
-              </div>
-            ))}
+          <div className="grid grid-cols-[120px_minmax(0,1fr)_90px_200px] gap-3 px-[18px] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
+            <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink">TYPE</div>
+            <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink">QUERY</div>
+            <div />
+            <div className="flex justify-end">
+              <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-1 bg-surf outline-none cursor-pointer">
+                <option>All types</option>
+                <option>Category</option>
+                <option>Product</option>
+                <option>URL</option>
+              </select>
+            </div>
           </div>
           {RECENT.map((r, i) => (
             <div
@@ -398,7 +396,7 @@ function Research() {
               </div>
               <span className="text-[11px] text-ink whitespace-nowrap">{r.time}</span>
               <div className="flex items-center justify-end gap-3">
-                <button className="text-[12px] font-medium text-white bg-[#1d9e75] border-0 rounded-md px-3 py-[5px] cursor-pointer whitespace-nowrap hover:opacity-90">
+                <button className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3 py-[5px] cursor-pointer whitespace-nowrap hover:opacity-90">
                   + Pipeline ({r.pipeline})
                 </button>
                 <span className="text-ink cursor-pointer flex hover:opacity-70">
