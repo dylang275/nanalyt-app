@@ -144,17 +144,15 @@ type ProductPick = {
   angles: number
 }
 
-const OLLY_BRAND_IMG = '/uploads/Screenshot 2026-05-11 at 10.35.38 PM.png'
-
 const COMPETING_PRODUCTS: ProductPick[] = [
-  { id: 'goodbye-stress', name: 'Goodbye Stress Gummies', img: OLLY_BRAND_IMG, imgBg: '#5fb8c4', competesWith: 'Magnesium Glycinate Complex', activeAds: 19, spendPct: '42%', angles: 4 },
-  { id: 'sleep-gummies', name: 'Sleep Gummies', img: OLLY_BRAND_IMG, imgBg: '#7c5cbf', competesWith: 'ZzzPlex Sleep Support', activeAds: 14, spendPct: '31%', angles: 3 },
+  { id: 'goodbye-stress', name: 'Goodbye Stress Gummies', img: '/uploads/Screenshot 2026-05-13 at 10.48.22 AM.png', imgBg: '#5fb8c4', competesWith: 'Magnesium Glycinate Complex', activeAds: 19, spendPct: '42%', angles: 4 },
+  { id: 'sleep-gummies', name: 'Sleep Gummies', img: '/uploads/Screenshot 2026-05-13 at 10.48.48 AM.png', imgBg: '#7c5cbf', competesWith: 'ZzzPlex Sleep Support', activeAds: 14, spendPct: '31%', angles: 3 },
 ]
 
 const TOP_PRODUCTS: ProductPick[] = [
-  { id: 'pms-care', name: 'PMS Care Gummies', img: OLLY_BRAND_IMG, imgBg: '#d4547a', activeAds: 9, spendPct: '16%', angles: 2 },
-  { id: 'probiotic', name: 'Big 10 Probiotic', img: OLLY_BRAND_IMG, imgBg: '#6ab87a', activeAds: 5, spendPct: '7%', angles: 2 },
-  { id: 'energy-focus', name: 'Extra Strength Daily Energy', img: OLLY_BRAND_IMG, imgBg: '#e8b84b', activeAds: 4, spendPct: '4%', angles: 1 },
+  { id: 'pms-care', name: 'PMS Care Gummies', img: '/uploads/Screenshot 2026-05-13 at 10.49.59 AM.png', imgBg: '#d4547a', activeAds: 9, spendPct: '16%', angles: 2 },
+  { id: 'probiotic', name: 'Big 10 Probiotic', img: '/uploads/Screenshot 2026-05-13 at 10.50.43 AM.png', imgBg: '#6ab87a', activeAds: 5, spendPct: '7%', angles: 2 },
+  { id: 'energy-focus', name: 'Extra Strength Daily Energy', img: '/uploads/Screenshot 2026-05-13 at 10.51.27 AM.png', imgBg: '#e8b84b', activeAds: 4, spendPct: '4%', angles: 1 },
 ]
 
 // ─── Atoms ───────────────────────────────────────────────────────────────────
@@ -612,7 +610,7 @@ function ComparisonTab({ comp }: { comp: Competitor }) {
 
       <div className="grid grid-cols-2 gap-3">
         {[
-          { label: comp.name.toUpperCase(), name: compProduct, detail: '$14 · 60 gummies · 3mg melatonin', img: comp.heroImg, bg: '#7c5cbf' },
+          { label: comp.name.toUpperCase(), name: compProduct, detail: '$14 · 60 gummies · 3mg melatonin', img: '/uploads/Screenshot 2026-05-13 at 10.48.48 AM.png', bg: '#7c5cbf' },
           { label: 'YOUR PRODUCT', name: yourProduct, detail: '$28 · 60 capsules · 400mg magnesium', img: '/uploads/IMG_3474.jpg', bg: '#2563eb' },
         ].map((p, i) => (
           <div key={i} className="bg-surf rounded-lg shadow-lift px-4 py-3.5 flex items-center gap-3">
