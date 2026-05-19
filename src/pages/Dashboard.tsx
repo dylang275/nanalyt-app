@@ -40,7 +40,7 @@ function SignalCard({ label, children }: { label: string; children: ReactNode })
 }
 
 function SignalDivider() {
-  return <div className="w-[0.5px] h-9 bg-[#e5e7eb] self-center shrink-0" />
+  return <div className="w-px h-9 bg-[#6b7280] self-center shrink-0" />
 }
 
 function MarketSignals() {
@@ -438,35 +438,37 @@ function TopAds() {
   return (
     <div className="grid grid-cols-3 gap-3 max-w-[720px]">
       {TOP_ADS.map((ad, i) => (
-        <div key={i} className="flex flex-col">
-          <div className="relative w-full pb-[100%] rounded-[10px] overflow-hidden shrink-0">
+        <div key={i} className="bg-surf rounded-[10px] shadow-lift overflow-hidden flex flex-col">
+          <div className="relative w-full pb-[100%] shrink-0">
             <img src={ad.img} alt="" className="absolute inset-0 w-full h-full object-cover block" />
             <span className="absolute top-2.5 left-2.5 bg-[rgba(15,30,60,0.88)] text-white text-[10px] font-medium tracking-[0.03em] uppercase px-[9px] py-[3px] rounded-[20px]">
               {ad.format}
             </span>
           </div>
-          <div className="text-[13px] font-medium text-ink mt-2.5 mb-2 leading-[1.3]">{ad.product}</div>
-          <div className="flex items-end justify-between mb-2">
-            <div>
-              <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">ROAS</div>
-              <div className="text-base font-medium text-ink">{ad.roas}</div>
+          <div className="p-3">
+            <div className="text-[13px] font-medium text-ink mb-2 leading-[1.3]">{ad.product}</div>
+            <div className="flex items-end justify-between mb-2">
+              <div>
+                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">ROAS</div>
+                <div className="text-base font-medium text-ink">{ad.roas}</div>
+              </div>
+              <span
+                className={`text-[11px] font-medium px-[7px] py-[2px] rounded-[20px] mb-0.5 ${
+                  ad.pos ? 'bg-brand-bg text-brand' : 'bg-danger-bg text-danger'
+                }`}
+              >
+                {ad.delta}
+              </span>
             </div>
-            <span
-              className={`text-[11px] font-medium px-[7px] py-[2px] rounded-[20px] mb-0.5 ${
-                ad.pos ? 'bg-brand-bg text-brand' : 'bg-danger-bg text-danger'
-              }`}
-            >
-              {ad.delta}
-            </span>
-          </div>
-          <div className="flex gap-4">
-            <div>
-              <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">CPA</div>
-              <div className={`text-[13px] ${ad.cpaRed ? 'text-[#993556]' : 'text-ink'}`}>{ad.cpa}</div>
-            </div>
-            <div>
-              <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">SPEND</div>
-              <div className="text-[13px] text-ink">{ad.spend}</div>
+            <div className="flex gap-4">
+              <div>
+                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">CPA</div>
+                <div className={`text-[13px] ${ad.cpaRed ? 'text-[#993556]' : 'text-ink'}`}>{ad.cpa}</div>
+              </div>
+              <div>
+                <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-dim mb-0.5">SPEND</div>
+                <div className="text-[13px] text-ink">{ad.spend}</div>
+              </div>
             </div>
           </div>
         </div>
