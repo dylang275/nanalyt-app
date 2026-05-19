@@ -154,7 +154,7 @@ function ResearchAnalysis() {
 
   return (
     <div className="font-sans">
-      <div className="px-7 pt-4 border-b-[0.5px] border-line bg-surf">
+      <div className="px-7 pt-4">
         <div className="text-[11px] text-ink mb-3 flex items-center gap-1">
           <button
             onClick={() => navigate('/research')}
@@ -248,7 +248,7 @@ function ResearchAnalysis() {
           </div>
         </div>
 
-        <div className={`flex items-center justify-between px-4 py-3 border-[0.5px] border-[#e2deda] rounded-lg bg-surf-2`}>
+        <div className={`flex items-center justify-between px-4 py-3 border-[0.5px] border-[#e2deda] rounded-lg bg-surf`}>
           <div className="text-[12px] text-ink">
             <strong className="font-semibold">Next step:</strong> Add to pipeline and generate a campaign package to start validation testing
           </div>
