@@ -123,12 +123,21 @@ const COMPETITORS: Competitor[] = [
 ]
 
 type ShareSeries = { name: string; shade: string; values: number[]; lastPeriod: string }
+const TREND_GREEN = '#2d5c3a'
 const SHARE_SERIES: ShareSeries[] = [
-  { name: 'Olly', shade: '#1a3d26', values: [25, 28, 31, 33, 30], lastPeriod: '25%' },
-  { name: 'Beam', shade: '#2d5c3a', values: [22, 21, 22, 23, 22], lastPeriod: '22%' },
-  { name: 'Moon Juice', shade: '#3e7a4f', values: [20, 20, 19, 18, 19], lastPeriod: '20%' },
-  { name: 'Ritual', shade: '#5a9e6a', values: [18, 17, 16, 15, 16], lastPeriod: '18%' },
-  { name: 'Pure Enc.', shade: '#85be90', values: [15, 14, 12, 11, 13], lastPeriod: '15%' },
+  { name: 'Olly', shade: TREND_GREEN, values: [25, 26, 28, 29, 30], lastPeriod: '25%' },
+  { name: 'Beam', shade: TREND_GREEN, values: [22, 22, 22, 22, 22], lastPeriod: '22%' },
+  { name: 'Moon Juice', shade: TREND_GREEN, values: [20, 20, 19, 19, 19], lastPeriod: '20%' },
+  { name: 'Ritual', shade: TREND_GREEN, values: [18, 18, 17, 17, 16], lastPeriod: '18%' },
+  { name: 'Pure Enc.', shade: TREND_GREEN, values: [15, 15, 14, 14, 13], lastPeriod: '15%' },
+]
+
+const RECENT_ALERTS = [
+  { dot: '#2d5c3a', title: 'Olly launched 4 new Sleep-Anxiety Crossover ads', sub: 'Pushed share to 33%, highest in 6 months', time: '2h ago' },
+  { dot: '#dc2626', title: 'Moon Juice paused 8 of 14 active ads', sub: 'Possible strategy shift — worth investigating', time: '1d ago' },
+  { dot: '#2d5c3a', title: 'Beam launched first Sleep-Anxiety Crossover ad', sub: 'Validates angle across 3 of your 5 tracked competitors', time: '2d ago' },
+  { dot: '#d97706', title: '3 competitors now running "next-day calm" framing', sub: 'Angle has crossed validation threshold', time: '3d ago' },
+  { dot: '#dc2626', title: "Ritual's share dropped from 18% to 15%", sub: 'Lowest activity in 30 days', time: '4d ago' },
 ]
 
 // ─── Profile-page product data (shared across all competitors for demo) ──────
@@ -220,22 +229,22 @@ function ShareOfActivityChart() {
   }
 
   return (
-    <div className="font-sans mb-10">
+    <div className="font-sans">
       <div className="bg-surf rounded-[10px] px-6 py-5">
         <div className="flex items-center gap-2.5 mb-6">
-          <span className="text-[14px] font-medium text-ink tracking-[-0.01em]">Share of activity</span>
-          <span className="text-[11px] text-mid bg-surf border border-line rounded-[20px] px-2.5 py-[2px] whitespace-nowrap">
+          <span className="text-[14px] font-medium text-ink">Share of activity</span>
+          <span className="text-[11px] font-medium text-mid bg-surf-2 rounded-md px-2.5 py-1 whitespace-nowrap">
             Weekly ad activity
           </span>
-          <span className="text-[11px] text-dim ml-auto">Apr 15 – May 13</span>
+          <span className="text-[11px] text-mid ml-auto">Apr 15 – May 13</span>
         </div>
 
         <div className="grid grid-cols-3 gap-0">
           {SHARE_SERIES.map((s, i) => {
             const last = s.values[s.values.length - 1]
             const showRight = (i + 1) % 3 !== 0 && i < SHARE_SERIES.length - 1
-            const pl = i % 3 !== 0 ? 'pl-6' : ''
-            const pr = showRight ? 'pr-6' : ''
+            const pl = i % 3 !== 0 ? 'pl-5' : ''
+            const pr = showRight ? 'pr-5' : ''
             const pt = i >= 3 ? 'pt-6' : ''
             return (
               <div key={s.name} className={`pb-5 relative ${pl} ${pr} ${pt}`}>
@@ -245,17 +254,17 @@ function ShareOfActivityChart() {
                     {deltaStr(s)}
                   </span>
                 </div>
-                <div className="text-[28px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-0.5">
+                <div className="text-[26px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-0.5">
                   {last}%
                 </div>
-                <div className="text-[11px] text-dim mb-3.5">{s.lastPeriod} last period</div>
+                <div className="text-[11px] text-mid mb-3.5">{s.lastPeriod} last period</div>
                 <div className="relative">
-                  <GridAreaSpark vals={s.values} color={s.shade} h={90} />
-                  {showRight && <div className="absolute top-0 -right-6 w-px h-full bg-line" />}
+                  <GridAreaSpark vals={s.values} color={s.shade} h={80} />
+                  {showRight && <div className="absolute top-0 -right-5 w-px h-full bg-line" />}
                 </div>
                 <div className="flex justify-between mt-1.5">
-                  <span className="text-[10px] text-dim font-mono">Apr 15</span>
-                  <span className="text-[10px] text-dim font-mono">May 13</span>
+                  <span className="text-[10px] text-mid font-mono">Apr 15</span>
+                  <span className="text-[10px] text-mid font-mono">May 13</span>
                 </div>
               </div>
             )
@@ -263,10 +272,52 @@ function ShareOfActivityChart() {
         </div>
       </div>
 
-      <div className="text-[12px] text-mid mt-3.5 leading-[1.6]">
-        <strong className="text-ink font-semibold">Olly's share climbed from 25% → 33%</strong> over the last 4 weeks.{' '}
-        <strong className="text-ink font-semibold">Pure Encapsulations slipped from 15% → 11%</strong>.
+      <div className="text-[12px] text-ink leading-[1.5] mt-3 pl-1">
+        <strong className="font-semibold">Olly's share climbed from 25% → 33%</strong> over the last 4 weeks.{' '}
+        <strong className="font-semibold">Pure Encapsulations slipped from 15% → 11%</strong>.
       </div>
+    </div>
+  )
+}
+
+// ─── Recent alerts panel ─────────────────────────────────────────────────────
+
+function CompetitorsSectionHead({ title, link }: {
+  title: string
+  link?: { label: string; fn: () => void }
+}) {
+  return (
+    <div className="flex items-center gap-2 mb-3 font-sans">
+      <span className="text-[14px] font-semibold text-ink whitespace-nowrap">{title}</span>
+      {link && (
+        <span
+          onClick={link.fn}
+          className="text-[11px] text-dim cursor-pointer flex items-center gap-1 whitespace-nowrap ml-auto hover:text-ink"
+        >
+          {link.label}
+          <ArrowR />
+        </span>
+      )}
+    </div>
+  )
+}
+
+function RecentAlerts() {
+  return (
+    <div className="flex flex-col gap-2.5">
+      {RECENT_ALERTS.map((a, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-2.5 px-[14px] py-[9px] bg-surf rounded-[10px] cursor-pointer shadow-lift hover:bg-black/[0.025]"
+        >
+          <span className="w-[5px] h-[5px] rounded-full block shrink-0" style={{ background: a.dot }} />
+          <div className="flex-1 min-w-0">
+            <div className="text-[12px] font-medium text-ink">{a.title}</div>
+            <div className="text-[11px] text-dim">{a.sub}</div>
+          </div>
+          <span className="text-[10px] text-dim font-mono whitespace-nowrap shrink-0">{a.time}</span>
+        </div>
+      ))}
     </div>
   )
 }
@@ -389,16 +440,22 @@ function WatchlistView({ onOpen }: { onOpen: (c: Competitor) => void }) {
         <div className="text-[20px] font-medium text-ink tracking-[-0.025em]">Competitors</div>
       </div>
 
-      <ShareOfActivityChart />
+      <div className="grid grid-cols-[1.8fr_1fr] gap-[18px] mb-8 items-start">
+        <ShareOfActivityChart />
+        <div>
+          <CompetitorsSectionHead title="Recent alerts" link={{ label: 'View all', fn: () => {} }} />
+          <RecentAlerts />
+        </div>
+      </div>
 
-      <div className="flex items-center justify-between mb-3.5 mt-2">
+      <div className="flex items-center justify-between mb-3.5">
         <span className="text-[14px] font-semibold text-ink">Tracked competitors</span>
         <button className="bg-transparent text-brand border border-brand-dim rounded-[20px] px-3 py-1 text-[11px] font-medium cursor-pointer hover:bg-brand-bg">
           + Add competitor
         </button>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 items-stretch">
+      <div className="grid grid-cols-3 gap-2 items-stretch">
         {COMPETITORS.map(comp => (
           <CompetitorCard key={comp.id} comp={comp} onOpen={onOpen} />
         ))}
