@@ -38,7 +38,7 @@ type ProductDetail = {
   activeVerdict?: ActiveVerdict
   pipelineVerdict?: PipelineVerdict
   vsAvg?: string
-  kpis?: Kpi[]
+  kpis: Kpi[]
   bars: number[]
   roasLine: number[]
   creatives: CreativeRow[]
@@ -49,19 +49,23 @@ type ProductDetail = {
 const DATES = ['Apr 19', 'Apr 26', 'May 3', 'May 10', 'May 17']
 const DATE_RANGE = 'Apr 19 – May 19'
 
-// Active table (existing layout — unchanged)
-const GRID_ADS_ACTIVE = 'grid grid-cols-[80px_1fr_80px_100px_80px_80px_80px_110px_60px] items-center px-[22px] py-3'
-
-// Pipeline table grids (per reference HTML)
-const GRID_PDP_PIPE = 'grid grid-cols-[68px_1fr_80px_80px_116px_42px] items-center pl-4 pr-6 gap-0'
-const GRID_ADS_PIPE = 'grid grid-cols-[68px_1fr_68px_72px_68px_64px_60px_116px_42px] items-center pl-4 pr-6 gap-0'
+const GRID_PDP = 'grid grid-cols-[68px_1fr_80px_80px_116px_42px] items-center pl-4 pr-6 gap-0'
+const GRID_ADS = 'grid grid-cols-[68px_1fr_68px_72px_68px_64px_60px_116px_42px] items-center pl-4 pr-6 gap-0'
 
 // ─── Demo data ───────────────────────────────────────────────────────────────
 
 const MAG_CREATIVES: CreativeRow[] = [
   {
+    id: 'm0', format: 'PDP',
+    bg: 'linear-gradient(140deg, #F0F4F8, #B8C7D6)',
+    name: 'Next-day calm landing page',
+    angle: 'v1 · Sleep-Anxiety Crossover · PDP',
+    daysLive: '32d', spend: '—', roas: '—', cvr: '2.4%', ctr: '—',
+    verdict: 'scaling',
+  },
+  {
     id: 'm1', format: 'UGC',
-    bg: 'linear-gradient(135deg, #E5C9D5, #B96F8E)',
+    bg: 'linear-gradient(140deg, #E5C9D5, #B96F8E)',
     name: "Couldn't shut my brain off",
     angle: 'Sleep-Anxiety Crossover · UGC',
     daysLive: '22d', spend: '$6.2k', roas: '5.4×', cvr: '3.2%', ctr: '1.8%',
@@ -69,7 +73,7 @@ const MAG_CREATIVES: CreativeRow[] = [
   },
   {
     id: 'm2', format: 'STATIC',
-    bg: 'linear-gradient(135deg, #E5E2C9, #B9B26F)',
+    bg: 'linear-gradient(140deg, #E5E2C9, #B9B26F)',
     name: 'Lifestyle composition',
     angle: 'Lifestyle & Wellness · Static',
     daysLive: '18d', spend: '$3.4k', roas: '3.6×', cvr: '2.4%', ctr: '1.2%',
@@ -77,23 +81,14 @@ const MAG_CREATIVES: CreativeRow[] = [
   },
   {
     id: 'm3', format: 'VIDEO',
-    bg: 'linear-gradient(135deg, #D5C9E5, #8E6FB9)',
+    bg: 'linear-gradient(140deg, #D5C9E5, #8E6FB9)',
     name: 'Tried everything for sleep',
     angle: 'Sleep-Anxiety Crossover · Video',
     daysLive: '14d', spend: '$2.1k', roas: '2.8×', cvr: '1.9%', ctr: '0.9%',
     verdict: 'watch',
   },
-  {
-    id: 'm4', format: 'PDP',
-    bg: 'linear-gradient(135deg, #F0F4F8, #D9E2EC)',
-    name: 'Next-day calm landing page',
-    angle: 'v1 · Sleep-Anxiety Crossover · PDP',
-    daysLive: '32d', spend: '—', roas: '—', cvr: '2.4%', ctr: '—',
-    verdict: 'scaling',
-  },
 ]
 
-// Gummies — copy + gradients + chart data per reference HTML
 const GUMMIES_CREATIVES: CreativeRow[] = [
   {
     id: 'g0', format: 'PDP',
@@ -149,6 +144,12 @@ const PRODUCTS: ProductDetail[] = [
     subline: 'In market · 1 PDP · 3 ads · last 30 days',
     spend: '$12.4k', roas: '4.1×', cvr: '2.8%',
     activeVerdict: 'performing',
+    kpis: [
+      { label: 'Impressions', value: '520k', delta: '+14%', deltaSign: 'pos' },
+      { label: 'CTR', value: '1.6%', delta: '+0.3', deltaSign: 'pos' },
+      { label: 'ATCs', value: '1,520', delta: '+12%', deltaSign: 'pos' },
+      { label: 'CPA', value: '$16.40', delta: '−$1.40', deltaSign: 'pos' },
+    ],
     bars: [32, 38, 45, 52, 48, 58, 64, 60, 72, 78, 85, 80, 92, 98, 105, 112, 108, 118, 124, 130, 128, 138],
     roasLine: [3.0, 2.9, 3.1, 3.2, 3.3, 3.4, 3.5, 3.5, 3.7, 3.8, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.7, 4.9, 5.0, 5.2, 5.4, 5.5],
     creatives: MAG_CREATIVES,
@@ -161,12 +162,18 @@ const PRODUCTS: ProductDetail[] = [
     subline: 'In market · 1 PDP · 2 ads · last 30 days',
     spend: '$8.6k', roas: '3.4×', cvr: '2.1%',
     activeVerdict: 'stable',
+    kpis: [
+      { label: 'Impressions', value: '348k', delta: '+2%', deltaSign: 'pos' },
+      { label: 'CTR', value: '1.1%', delta: '+0.1', deltaSign: 'pos' },
+      { label: 'ATCs', value: '720', delta: '+1%', deltaSign: 'pos' },
+      { label: 'CPA', value: '$19.20', delta: '+$0.30', deltaSign: 'neg' },
+    ],
     bars: [55, 58, 62, 60, 65, 68, 72, 75, 78, 76, 82, 80, 85, 88, 84, 90, 92, 89, 94, 96, 92, 98],
     roasLine: [3.2, 3.1, 3.3, 3.4, 3.5, 3.4, 3.5, 3.3, 3.4, 3.5, 3.6, 3.5, 3.4, 3.5, 3.4, 3.5, 3.4, 3.5, 3.4, 3.4, 3.5, 3.4],
     creatives: [
-      { id: 'z1', format: 'STATIC', bg: 'linear-gradient(135deg, #DBEAFE, #1E3A8A)', name: 'Restful nights, sharper mornings', angle: 'Sleep quality · Static', daysLive: '21d', spend: '$5.1k', roas: '3.6×', cvr: '2.3%', ctr: '1.4%', verdict: 'stable' },
-      { id: 'z2', format: 'UGC', bg: 'linear-gradient(135deg, #BFDBFE, #3B82F6)', name: 'Creator review walkthrough', angle: 'Sleep quality · UGC', daysLive: '16d', spend: '$3.5k', roas: '3.2×', cvr: '1.9%', ctr: '1.1%', verdict: 'stable' },
-      { id: 'z3', format: 'PDP', bg: 'linear-gradient(135deg, #E0E7FF, #A5B4FC)', name: 'Sleep quality landing page', angle: 'v1 · Sleep quality · PDP', daysLive: '28d', spend: '—', roas: '—', cvr: '2.1%', ctr: '—', verdict: 'stable' },
+      { id: 'z0', format: 'PDP', bg: 'linear-gradient(140deg, #E0E7FF, #8B9DCC)', name: 'Sleep quality landing page', angle: 'v1 · Sleep quality · PDP', daysLive: '28d', spend: '—', roas: '—', cvr: '2.1%', ctr: '—', verdict: 'stable' },
+      { id: 'z1', format: 'STATIC', bg: 'linear-gradient(140deg, #DBEAFE, #1E3A8A)', name: 'Restful nights, sharper mornings', angle: 'Sleep quality · Static', daysLive: '21d', spend: '$5.1k', roas: '3.6×', cvr: '2.3%', ctr: '1.4%', verdict: 'stable' },
+      { id: 'z2', format: 'UGC', bg: 'linear-gradient(140deg, #BFDBFE, #3B82F6)', name: 'Creator review walkthrough', angle: 'Sleep quality · UGC', daysLive: '16d', spend: '$3.5k', roas: '3.2×', cvr: '1.9%', ctr: '1.1%', verdict: 'stable' },
     ],
   },
   {
@@ -177,10 +184,16 @@ const PRODUCTS: ProductDetail[] = [
     subline: 'In market · No PDP · 1 ad · last 30 days',
     spend: '$3.6k', roas: '2.1×', cvr: '1.4%',
     activeVerdict: 'watch',
+    kpis: [
+      { label: 'Impressions', value: '142k', delta: '-6%', deltaSign: 'neg' },
+      { label: 'CTR', value: '0.8%', delta: '-0.2', deltaSign: 'neg' },
+      { label: 'ATCs', value: '248', delta: '-10%', deltaSign: 'neg' },
+      { label: 'CPA', value: '$28.40', delta: '+$3.80', deltaSign: 'neg' },
+    ],
     bars: [42, 46, 48, 52, 50, 54, 56, 52, 58, 54, 56, 50, 48, 52, 54, 50, 48, 52, 50, 46, 48, 44],
     roasLine: [2.8, 2.7, 2.6, 2.7, 2.6, 2.5, 2.4, 2.5, 2.4, 2.3, 2.4, 2.3, 2.2, 2.3, 2.2, 2.1, 2.2, 2.1, 2.0, 2.1, 2.0, 2.1],
     creatives: [
-      { id: 'a1', format: 'UGC', bg: 'linear-gradient(135deg, #FDE68A, #D97706)', name: 'Stress-sleep angle test', angle: 'Stress-Sleep · UGC', daysLive: '12d', spend: '$3.6k', roas: '2.1×', cvr: '1.4%', ctr: '0.8%', verdict: 'watch' },
+      { id: 'a1', format: 'UGC', bg: 'linear-gradient(140deg, #FDE68A, #D97706)', name: 'Stress-sleep angle test', angle: 'Stress-Sleep · UGC', daysLive: '12d', spend: '$3.6k', roas: '2.1×', cvr: '1.4%', ctr: '0.8%', verdict: 'watch' },
     ],
   },
   {
@@ -251,105 +264,35 @@ const PRODUCTS: ProductDetail[] = [
   },
 ]
 
-// ─── Active-page pills (existing) ───────────────────────────────────────────
+// ─── Pills ───────────────────────────────────────────────────────────────────
 
-const HEADER_PILL = 'text-[11px] font-medium px-2.5 py-[3px] rounded-[12px] inline-flex items-center gap-1'
-
-function ActiveStatusPill({ v }: { v: ActiveVerdict }) {
-  if (v === 'performing') {
-    return (
-      <span className={`${HEADER_PILL} bg-[#EAF3DE] text-[#27500A]`}>
-        <span className="text-[9px] leading-none">▲</span>Performing
-      </span>
-    )
-  }
-  if (v === 'stable') return <span className={`${HEADER_PILL} bg-[#F0F1F3] text-[#4B5563]`}>Stable</span>
-  return <span className={`${HEADER_PILL} bg-[#FEF3D7] text-[#92400E]`}>Watch</span>
-}
-
-const ROW_PILL_ACTIVE = 'inline-flex items-center gap-1 text-[10px] font-medium px-2 py-[2px] rounded-[10px] tracking-[0.03em]'
-
-function ActiveRowPill({ v }: { v: RowVerdict }) {
-  if (v === 'scaling') {
-    return (
-      <span className={`${ROW_PILL_ACTIVE} bg-[#EAF3DE] text-[#27500A]`}>
-        <span className="text-[8px] leading-none">▲</span>SCALING
-      </span>
-    )
-  }
-  if (v === 'stable') return <span className={`${ROW_PILL_ACTIVE} bg-[#F0F1F3] text-[#4B5563]`}>STABLE</span>
-  if (v === 'watch') return <span className={`${ROW_PILL_ACTIVE} bg-[#FEF3D7] text-[#92400E]`}>WATCH</span>
-  return (
-    <span className={`${ROW_PILL_ACTIVE} bg-[#FCEBEB] text-[#791F1F]`}>
-      <span className="text-[8px] leading-none">▼</span>WIND DOWN
-    </span>
-  )
-}
-
-// ─── Pipeline-page pills (HTML reference) ───────────────────────────────────
+const HEADER_PILL_BASE = 'text-[11px] font-semibold tracking-[0.01em] px-3 py-1 rounded-[20px] whitespace-nowrap'
 
 function ValidatedPill({ v }: { v: PipelineVerdict }) {
-  const base = 'text-[11px] font-semibold tracking-[0.01em] px-3 py-1 rounded-[20px] whitespace-nowrap'
-  if (v === 'validated') return <span className={`${base} bg-brand text-white`}>VALIDATED</span>
-  if (v === 'testing') return <span className={`${base} bg-surf-2 text-ink`}>TESTING</span>
-  if (v === 'wind-down') return <span className={`${base} bg-warn-bg text-warn`}>WIND DOWN</span>
-  return <span className={`${base} bg-danger-bg text-danger`}>KILLED</span>
+  if (v === 'validated') return <span className={`${HEADER_PILL_BASE} bg-brand text-white`}>VALIDATED</span>
+  if (v === 'testing') return <span className={`${HEADER_PILL_BASE} bg-surf-2 text-ink`}>TESTING</span>
+  if (v === 'wind-down') return <span className={`${HEADER_PILL_BASE} bg-warn-bg text-warn`}>WIND DOWN</span>
+  return <span className={`${HEADER_PILL_BASE} bg-danger-bg text-danger`}>KILLED</span>
 }
 
-function PipeRowPill({ v }: { v: RowVerdict }) {
-  const base = 'text-[10px] font-semibold tracking-[0.04em] px-[9px] py-1 rounded-[4px] whitespace-nowrap inline-block'
-  if (v === 'scaling') return <span className={`${base} bg-brand-bg text-brand`}>▲ SCALING</span>
-  if (v === 'stable') return <span className={`${base} bg-surf-2 text-ink`}>STABLE</span>
-  if (v === 'watch') return <span className={`${base} bg-warn-bg text-warn`}>WATCH</span>
-  return <span className={`${base} bg-danger-bg text-danger`}>WIND DOWN</span>
+function ActivePill({ v }: { v: ActiveVerdict }) {
+  if (v === 'performing') return <span className={`${HEADER_PILL_BASE} bg-brand-bg text-brand`}>PERFORMING</span>
+  if (v === 'stable') return <span className={`${HEADER_PILL_BASE} bg-surf-2 text-ink`}>STABLE</span>
+  return <span className={`${HEADER_PILL_BASE} bg-warn-bg text-warn`}>WATCH</span>
 }
 
-// ─── Active-page chart (existing) ───────────────────────────────────────────
+const ROW_PILL_BASE = 'text-[10px] font-semibold tracking-[0.04em] px-[9px] py-1 rounded-[4px] whitespace-nowrap inline-block'
 
-function smoothPathActive(vals: number[]) {
-  const mn = Math.min(...vals)
-  const mx = Math.max(...vals)
-  const rng = mx - mn || 1
-  const W = 800
-  const slotW = W / vals.length
-  const norm = (v: number) => 115 - ((v - mn) / rng) * 75
-  const coords = vals.map((v, i) => ({ x: slotW / 2 + i * slotW, y: norm(v) }))
-  let d = `M ${coords[0].x} ${coords[0].y}`
-  for (let i = 1; i < coords.length; i++) {
-    const p = coords[i - 1]
-    const c = coords[i]
-    d += ` C ${p.x + (c.x - p.x) / 3} ${p.y} ${c.x - (c.x - p.x) / 3} ${c.y} ${c.x} ${c.y}`
-  }
-  return d
+function RowPill({ v }: { v: RowVerdict }) {
+  if (v === 'scaling') return <span className={`${ROW_PILL_BASE} bg-brand-bg text-brand`}>▲ SCALING</span>
+  if (v === 'stable') return <span className={`${ROW_PILL_BASE} bg-surf-2 text-ink`}>STABLE</span>
+  if (v === 'watch') return <span className={`${ROW_PILL_BASE} bg-warn-bg text-warn`}>WATCH</span>
+  return <span className={`${ROW_PILL_BASE} bg-danger-bg text-danger`}>WIND DOWN</span>
 }
 
-function ActiveChart({ bars, roasLine }: { bars: number[]; roasLine: number[] }) {
-  const W = 800
-  const H = 200
-  const barW = 20
-  const slotW = W / bars.length
-  const maxBar = Math.max(...bars)
-  const path = smoothPathActive(roasLine)
+// ─── Chart ───────────────────────────────────────────────────────────────────
 
-  return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block" style={{ height: 180 }}>
-      {[40, 100, 160].map(y => (
-        <line key={y} x1="0" x2={W} y1={y} y2={y} stroke="#F0F1F3" strokeWidth="0.5" strokeDasharray="2 2" />
-      ))}
-      {bars.map((b, i) => {
-        const h = (b / maxBar) * (H * 0.78)
-        const x = i * slotW + (slotW - barW) / 2
-        const y = H - h
-        return <rect key={i} x={x} y={y} width={barW} height={h} rx={2} fill="rgba(29, 120, 73, 0.18)" />
-      })}
-      <path d={path} fill="none" stroke="#1F4D2D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-// ─── Pipeline-page chart (HTML reference: 800x148, 30pts, solid bars) ──────
-
-function PipelineChart({ bars, roasLine }: { bars: number[]; roasLine: number[] }) {
+function PerformanceChart({ bars, roasLine }: { bars: number[]; roasLine: number[] }) {
   const W = 800
   const H = 148
   const slotW = W / bars.length
@@ -388,14 +331,23 @@ function PipelineChart({ bars, roasLine }: { bars: number[]; roasLine: number[] 
   )
 }
 
-// ─── Active-page atoms (existing) ───────────────────────────────────────────
+// ─── Atoms ───────────────────────────────────────────────────────────────────
 
-function HeaderMetric({ label, value }: { label: string; value: string }) {
+const FMT_BG: Record<Format, string> = {
+  UGC: '#2d5c3a',
+  STATIC: '#4a4740',
+  VIDEO: '#6b45a8',
+  PDP: '#1e5faa',
+}
+
+function FmtPill({ fmt }: { fmt: Format }) {
   return (
-    <div className="flex flex-col items-end">
-      <div className="text-[10px] font-medium uppercase tracking-[0.03em] text-ink mb-1">{label}</div>
-      <div className="text-[18px] font-medium text-ink leading-none">{value}</div>
-    </div>
+    <span
+      className="absolute top-[5px] left-[5px] text-[8px] font-bold text-white px-[5px] py-[2px] rounded-[3px] leading-[12px] z-10"
+      style={{ background: FMT_BG[fmt], letterSpacing: '0.05em' }}
+    >
+      {fmt}
+    </span>
   )
 }
 
@@ -411,67 +363,16 @@ function PlayOverlay() {
   )
 }
 
-function ActiveCreativeThumb({ row }: { row: CreativeRow }) {
-  return (
-    <div className="relative w-14 h-14 rounded-md overflow-hidden" style={{ background: row.bg }}>
-      <span
-        className="absolute top-[3px] left-[3px] text-[8px] font-medium text-white px-[5px] py-px rounded-[3px]"
-        style={{ background: 'rgba(15, 30, 60, 0.9)' }}
-      >
-        {row.format}
-      </span>
-      {(row.format === 'UGC' || row.format === 'VIDEO') && <PlayOverlay />}
-    </div>
-  )
-}
-
-function ActiveActionIcons() {
-  return (
-    <div className="flex justify-end gap-1">
-      <span className="text-[14px] text-ink cursor-pointer leading-none">⏸</span>
-      <span className="text-[14px] text-ink cursor-pointer leading-none">⋯</span>
-    </div>
-  )
-}
-
-function Card({ children, className = '', style }: { children: ReactNode; className?: string; style?: React.CSSProperties }) {
-  return (
-    <div className={`bg-white border-[0.5px] border-[#E5E7EB] rounded-[10px] ${className}`} style={style}>
-      {children}
-    </div>
-  )
-}
-
-// ─── Pipeline-page atoms (HTML reference) ───────────────────────────────────
-
-const FMT_BG: Record<Format, string> = {
-  UGC: '#2d5c3a',
-  STATIC: '#4a4740',
-  VIDEO: '#6b45a8',
-  PDP: '#1e5faa',
-}
-
-function PipeFmtPill({ fmt }: { fmt: Format }) {
-  return (
-    <span
-      className="absolute top-[5px] left-[5px] text-[8px] font-bold text-white px-[5px] py-[2px] rounded-[3px] leading-[12px] z-10"
-      style={{ background: FMT_BG[fmt], letterSpacing: '0.05em' }}
-    >
-      {fmt}
-    </span>
-  )
-}
-
-function PipeCreativeThumb({ row }: { row: CreativeRow }) {
+function CreativeThumb({ row }: { row: CreativeRow }) {
   return (
     <div className="relative w-14 h-14 rounded-[7px] overflow-hidden shrink-0" style={{ background: row.bg }}>
-      <PipeFmtPill fmt={row.format} />
+      <FmtPill fmt={row.format} />
       {(row.format === 'UGC' || row.format === 'VIDEO') && <PlayOverlay />}
     </div>
   )
 }
 
-function PipeRowActions() {
+function RowActions() {
   return (
     <div
       className="flex justify-end gap-1.5 text-ink transition-opacity"
@@ -488,140 +389,48 @@ function PipeRowActions() {
   )
 }
 
-function PipeColHdr({ children, creative }: { children: ReactNode; creative?: boolean }) {
+function ColHdr({ children, creative }: { children: ReactNode; creative?: boolean }) {
   return (
-    <div
-      className={`text-[9px] font-medium uppercase tracking-[0.06em] text-ink ${creative ? 'pl-3' : ''}`}
-    >
+    <div className={`text-[9px] font-medium uppercase tracking-[0.06em] text-ink ${creative ? 'pl-3' : ''}`}>
       {children}
     </div>
   )
 }
 
-// ─── Active-page render (unchanged) ─────────────────────────────────────────
+// ─── Product detail (handles both active + pipeline) ────────────────────────
 
-function ActiveDetail({ product }: { product: ProductDetail }) {
-  return (
-    <>
-      <Card className="px-6 py-[22px] mb-3.5 flex items-center justify-between">
-        <div className="flex items-center gap-3.5 flex-1 min-w-0">
-          {product.img ? (
-            <img src={product.img} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0 border-[0.5px] border-[#E5E7EB]" />
-          ) : (
-            <div className={`w-12 h-12 rounded-lg shrink-0 bg-gradient-to-br ${product.gradient}`} />
-          )}
-          <div className="min-w-0">
-            <div className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink mb-1">PRODUCT</div>
-            <div className="flex items-center gap-2.5">
-              <div className="text-[20px] font-medium text-ink leading-none">{product.name}</div>
-              {product.activeVerdict && <ActiveStatusPill v={product.activeVerdict} />}
-            </div>
-            <div className="text-[12px] text-ink mt-1">{product.subline}</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-7 shrink-0">
-          <HeaderMetric label="SPEND" value={product.spend} />
-          <HeaderMetric label="BLENDED ROAS" value={product.roas} />
-          <HeaderMetric label="AVG CVR" value={product.cvr} />
-        </div>
-      </Card>
-
-      <Card className="px-[22px] py-5 mb-3.5">
-        <div className="flex items-center justify-between mb-[18px]">
-          <div className="flex items-center gap-[18px]">
-            <span className="text-[14px] font-medium text-ink">Performance over time</span>
-            <div className="flex items-center gap-3.5">
-              <span className="flex items-center gap-1.5">
-                <span className="block" style={{ width: 12, height: 2, background: '#1F4D2D' }} />
-                <span className="text-[11px] text-ink">ROAS</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="block" style={{ width: 12, height: 8, background: 'rgba(29, 120, 73, 0.2)' }} />
-                <span className="text-[11px] text-ink">Spend</span>
-              </span>
-            </div>
-          </div>
-          <span className="text-[11px] text-ink">{DATE_RANGE}</span>
-        </div>
-        <ActiveChart bars={product.bars} roasLine={product.roasLine} />
-        <div className="flex justify-between mt-1.5 px-5">
-          {DATES.map(d => (
-            <span key={d} className="text-[10px] text-ink">{d}</span>
-          ))}
-        </div>
-      </Card>
-
-      <Card className="overflow-hidden">
-        <div className={`${GRID_ADS_ACTIVE} border-b-[0.5px] border-[#F0F1F3]`}>
-          <span />
-          <span className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink">CREATIVE</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink">DAYS LIVE</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink">SPEND</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink">ROAS</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink">CVR</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink">CTR</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink">VERDICT</span>
-          <span />
-        </div>
-        {product.creatives.map((row, i, arr) => (
-          <div
-            key={row.id}
-            className={`${GRID_ADS_ACTIVE} ${i === arr.length - 1 ? '' : 'border-b-[0.5px] border-[#F0F1F3]'} transition-colors hover:bg-[#fafafa]`}
-            style={row.winner ? { background: '#F0F9F4' } : undefined}
-          >
-            <ActiveCreativeThumb row={row} />
-            <div className="pl-1 min-w-0">
-              <p className="m-0 flex items-baseline gap-1.5 flex-wrap">
-                <span className="text-[13px] font-medium text-ink">{row.name}</span>
-                {row.winner && (
-                  <span className="text-[9px] font-medium tracking-[0.03em] text-white px-1.5 py-px rounded-[8px]" style={{ background: '#1D9E75' }}>
-                    WINNER
-                  </span>
-                )}
-              </p>
-              <p className="m-0 text-[11px] text-ink mt-0.5">{row.angle}</p>
-            </div>
-            <span className="text-[12px] text-ink">{row.daysLive}</span>
-            <span className="text-[12px] font-medium text-ink">{row.spend}</span>
-            <span className="text-[12px] font-medium text-ink">{row.roas}</span>
-            <span className="text-[12px] text-ink">{row.cvr}</span>
-            <span className="text-[12px] text-ink">{row.ctr}</span>
-            <div><ActiveRowPill v={row.verdict} /></div>
-            <ActiveActionIcons />
-          </div>
-        ))}
-      </Card>
-    </>
-  )
-}
-
-// ─── Pipeline-page render (HTML reference) ──────────────────────────────────
-
-function PipelineDetail({ product }: { product: ProductDetail }) {
+function ProductDetail({ product }: { product: ProductDetail }) {
+  const isPipeline = product.kind === 'pipeline'
+  const showPromote = product.pipelineVerdict === 'validated'
   const pdpRows = product.creatives.filter(c => c.format === 'PDP')
   const adRows = product.creatives.filter(c => c.format !== 'PDP')
-  const showPromote = product.pipelineVerdict === 'validated'
-  const deltaCls =
-    product.vsAvg && product.vsAvg.startsWith('-') ? 'text-danger' : 'text-brand'
+  const deltaCls = product.vsAvg && product.vsAvg.startsWith('-') ? 'text-danger' : 'text-brand'
 
   return (
     <>
-      {/* Pipeline product header */}
+      {/* Product header */}
       <section className="bg-white border border-line rounded-[10px] px-[22px] py-5 flex items-center gap-0">
         <div className="flex items-start gap-3.5 flex-1 min-w-0">
-          <div
-            className="w-16 h-16 rounded-[10px] overflow-hidden shrink-0 mt-px border border-line"
-            style={{ background: 'linear-gradient(140deg, #f0ede8, #c8c1b5)' }}
-          />
+          {product.img ? (
+            <img
+              src={product.img}
+              alt=""
+              className="w-16 h-16 rounded-[10px] object-cover shrink-0 mt-px border border-line"
+            />
+          ) : (
+            <div
+              className="w-16 h-16 rounded-[10px] overflow-hidden shrink-0 mt-px border border-line"
+              style={{ background: 'linear-gradient(140deg, #f0ede8, #c8c1b5)' }}
+            />
+          )}
           <div className="pt-px">
             <p className="text-[9px] font-semibold uppercase tracking-[0.09em] text-brand opacity-70 mb-[5px]">
-              Pipeline Product
+              {isPipeline ? 'Pipeline Product' : 'Product'}
             </p>
             <div className="flex items-center gap-2.5 flex-wrap mb-1">
-              <h1 className="text-[18px] font-medium text-ink tracking-[-0.025em] leading-none">
-                {product.name}
-              </h1>
-              {product.pipelineVerdict && <ValidatedPill v={product.pipelineVerdict} />}
+              <h1 className="text-[18px] font-medium text-ink tracking-[-0.025em] leading-none">{product.name}</h1>
+              {isPipeline && product.pipelineVerdict && <ValidatedPill v={product.pipelineVerdict} />}
+              {!isPipeline && product.activeVerdict && <ActivePill v={product.activeVerdict} />}
             </div>
             <p className="text-[11px] text-ink mb-[7px]">{product.subline}</p>
             {product.vsAvg && (
@@ -632,7 +441,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-3.5 shrink-0">
+        <div className={`flex shrink-0 ${showPromote ? 'flex-col items-end gap-3.5' : 'items-center'}`}>
           <div className="flex">
             {[
               { label: 'Spend', value: product.spend },
@@ -684,7 +493,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
             </div>
             <span className="ml-auto text-[11px] text-ink font-mono">{DATE_RANGE}</span>
           </div>
-          <PipelineChart bars={product.bars} roasLine={product.roasLine} />
+          <PerformanceChart bars={product.bars} roasLine={product.roasLine} />
           <div className="flex justify-between mt-[9px]">
             {DATES.map(d => (
               <span key={d} className="text-[10px] text-ink font-mono">{d}</span>
@@ -693,7 +502,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
         </section>
 
         <aside className="bg-white border border-line rounded-[10px] overflow-hidden flex flex-col">
-          {product.kpis?.map((k, i) => (
+          {product.kpis.map((k, i) => (
             <div
               key={k.label}
               className={`px-3.5 py-[11px] flex-1 flex flex-col justify-center ${i > 0 ? 'border-t-[0.5px] border-line' : ''}`}
@@ -710,82 +519,82 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
 
       {/* Creatives table */}
       <section className="bg-white border border-line rounded-[10px] overflow-hidden">
-        {/* PRODUCT PAGE section */}
-        <div className="px-4 pt-[11px] pb-[9px] flex items-center gap-1.5">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Product page</span>
-          <span className="text-[10px] font-semibold text-ink font-mono">· {pdpRows.length}</span>
-        </div>
-
-        {/* PDP rows */}
-        {pdpRows.map(row => (
-          <div
-            key={row.id}
-            className={`${GRID_PDP_PIPE} pt-[11px] pb-[11px] border-b border-line cursor-pointer transition-colors hover:bg-black/[0.02]`}
-          >
-            <PipeCreativeThumb row={row} />
-            <div className="pl-3 min-w-0">
-              <div className="flex items-center gap-[7px] mb-0.5 flex-wrap">
-                <span className="text-[13px] font-medium text-ink">{row.name}</span>
-              </div>
-              <span className="text-[11px] text-ink">{row.angle}</span>
+        {pdpRows.length > 0 && (
+          <>
+            <div className="px-4 pt-[11px] pb-[9px] flex items-center gap-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Product page</span>
+              <span className="text-[10px] font-semibold text-ink font-mono">· {pdpRows.length}</span>
             </div>
-            <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.daysLive}</span>
-            <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.cvr}</span>
-            <PipeRowPill v={row.verdict} />
-            <PipeRowActions />
-          </div>
-        ))}
-
-        {/* ADS section */}
-        <div className="px-4 pt-[11px] pb-[9px] flex items-center gap-1.5">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Ads</span>
-          <span className="text-[10px] font-semibold text-ink font-mono">· {adRows.length}</span>
-          <span className="text-[11px] text-ink ml-0.5">Sending traffic to the page above:</span>
-        </div>
-
-        {/* Ads column headers */}
-        <div className={`${GRID_ADS_PIPE} pt-2 pb-2 border-b border-line-soft`}>
-          <div />
-          <PipeColHdr creative>Creative</PipeColHdr>
-          <PipeColHdr>Days Live</PipeColHdr>
-          <PipeColHdr>Spend</PipeColHdr>
-          <PipeColHdr>ROAS</PipeColHdr>
-          <PipeColHdr>CVR</PipeColHdr>
-          <PipeColHdr>CTR</PipeColHdr>
-          <PipeColHdr>Verdict</PipeColHdr>
-          <div />
-        </div>
-
-        {/* Ad rows */}
-        {adRows.map((row, i, arr) => {
-          const last = i === arr.length - 1
-          return (
-            <div
-              key={row.id}
-              className={`${GRID_ADS_PIPE} pt-[11px] pb-[11px] ${last ? '' : 'border-b border-line-soft'} cursor-pointer transition-colors hover:bg-black/[0.02]`}
-            >
-              <PipeCreativeThumb row={row} />
-              <div className="pl-3 min-w-0">
-                <div className="flex items-center gap-[7px] mb-0.5 flex-wrap">
-                  <span className="text-[13px] font-medium text-ink">{row.name}</span>
-                  {row.winner && (
-                    <span className="text-[9px] font-semibold tracking-[0.05em] bg-brand-bg text-brand px-[7px] py-[2px] rounded-[3px]">
-                      WINNER
-                    </span>
-                  )}
+            {pdpRows.map(row => (
+              <div
+                key={row.id}
+                className={`${GRID_PDP} pt-[11px] pb-[11px] border-b border-line cursor-pointer transition-colors hover:bg-black/[0.02]`}
+              >
+                <CreativeThumb row={row} />
+                <div className="pl-3 min-w-0">
+                  <div className="flex items-center gap-[7px] mb-0.5 flex-wrap">
+                    <span className="text-[13px] font-medium text-ink">{row.name}</span>
+                  </div>
+                  <span className="text-[11px] text-ink">{row.angle}</span>
                 </div>
-                <span className="text-[11px] text-ink">{row.angle}</span>
+                <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.daysLive}</span>
+                <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.cvr}</span>
+                <RowPill v={row.verdict} />
+                <RowActions />
               </div>
-              <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.daysLive}</span>
-              <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.spend}</span>
-              <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.roas}</span>
-              <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.cvr}</span>
-              <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.ctr}</span>
-              <PipeRowPill v={row.verdict} />
-              <PipeRowActions />
+            ))}
+          </>
+        )}
+
+        {adRows.length > 0 && (
+          <>
+            <div className="px-4 pt-[11px] pb-[9px] flex items-center gap-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Ads</span>
+              <span className="text-[10px] font-semibold text-ink font-mono">· {adRows.length}</span>
+              <span className="text-[11px] text-ink ml-0.5">Sending traffic to the page above:</span>
             </div>
-          )
-        })}
+            <div className={`${GRID_ADS} pt-2 pb-2 border-b border-line-soft`}>
+              <div />
+              <ColHdr creative>Creative</ColHdr>
+              <ColHdr>Days Live</ColHdr>
+              <ColHdr>Spend</ColHdr>
+              <ColHdr>ROAS</ColHdr>
+              <ColHdr>CVR</ColHdr>
+              <ColHdr>CTR</ColHdr>
+              <ColHdr>Verdict</ColHdr>
+              <div />
+            </div>
+            {adRows.map((row, i, arr) => {
+              const last = i === arr.length - 1
+              return (
+                <div
+                  key={row.id}
+                  className={`${GRID_ADS} pt-[11px] pb-[11px] ${last ? '' : 'border-b border-line-soft'} cursor-pointer transition-colors hover:bg-black/[0.02]`}
+                >
+                  <CreativeThumb row={row} />
+                  <div className="pl-3 min-w-0">
+                    <div className="flex items-center gap-[7px] mb-0.5 flex-wrap">
+                      <span className="text-[13px] font-medium text-ink">{row.name}</span>
+                      {row.winner && (
+                        <span className="text-[9px] font-semibold tracking-[0.05em] bg-brand-bg text-brand px-[7px] py-[2px] rounded-[3px]">
+                          WINNER
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[11px] text-ink">{row.angle}</span>
+                  </div>
+                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.daysLive}</span>
+                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.spend}</span>
+                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.roas}</span>
+                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.cvr}</span>
+                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.ctr}</span>
+                  <RowPill v={row.verdict} />
+                  <RowActions />
+                </div>
+              )
+            })}
+          </>
+        )}
       </section>
     </>
   )
@@ -808,9 +617,9 @@ function PerformanceProduct() {
           >
             ← Back to Performance
           </button>
-          <Card className="px-6 py-12 flex items-center justify-center">
+          <div className="bg-white border-[0.5px] border-[#E5E7EB] rounded-[10px] px-6 py-12 flex items-center justify-center">
             <div className="text-[13px] text-ink">Product not found · <span className="font-mono">{slug}</span></div>
-          </Card>
+          </div>
         </div>
       </div>
     )
@@ -825,13 +634,9 @@ function PerformanceProduct() {
         >
           ← Back to Performance
         </button>
-        {product.kind === 'pipeline' ? (
-          <div className="flex flex-col gap-3.5">
-            <PipelineDetail product={product} />
-          </div>
-        ) : (
-          <ActiveDetail product={product} />
-        )}
+        <div className="flex flex-col gap-3.5">
+          <ProductDetail product={product} />
+        </div>
       </div>
     </div>
   )
