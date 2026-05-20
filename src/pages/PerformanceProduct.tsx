@@ -53,8 +53,8 @@ const DATE_RANGE = 'Apr 19 – May 19'
 const GRID_ADS_ACTIVE = 'grid grid-cols-[80px_1fr_80px_100px_80px_80px_80px_110px_60px] items-center px-[22px] py-3'
 
 // Pipeline table grids (per reference HTML)
-const GRID_PDP_PIPE = 'grid grid-cols-[68px_1fr_80px_80px_116px_42px] items-center px-4 gap-0'
-const GRID_ADS_PIPE = 'grid grid-cols-[68px_1fr_68px_72px_68px_64px_60px_116px_42px] items-center px-4 gap-0'
+const GRID_PDP_PIPE = 'grid grid-cols-[68px_1fr_80px_80px_116px_42px] items-center pl-4 pr-6 gap-0'
+const GRID_ADS_PIPE = 'grid grid-cols-[68px_1fr_68px_72px_68px_64px_60px_116px_42px] items-center pl-4 pr-6 gap-0'
 
 // ─── Demo data ───────────────────────────────────────────────────────────────
 
@@ -291,7 +291,7 @@ function ActiveRowPill({ v }: { v: RowVerdict }) {
 function ValidatedPill({ v }: { v: PipelineVerdict }) {
   const base = 'text-[11px] font-semibold tracking-[0.01em] px-3 py-1 rounded-[20px] whitespace-nowrap'
   if (v === 'validated') return <span className={`${base} bg-brand text-white`}>VALIDATED</span>
-  if (v === 'testing') return <span className={`${base} bg-surf-2 text-mid`}>TESTING</span>
+  if (v === 'testing') return <span className={`${base} bg-surf-2 text-ink`}>TESTING</span>
   if (v === 'wind-down') return <span className={`${base} bg-warn-bg text-warn`}>WIND DOWN</span>
   return <span className={`${base} bg-danger-bg text-danger`}>KILLED</span>
 }
@@ -299,7 +299,7 @@ function ValidatedPill({ v }: { v: PipelineVerdict }) {
 function PipeRowPill({ v }: { v: RowVerdict }) {
   const base = 'text-[10px] font-semibold tracking-[0.04em] px-[9px] py-1 rounded-[4px] whitespace-nowrap inline-block'
   if (v === 'scaling') return <span className={`${base} bg-brand-bg text-brand`}>▲ SCALING</span>
-  if (v === 'stable') return <span className={`${base} bg-surf-2 text-mid`}>STABLE</span>
+  if (v === 'stable') return <span className={`${base} bg-surf-2 text-ink`}>STABLE</span>
   if (v === 'watch') return <span className={`${base} bg-warn-bg text-warn`}>WATCH</span>
   return <span className={`${base} bg-danger-bg text-danger`}>WIND DOWN</span>
 }
@@ -474,8 +474,8 @@ function PipeCreativeThumb({ row }: { row: CreativeRow }) {
 function PipeRowActions() {
   return (
     <div
-      className="flex justify-end gap-2 transition-opacity"
-      style={{ color: '#a09d98', opacity: 0.38 }}
+      className="flex justify-end gap-1.5 text-ink transition-opacity"
+      style={{ opacity: 0.38 }}
       onMouseEnter={e => ((e.currentTarget as HTMLDivElement).style.opacity = '0.7')}
       onMouseLeave={e => ((e.currentTarget as HTMLDivElement).style.opacity = '0.38')}
     >
@@ -491,42 +491,10 @@ function PipeRowActions() {
 function PipeColHdr({ children, creative }: { children: ReactNode; creative?: boolean }) {
   return (
     <div
-      className={`text-[9px] font-medium uppercase tracking-[0.06em] text-dim ${creative ? 'pl-3' : ''}`}
+      className={`text-[9px] font-medium uppercase tracking-[0.06em] text-ink ${creative ? 'pl-3' : ''}`}
     >
       {children}
     </div>
-  )
-}
-
-function PipeKpiTile({ label, value, delta, deltaSign }: Kpi) {
-  const deltaColor = deltaSign === 'neg' ? 'text-danger' : 'text-brand'
-  return (
-    <div className="bg-white border border-line rounded-[10px] px-3.5 py-[11px] flex-1 flex flex-col justify-center">
-      <div className="text-[9px] font-semibold uppercase tracking-[0.07em] text-dim mb-1.5">{label}</div>
-      <div className="flex items-baseline gap-2">
-        <span className="text-[17px] font-medium text-ink font-mono leading-none tracking-[-0.02em]">{value}</span>
-        <span className={`text-[11px] font-medium font-mono ${deltaColor}`}>{delta}</span>
-      </div>
-    </div>
-  )
-}
-
-function PipeProductBottleIcon({ gradient }: { gradient: string }) {
-  // Stylized supplement bottle: gradient bg + lid + label band
-  const [from, to] = gradient.match(/from-\[(#[a-f0-9]+)\] to-\[(#[a-f0-9]+)\]/i)?.slice(1) ?? ['#d4e8c8', '#7aaa7a']
-  return (
-    <svg viewBox="0 0 64 64" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="prodGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={from} />
-          <stop offset="100%" stopColor={to} />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" fill="url(#prodGrad)" />
-      <ellipse cx="32" cy="28" rx="14" ry="14" fill="rgba(255,255,255,0.35)" />
-      <ellipse cx="32" cy="27" rx="9" ry="9" fill="rgba(255,255,255,0.55)" />
-      <rect x="20" y="43" width="24" height="4" rx="2" fill="rgba(255,255,255,0.45)" />
-    </svg>
   )
 }
 
@@ -645,11 +613,9 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
       >
         <div className="flex items-start gap-3.5 flex-1 min-w-0">
           <div
-            className="w-16 h-16 rounded-[10px] overflow-hidden shrink-0 mt-px"
-            style={{ border: '2px solid #c2d4c8', boxShadow: '0 2px 12px rgba(45,92,58,0.12)' }}
-          >
-            <PipeProductBottleIcon gradient={product.gradient ?? 'from-[#d4e8c8] to-[#7aaa7a]'} />
-          </div>
+            className="w-16 h-16 rounded-[10px] overflow-hidden shrink-0 mt-px border border-line"
+            style={{ background: 'linear-gradient(140deg, #f0ede8, #c8c1b5)' }}
+          />
           <div className="pt-px">
             <p className="text-[9px] font-semibold uppercase tracking-[0.09em] text-brand opacity-70 mb-[5px]">
               Pipeline Product
@@ -660,9 +626,9 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
               </h1>
               {product.pipelineVerdict && <ValidatedPill v={product.pipelineVerdict} />}
             </div>
-            <p className="text-[11px] text-mid mb-[7px]">{product.subline}</p>
+            <p className="text-[11px] text-ink mb-[7px]">{product.subline}</p>
             {product.vsAvg && (
-              <p className="text-[12px] text-mid">
+              <p className="text-[12px] text-ink">
                 vs catalog avg ROAS: <strong className={`font-semibold ${deltaCls}`}>{product.vsAvg}</strong>
               </p>
             )}
@@ -710,28 +676,37 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
           <div className="flex items-center mb-4">
             <span className="text-[13px] font-medium text-ink tracking-[-0.01em] mr-3.5">Performance over time</span>
             <div className="flex gap-3">
-              <span className="flex items-center gap-1.5 text-[11px] text-mid">
+              <span className="flex items-center gap-1.5 text-[11px] text-ink">
                 <span className="block w-4 rounded-[2px] shrink-0" style={{ height: 2.5, background: '#2d5c3a' }} />
                 ROAS
               </span>
-              <span className="flex items-center gap-1.5 text-[11px] text-mid">
+              <span className="flex items-center gap-1.5 text-[11px] text-ink">
                 <span className="block w-3 h-2.5 rounded-[2px] shrink-0" style={{ background: '#c8ddd0' }} />
                 Spend
               </span>
             </div>
-            <span className="ml-auto text-[11px] text-dim font-mono">{DATE_RANGE}</span>
+            <span className="ml-auto text-[11px] text-ink font-mono">{DATE_RANGE}</span>
           </div>
           <PipelineChart bars={product.bars} roasLine={product.roasLine} />
           <div className="flex justify-between mt-[9px]">
             {DATES.map(d => (
-              <span key={d} className="text-[10px] text-dim font-mono">{d}</span>
+              <span key={d} className="text-[10px] text-ink font-mono">{d}</span>
             ))}
           </div>
         </section>
 
-        <aside className="flex flex-col gap-2.5">
-          {product.kpis?.map(k => (
-            <PipeKpiTile key={k.label} {...k} />
+        <aside className="bg-white border border-line rounded-[10px] overflow-hidden flex flex-col">
+          {product.kpis?.map((k, i) => (
+            <div
+              key={k.label}
+              className={`px-3.5 py-[11px] flex-1 flex flex-col justify-center ${i > 0 ? 'border-t-[0.5px] border-line' : ''}`}
+            >
+              <div className="text-[9px] font-semibold uppercase tracking-[0.07em] text-ink mb-1.5">{k.label}</div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-[17px] font-medium text-ink font-mono leading-none tracking-[-0.02em]">{k.value}</span>
+                <span className={`text-[11px] font-medium font-mono ${k.deltaSign === 'neg' ? 'text-danger' : 'text-brand'}`}>{k.delta}</span>
+              </div>
+            </div>
           ))}
         </aside>
       </div>
@@ -740,8 +715,8 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
       <section className="bg-white border border-line rounded-[10px] overflow-hidden">
         {/* PRODUCT PAGE section */}
         <div className="px-4 pt-[11px] pb-[9px] border-b border-line flex items-center gap-1.5">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-mid">Product page</span>
-          <span className="text-[10px] font-semibold text-dim font-mono">· {pdpRows.length}</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Product page</span>
+          <span className="text-[10px] font-semibold text-ink font-mono">· {pdpRows.length}</span>
         </div>
 
         {/* PDP column headers */}
@@ -765,7 +740,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
               <div className="flex items-center gap-[7px] mb-0.5 flex-wrap">
                 <span className="text-[13px] font-medium text-ink">{row.name}</span>
               </div>
-              <span className="text-[11px] text-dim">{row.angle}</span>
+              <span className="text-[11px] text-ink">{row.angle}</span>
             </div>
             <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.daysLive}</span>
             <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.cvr}</span>
@@ -776,9 +751,9 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
 
         {/* ADS section */}
         <div className="px-4 pt-[11px] pb-[9px] border-b border-line border-t border-t-line flex items-center gap-1.5">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-mid">Ads</span>
-          <span className="text-[10px] font-semibold text-dim font-mono">· {adRows.length}</span>
-          <span className="text-[11px] text-dim ml-0.5">Sending traffic to the page above:</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Ads</span>
+          <span className="text-[10px] font-semibold text-ink font-mono">· {adRows.length}</span>
+          <span className="text-[11px] text-ink ml-0.5">Sending traffic to the page above:</span>
         </div>
 
         {/* Ads column headers */}
@@ -821,7 +796,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
                     </span>
                   )}
                 </div>
-                <span className="text-[11px] text-dim">{row.angle}</span>
+                <span className="text-[11px] text-ink">{row.angle}</span>
               </div>
               <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.daysLive}</span>
               <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.spend}</span>
@@ -863,27 +838,6 @@ function PerformanceProduct() {
     )
   }
 
-  if (product.kind === 'pipeline') {
-    return (
-      <div className="font-sans bg-white min-h-full">
-        <div className="max-w-[1020px] px-6 pt-5 pb-16">
-          <a
-            onClick={() => navigate('/performance')}
-            className="inline-flex items-center gap-[5px] text-[11px] text-dim tracking-[-0.01em] no-underline cursor-pointer mb-1 hover:text-ink"
-          >
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 5.5H2M4.5 3L2 5.5 4.5 8" />
-            </svg>
-            <span>Back to Performance</span>
-          </a>
-          <div className="flex flex-col gap-3.5 mt-1">
-            <PipelineDetail product={product} />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="font-sans">
       <div className="max-w-[1200px] mx-auto px-6 pt-5 pb-12">
@@ -893,7 +847,13 @@ function PerformanceProduct() {
         >
           ← Back to Performance
         </button>
-        <ActiveDetail product={product} />
+        {product.kind === 'pipeline' ? (
+          <div className="flex flex-col gap-3.5">
+            <PipelineDetail product={product} />
+          </div>
+        ) : (
+          <ActiveDetail product={product} />
+        )}
       </div>
     </div>
   )
