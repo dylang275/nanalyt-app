@@ -17,13 +17,56 @@ const ALT_IMAGES = [
 ]
 const DEFAULT_IMAGE = ALT_IMAGES[0]
 
-const DEFAULT_FEATURES = [
-  { title: '400mg glycinate form', desc: 'Calms the nervous system at clinical dose' },
-  { title: 'No melatonin grogginess', desc: 'Wake up clear-headed, not foggy' },
-  { title: 'NSF Certified', desc: 'Third-party tested for purity' },
-  { title: 'Vegan, non-GMO', desc: 'Clean formulation' },
+const DEFAULT_BULLETS: string[] = [
+  'High Absorption Formula For Improved Bioavailability*',
+  '3rd Party And Triple Lab Tested',
+  'Vegan, No Artificial Fillers Or Binders',
+  'Made To The Highest Standards In California',
 ]
-type Feature = { title: string; desc: string }
+
+const TRUST_BADGES = [
+  {
+    label: 'LAB TESTED',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#1b3654" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 4h8v6l5 12a3 3 0 01-3 4H10a3 3 0 01-3-4l5-12V4z" />
+        <path d="M12 4h8" />
+        <path d="M10 18h12" />
+        <circle cx="13" cy="22" r="1" fill="#1b3654" stroke="none" />
+        <circle cx="18" cy="24" r="1.2" fill="#1b3654" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    label: 'VEGAN',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#1b3654" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 28C9 28 5 22 5 16c0-4 2-8 6-8 3 0 4 3 4 6" />
+        <path d="M16 28c0-9 4-16 11-18-1 12-6 18-11 18z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'MADE IN USA',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#1b3654" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="7" width="24" height="18" rx="1" />
+        <rect x="4" y="7" width="12" height="9" fill="#1b3654" stroke="none" />
+        <path d="M4 11h24M4 15h24M4 19h24M4 23h24" />
+      </svg>
+    ),
+  },
+  {
+    label: 'NON GMO',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#1b3654" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="16" cy="16" r="11" />
+        <path d="M10 11l12 10" />
+        <path d="M11 16h10" />
+      </svg>
+    ),
+  },
+]
 
 type SectionId =
   | 'hero'
@@ -44,23 +87,35 @@ const SECTIONS: { id: SectionId; label: string }[] = [
   { id: 'subscribe', label: 'Subscribe & purchase' },
 ]
 
+type Tab = 'Description' | 'Directions' | 'Ingredients' | 'Supplement Facts'
+
 // ─── PDP canvas ──────────────────────────────────────────────────────────────
 
 function PdpCanvas({
   headline,
   subHeadline,
   heroImg,
-  features,
+  bullets,
   onEditHeadline,
   onEditSubHead,
 }: {
   headline: string
   subHeadline: string
   heroImg: string
-  features: Feature[]
+  bullets: string[]
   onEditHeadline: () => void
   onEditSubHead: () => void
 }) {
+  const [plan, setPlan] = useState<'subscribe' | 'onetime'>('subscribe')
+  const [qty, setQty] = useState(1)
+  const [cartFlash, setCartFlash] = useState(false)
+  const [activeTab, setActiveTab] = useState<Tab>('Description')
+
+  const addToCart = () => {
+    setCartFlash(true)
+    setTimeout(() => setCartFlash(false), 1500)
+  }
+
   const editClass =
     'cursor-pointer rounded-sm transition-colors hover:bg-brand-bg hover:outline hover:outline-1 hover:outline-dashed hover:outline-brand'
 
@@ -82,14 +137,16 @@ function PdpCanvas({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8 p-7">
-        <div className="aspect-square bg-gradient-to-br from-[#dbeafe] to-[#bfdbfe] rounded-lg overflow-hidden relative group">
+      <div className="grid grid-cols-2 gap-8 p-7 items-start">
+        {/* LEFT — product image */}
+        <div className="aspect-square bg-white border-[0.5px] border-[#e5e7eb] rounded-lg overflow-hidden relative group">
           <img src={heroImg} alt="" className="w-full h-full object-contain p-6" />
           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)] rounded px-2 py-1 text-[10px] font-medium text-ink">
             ✎ Edit image
           </div>
         </div>
 
+        {/* RIGHT — title, plans, cart, description, badges */}
         <div>
           <div className="text-[11px] text-ink mb-2">
             <span className="text-[#fbbf24]">★★★★★</span> 1503 Reviews
@@ -109,14 +166,24 @@ function PdpCanvas({
             {subHeadline}
           </p>
 
-          <div className="relative bg-white border-[1.5px] border-[#0066a0] rounded-lg px-3.5 py-3 mb-2.5">
+          {/* Subscribe card */}
+          <div
+            onClick={() => setPlan('subscribe')}
+            className={`relative bg-white rounded-lg px-3.5 py-3 mb-2.5 cursor-pointer transition-colors ${
+              plan === 'subscribe' ? 'border-[1.5px] border-[#0066a0]' : 'border-[0.5px] border-[#d1d5db]'
+            }`}
+          >
             <span className="absolute -top-2.5 right-3 text-[9px] font-semibold text-white bg-[#0066a0] px-2 py-0.5 rounded-md">
               Save up to 15%
             </span>
             <div className="flex items-start justify-between mb-2.5">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full border-[1.5px] border-[#0066a0] bg-white flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-[#0066a0]" />
+                <div
+                  className={`w-4 h-4 rounded-full border-[1.5px] bg-white flex items-center justify-center ${
+                    plan === 'subscribe' ? 'border-[#0066a0]' : 'border-[#d1d5db]'
+                  }`}
+                >
+                  {plan === 'subscribe' && <div className="w-2 h-2 rounded-full bg-[#0066a0]" />}
                 </div>
                 <span className="text-[13px] font-semibold text-ink">Subscribe &amp; Save</span>
                 <span className="text-[10px] text-ink">ⓘ</span>
@@ -126,29 +193,46 @@ function PdpCanvas({
                 <div className="text-[14px] font-semibold text-ink">$23.79</div>
               </div>
             </div>
-            <div className="text-[11px] text-ink space-y-1 mb-3">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#0066a0]">✓</span> Save 15%
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#0066a0]">✓</span> Free Shipping On Orders &gt; $30
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#0066a0]">✓</span> No commitment — Cancel any time
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] font-semibold text-ink mb-1">Deliver every</div>
-              <div className="bg-white border-[0.5px] border-[#0066a0] rounded px-2.5 py-1.5 text-[11px] text-ink flex items-center justify-between">
-                <span>30 Days: Save 15%</span>
-                <span className="text-[#0066a0]">▾</span>
-              </div>
-            </div>
+            {plan === 'subscribe' && (
+              <>
+                <div className="text-[11px] text-ink space-y-1 mb-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#0066a0]">✓</span> Save 15%
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#0066a0]">✓</span> Free Shipping On Orders &gt; $30
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#0066a0]">✓</span> No commitment — Cancel any time
+                  </div>
+                </div>
+                <div onClick={e => e.stopPropagation()}>
+                  <div className="text-[10px] font-semibold text-ink mb-1">Deliver every</div>
+                  <select className="w-full bg-white border-[0.5px] border-[#0066a0] rounded px-2.5 py-1.5 text-[11px] text-ink outline-none cursor-pointer">
+                    <option>30 Days: Save 15%</option>
+                    <option>60 Days: Save 15%</option>
+                    <option>90 Days: Save 15%</option>
+                  </select>
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="bg-white border-[0.5px] border-[#d1d5db] rounded-lg px-3.5 py-2.5 mb-2 flex items-center justify-between">
+          {/* One-time card */}
+          <div
+            onClick={() => setPlan('onetime')}
+            className={`bg-white rounded-lg px-3.5 py-2.5 mb-2 flex items-center justify-between cursor-pointer transition-colors ${
+              plan === 'onetime' ? 'border-[1.5px] border-[#0066a0]' : 'border-[0.5px] border-[#d1d5db]'
+            }`}
+          >
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full border-[1.5px] border-[#d1d5db] bg-white" />
+              <div
+                className={`w-4 h-4 rounded-full border-[1.5px] bg-white flex items-center justify-center ${
+                  plan === 'onetime' ? 'border-[#0066a0]' : 'border-[#d1d5db]'
+                }`}
+              >
+                {plan === 'onetime' && <div className="w-2 h-2 rounded-full bg-[#0066a0]" />}
+              </div>
               <span className="text-[13px] font-semibold text-ink">One-time Purchase</span>
             </div>
             <span className="text-[13px] text-ink">$27.99</span>
@@ -158,18 +242,34 @@ function PdpCanvas({
             <span className="underline cursor-pointer text-[#0066a0]">Shipping</span> calculated at checkout.
           </div>
 
+          {/* Qty + Add to cart */}
           <div className="flex gap-2 mb-3">
             <div className="flex items-center border-[0.5px] border-[#d1d5db] rounded-full">
-              <button className="px-2.5 py-1.5 text-[14px] text-ink leading-none cursor-pointer">−</button>
-              <span className="px-2 py-1.5 text-[12px] text-ink leading-none">1</span>
-              <button className="px-2.5 py-1.5 text-[14px] text-ink leading-none cursor-pointer">+</button>
+              <button
+                onClick={() => setQty(q => Math.max(1, q - 1))}
+                className="px-2.5 py-1.5 text-[14px] text-ink leading-none cursor-pointer hover:bg-[#fafafa] rounded-l-full"
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
+              <span className="px-2 py-1.5 text-[12px] text-ink leading-none min-w-[20px] text-center">{qty}</span>
+              <button
+                onClick={() => setQty(q => q + 1)}
+                className="px-2.5 py-1.5 text-[14px] text-ink leading-none cursor-pointer hover:bg-[#fafafa] rounded-r-full"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
             </div>
-            <button className="flex-1 bg-[#1b3654] text-white rounded-full py-2 text-[14px] font-semibold hover:opacity-90">
-              Add to Cart
+            <button
+              onClick={addToCart}
+              className="flex-1 bg-[#1b3654] text-white rounded-full py-2 text-[14px] font-semibold hover:opacity-90 transition-opacity"
+            >
+              {cartFlash ? '✓ Added to Cart' : 'Add to Cart'}
             </button>
           </div>
 
-          <div className="flex items-center gap-3 text-[10px] text-ink flex-wrap">
+          <div className="flex items-center gap-3 text-[10px] text-ink flex-wrap mb-5">
             <span className="flex items-center gap-1">
               <span className="text-brand">●</span> IN STOCK
             </span>
@@ -179,35 +279,49 @@ function PdpCanvas({
             </span>
             <span className="underline cursor-pointer">Learn more</span>
           </div>
-        </div>
-      </div>
 
-      <div className="px-7 pt-3 pb-2 border-b-[0.5px] border-[#e5e7eb] flex gap-2">
-        {['Description', 'Directions', 'Ingredients', 'Supplement Facts'].map(t => (
-          <div
-            key={t}
-            className={`text-[12px] cursor-pointer px-3 py-1.5 rounded-md ${
-              t === 'Description'
-                ? 'text-[#0066a0] font-semibold'
-                : 'bg-[#dbeafe] text-[#0066a0]'
-            }`}
-          >
-            {t}
+          {/* Tabs */}
+          <div className="flex gap-1.5 mb-2">
+            {(['Description', 'Directions', 'Ingredients', 'Supplement Facts'] as Tab[]).map(t => (
+              <div
+                key={t}
+                onClick={() => setActiveTab(t)}
+                className={`text-[10px] cursor-pointer px-2.5 py-1.5 rounded-md transition-colors ${
+                  activeTab === t
+                    ? 'bg-[#1b3654] text-white font-semibold'
+                    : 'bg-[#dbeafe] text-[#0066a0] hover:bg-[#bfdbfe]'
+                }`}
+              >
+                {t}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="px-7 py-5">
-        <p className="text-[12px] leading-[1.6] text-ink mb-5">{DEFAULT_BODY}</p>
+          {/* Description body */}
+          <div className="bg-white border-[0.5px] border-[#e5e7eb] rounded-lg p-4 mb-3">
+            <p className="text-[11px] leading-[1.6] text-ink mb-3">{DEFAULT_BODY}</p>
+            <ul className="space-y-1.5">
+              {bullets.map((b, i) => (
+                <li key={i} className="flex gap-2 text-[11px] text-ink leading-[1.5]">
+                  <span className="text-[#1b3654] mt-px shrink-0">✓</span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div className="text-[11px] font-medium tracking-[0.04em] uppercase text-ink mb-3">WHY IT WORKS</div>
-        <div className="grid grid-cols-2 gap-3">
-          {features.map((f, i) => (
-            <div key={i} className="border-[0.5px] border-[#e5e7eb] rounded-md px-3 py-2.5">
-              <div className="text-[12px] font-medium text-ink mb-1">{f.title}</div>
-              <div className="text-[10px] text-ink">{f.desc}</div>
-            </div>
-          ))}
+          {/* Trust badges */}
+          <div className="grid grid-cols-4 gap-2">
+            {TRUST_BADGES.map(b => (
+              <div
+                key={b.label}
+                className="flex flex-col items-center gap-1.5 bg-white border-[0.5px] border-[#e5e7eb] rounded-md py-3 px-1"
+              >
+                <div>{b.icon}</div>
+                <div className="text-[9px] font-semibold tracking-[0.04em] text-[#1b3654] text-center">{b.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -286,7 +400,7 @@ function PdpEditor() {
   const [headline, setHeadline] = useState(DEFAULT_HEADLINE)
   const [subHeadline, setSubHeadline] = useState(DEFAULT_SUBHEAD)
   const [heroImg, setHeroImg] = useState(DEFAULT_IMAGE)
-  const [features, setFeatures] = useState<Feature[]>(DEFAULT_FEATURES)
+  const [bullets, setBullets] = useState<string[]>(DEFAULT_BULLETS)
   const [expandedSection, setExpandedSection] = useState<SectionId | null>('hero')
   const [replaceMenuOpen, setReplaceMenuOpen] = useState(false)
   const [regenSpinning, setRegenSpinning] = useState(false)
@@ -315,13 +429,13 @@ function PdpEditor() {
     setHeadline(DEFAULT_HEADLINE)
     setSubHeadline(DEFAULT_SUBHEAD)
     setHeroImg(DEFAULT_IMAGE)
-    setFeatures(DEFAULT_FEATURES)
+    setBullets(DEFAULT_BULLETS)
     setShowDiscardConfirm(false)
     navigate('/studio')
   }
 
-  const updateFeature = (i: number, patch: Partial<Feature>) => {
-    setFeatures(prev => prev.map((f, j) => (j === i ? { ...f, ...patch } : f)))
+  const updateBullet = (i: number, value: string) => {
+    setBullets(prev => prev.map((b, j) => (j === i ? value : b)))
   }
 
   return (
@@ -369,7 +483,7 @@ function PdpEditor() {
             headline={headline}
             subHeadline={subHeadline}
             heroImg={heroImg}
-            features={features}
+            bullets={bullets}
             onEditHeadline={() => editFromCanvas('headline')}
             onEditSubHead={() => editFromCanvas('sub')}
           />
@@ -461,20 +575,14 @@ function PdpEditor() {
                   {s.id === 'why' && (
                     <>
                       <div className="text-[10px] text-ink leading-[1.5] -mt-0.5">
-                        Four feature tiles render in the Description tab. Edit titles and descriptions below.
+                        Four bullets appear in the Description tab on the live PDP.
                       </div>
-                      {features.map((f, i) => (
-                        <div key={i} className="border-[0.5px] border-[#e5e7eb] bg-white rounded-md p-2.5 flex flex-col gap-1.5">
-                          <FieldLabel>FEATURE {i + 1} · TITLE</FieldLabel>
+                      {bullets.map((b, i) => (
+                        <div key={i}>
+                          <FieldLabel>BULLET {i + 1}</FieldLabel>
                           <input
-                            value={f.title}
-                            onChange={e => updateFeature(i, { title: e.target.value })}
-                            className="w-full text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 outline-none focus:border-brand"
-                          />
-                          <FieldLabel>FEATURE {i + 1} · DESCRIPTION</FieldLabel>
-                          <input
-                            value={f.desc}
-                            onChange={e => updateFeature(i, { desc: e.target.value })}
+                            value={b}
+                            onChange={e => updateBullet(i, e.target.value)}
                             className="w-full text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 outline-none focus:border-brand"
                           />
                         </div>

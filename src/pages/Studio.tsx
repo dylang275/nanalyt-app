@@ -753,8 +753,8 @@ function Studio() {
                   <div
                     key={p.id}
                     onClick={() => setSelectedProduct(pi)}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors border-[0.5px] border-[#e5e7eb] ${
-                      sel ? 'bg-surf-2' : 'bg-surf hover:bg-[#fafafa]'
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors border-[0.5px] ${
+                      sel ? 'bg-brand border-brand' : 'bg-surf border-[#e5e7eb] hover:bg-[#fafafa]'
                     }`}
                   >
                     <div className="w-8 h-8 rounded-md overflow-hidden shrink-0 border-[0.5px] border-line">
@@ -763,18 +763,18 @@ function Studio() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-px">
                         {p.hasLive && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-brand block shrink-0 animate-soft-pulse" />
+                          <span className={`w-1.5 h-1.5 rounded-full block shrink-0 animate-soft-pulse ${sel ? 'bg-white' : 'bg-brand'}`} />
                         )}
-                        <div className={`text-[12px] truncate leading-[1.3] text-ink ${sel ? 'font-medium' : 'font-normal'}`}>
+                        <div className={`text-[12px] truncate leading-[1.3] ${sel ? 'text-white font-medium' : 'text-ink font-normal'}`}>
                           {p.name}
                         </div>
                       </div>
-                      <div className="text-[10px] text-ink mt-px">
+                      <div className={`text-[10px] mt-px ${sel ? 'text-white/85' : 'text-ink'}`}>
                         {p.pdps.length > 0 ? `${p.pdps.length} PDP` : 'No PDP'} · {p.ads.length} {p.ads.length === 1 ? 'ad' : 'ads'}
                       </div>
                     </div>
                     {p.newCount > 0 && (
-                      <span className="text-[9px] font-semibold bg-brand text-white px-1.5 py-px rounded-lg shrink-0 tracking-[0.02em]">
+                      <span className={`text-[9px] font-semibold px-1.5 py-px rounded-lg shrink-0 tracking-[0.02em] ${sel ? 'bg-white text-brand' : 'bg-brand text-white'}`}>
                         {p.newCount} NEW
                       </span>
                     )}
@@ -798,13 +798,13 @@ function Studio() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setWizardMode('ad')}
-                  className="text-[12px] text-ink bg-surf border-[0.5px] border-line rounded-[7px] px-3.5 py-1.5 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-line-soft"
+                  className="text-[12px] text-ink bg-surf border-[0.5px] border-line rounded-[7px] px-3.5 py-1.5 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors hover:bg-brand hover:text-white hover:border-brand"
                 >
                   + Generate ad
                 </button>
                 <button
                   onClick={() => setWizardMode('pdp')}
-                  className="text-[12px] font-medium text-white bg-brand border-0 rounded-[7px] px-3.5 py-1.5 cursor-pointer hover:opacity-90"
+                  className="text-[12px] text-ink bg-surf border-[0.5px] border-line rounded-[7px] px-3.5 py-1.5 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors hover:bg-brand hover:text-white hover:border-brand"
                 >
                   + Generate PDP
                 </button>
@@ -820,7 +820,7 @@ function Studio() {
                   className={`text-[12px] px-3 py-1 rounded-md border-[0.5px] cursor-pointer transition-colors ${
                     assetFilter === f
                       ? 'font-medium border-ink bg-ink text-white'
-                      : 'font-normal border-line bg-transparent text-ink hover:bg-surf-2'
+                      : 'font-normal border-line bg-surf text-ink hover:bg-line-soft'
                   }`}
                 >
                   {f}
