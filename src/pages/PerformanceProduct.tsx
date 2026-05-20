@@ -607,10 +607,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
   return (
     <>
       {/* Pipeline product header */}
-      <section
-        className="rounded-[10px] px-[22px] py-5 flex items-center gap-0"
-        style={{ background: '#eef6f1', border: '1px solid #c2d4c8' }}
-      >
+      <section className="bg-white border border-line rounded-[10px] px-[22px] py-5 flex items-center gap-0">
         <div className="flex items-start gap-3.5 flex-1 min-w-0">
           <div
             className="w-16 h-16 rounded-[10px] overflow-hidden shrink-0 mt-px border border-line"
@@ -645,7 +642,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
               <div
                 key={k.label}
                 className="text-right pl-[26px]"
-                style={i > 0 ? { borderLeft: '1px solid #c2d4c8', marginLeft: 26 } : undefined}
+                style={i > 0 ? { borderLeft: '1px solid #e8e5e0', marginLeft: 26 } : undefined}
               >
                 <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-brand opacity-[0.65] mb-[5px]">
                   {k.label}
@@ -714,19 +711,9 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
       {/* Creatives table */}
       <section className="bg-white border border-line rounded-[10px] overflow-hidden">
         {/* PRODUCT PAGE section */}
-        <div className="px-4 pt-[11px] pb-[9px] border-b border-line flex items-center gap-1.5">
+        <div className="px-4 pt-[11px] pb-[9px] flex items-center gap-1.5">
           <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Product page</span>
           <span className="text-[10px] font-semibold text-ink font-mono">· {pdpRows.length}</span>
-        </div>
-
-        {/* PDP column headers */}
-        <div className={`${GRID_PDP_PIPE} pt-2 pb-2 border-b border-line-soft`}>
-          <div />
-          <PipeColHdr creative>Page</PipeColHdr>
-          <PipeColHdr>Days Live</PipeColHdr>
-          <PipeColHdr>CVR</PipeColHdr>
-          <PipeColHdr>Verdict</PipeColHdr>
-          <div />
         </div>
 
         {/* PDP rows */}
@@ -750,7 +737,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
         ))}
 
         {/* ADS section */}
-        <div className="px-4 pt-[11px] pb-[9px] border-b border-line border-t border-t-line flex items-center gap-1.5">
+        <div className="px-4 pt-[11px] pb-[9px] flex items-center gap-1.5">
           <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Ads</span>
           <span className="text-[10px] font-semibold text-ink font-mono">· {adRows.length}</span>
           <span className="text-[11px] text-ink ml-0.5">Sending traffic to the page above:</span>
@@ -775,16 +762,7 @@ function PipelineDetail({ product }: { product: ProductDetail }) {
           return (
             <div
               key={row.id}
-              className={`${GRID_ADS_PIPE} pt-[11px] pb-[11px] ${last ? '' : 'border-b border-line-soft'} cursor-pointer transition-colors`}
-              style={row.winner ? { background: '#eef6f1' } : undefined}
-              onMouseEnter={e => {
-                if (row.winner) (e.currentTarget as HTMLDivElement).style.background = '#e6f3ec'
-                else (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.02)'
-              }}
-              onMouseLeave={e => {
-                if (row.winner) (e.currentTarget as HTMLDivElement).style.background = '#eef6f1'
-                else (e.currentTarget as HTMLDivElement).style.background = ''
-              }}
+              className={`${GRID_ADS_PIPE} pt-[11px] pb-[11px] ${last ? '' : 'border-b border-line-soft'} cursor-pointer transition-colors hover:bg-black/[0.02]`}
             >
               <PipeCreativeThumb row={row} />
               <div className="pl-3 min-w-0">
