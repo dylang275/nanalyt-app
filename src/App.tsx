@@ -8,7 +8,8 @@ import Studio from './pages/Studio'
 import PdpEditor from './pages/PdpEditor'
 import Research from './pages/Research'
 import ResearchAnalysis from './pages/ResearchAnalysis'
-import Tests from './pages/Tests'
+import Performance from './pages/Performance'
+import PerformanceProduct from './pages/PerformanceProduct'
 import Settings from './pages/Settings'
 
 function App() {
@@ -23,7 +24,8 @@ function App() {
         <Route path="research" element={<Research />} />
         <Route path="research/analysis" element={<ResearchAnalysis />} />
         <Route path="studio" element={<Studio />} />
-        <Route path="tests" element={<Tests />} />
+        <Route path="performance" element={<Performance />} />
+        <Route path="performance/:slug" element={<PerformanceProduct />} />
         <Route path="settings" element={<Settings />} />
       </Route>
     </Routes>

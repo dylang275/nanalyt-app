@@ -49,10 +49,10 @@ const navIcon = {
       <path d="M5 8l2.5 2.5 4-5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
-  tests: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <path d="M5.5 1.5h4v6.5l2.5 5H3l2.5-5V1.5z" />
-      <path d="M5 1.5h5" strokeLinecap="round" />
+  performance: (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1.5 12.5h12" />
+      <path d="M3.5 10.5v-2.5M6.5 10.5v-5M9.5 10.5v-3.5M12.5 10.5v-6.5" />
     </svg>
   ),
   settings: (
@@ -70,7 +70,7 @@ const navItems: NavItem[] = [
   { to: '/competitors', label: 'Competitors', icon: navIcon.competitors },
   { to: '/research', label: 'Research', icon: navIcon.research },
   { to: '/studio', label: 'Studio', icon: navIcon.studio },
-  { to: '/tests', label: 'Tests', icon: navIcon.tests, badge: '3' },
+  { to: '/performance', label: 'Performance', icon: navIcon.performance },
   { to: '/settings', label: 'Settings', icon: navIcon.settings },
 ]
 
