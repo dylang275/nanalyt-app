@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -6,30 +6,20 @@ import { useNavigate } from 'react-router-dom'
 type Verdict = 'performing' | 'stable' | 'watch'
 type PipelineVerdict = 'validated' | 'testing' | 'wind-down' | 'killed'
 
-type ActiveProduct = {
+type Product = {
   slug: string
   name: string
-  img: string
+  img?: string
+  gradient?: string
   status: string
   spend: string
   roas: string
   cvr: string
-  verdict: Verdict
+  pipeline: boolean
+  verdict: Verdict | PipelineVerdict
 }
 
-type PipelineProduct = {
-  slug: string
-  name: string
-  gradient: string
-  status: string
-  spend: string
-  roas: string
-  cvr: string
-  verdict: PipelineVerdict
-  vsAvg: { delta: string; sign: 'pos' | 'neg' | 'flat' }
-}
-
-const ACTIVE_PRODUCTS: ActiveProduct[] = [
+const ACTIVE_PRODUCTS: Product[] = [
   {
     slug: 'magnesium-glycinate-complex',
     name: 'Magnesium Glycinate Complex',
@@ -38,6 +28,7 @@ const ACTIVE_PRODUCTS: ActiveProduct[] = [
     spend: '$12.4k',
     roas: '4.1×',
     cvr: '2.8%',
+    pipeline: false,
     verdict: 'performing',
   },
   {
@@ -48,6 +39,7 @@ const ACTIVE_PRODUCTS: ActiveProduct[] = [
     spend: '$8.6k',
     roas: '3.4×',
     cvr: '2.1%',
+    pipeline: false,
     verdict: 'stable',
   },
   {
@@ -58,11 +50,12 @@ const ACTIVE_PRODUCTS: ActiveProduct[] = [
     spend: '$3.6k',
     roas: '2.1×',
     cvr: '1.4%',
+    pipeline: false,
     verdict: 'watch',
   },
 ]
 
-const PIPELINE_PRODUCTS: PipelineProduct[] = [
+const PIPELINE_PRODUCTS: Product[] = [
   {
     slug: 'magnesium-ashwagandha-gummies',
     name: 'Magnesium + Ashwagandha Gummies',
@@ -71,8 +64,8 @@ const PIPELINE_PRODUCTS: PipelineProduct[] = [
     spend: '$4.2k',
     roas: '4.6×',
     cvr: '3.1%',
+    pipeline: true,
     verdict: 'validated',
-    vsAvg: { delta: '+21%', sign: 'pos' },
   },
   {
     slug: 'sleep-stress-tincture',
@@ -82,8 +75,8 @@ const PIPELINE_PRODUCTS: PipelineProduct[] = [
     spend: '$2.1k',
     roas: '3.8×',
     cvr: '2.4%',
+    pipeline: true,
     verdict: 'testing',
-    vsAvg: { delta: 'even', sign: 'flat' },
   },
   {
     slug: 'probiotic-calm-blend',
@@ -93,107 +86,117 @@ const PIPELINE_PRODUCTS: PipelineProduct[] = [
     spend: '$0.9k',
     roas: '2.3×',
     cvr: '1.6%',
+    pipeline: true,
     verdict: 'wind-down',
-    vsAvg: { delta: '-40%', sign: 'neg' },
   },
 ]
 
-// ─── Verdict pills ───────────────────────────────────────────────────────────
+// ─── Pills ───────────────────────────────────────────────────────────────────
 
-function ActivePill({ v }: { v: Verdict }) {
+const PILL_BASE =
+  'text-[11px] font-medium px-2.5 py-[3px] rounded-[12px] inline-flex items-center gap-1'
+
+function StatusPill({ v }: { v: Verdict | PipelineVerdict }) {
   if (v === 'performing') {
     return (
-      <span className="text-[11px] font-medium bg-brand-bg text-brand px-2.5 py-[3px] rounded-[12px] flex items-center gap-1">
+      <span className={`${PILL_BASE} bg-[#EAF3DE] text-[#27500A]`}>
         <span className="text-[9px] leading-none">▲</span>
         Performing
       </span>
     )
   }
   if (v === 'stable') {
-    return (
-      <span className="text-[11px] font-medium bg-[#f0f1f3] text-ink px-2.5 py-[3px] rounded-[12px]">
-        Stable
-      </span>
-    )
+    return <span className={`${PILL_BASE} bg-[#F0F1F3] text-[#4B5563]`}>Stable</span>
   }
-  return (
-    <span className="text-[11px] font-medium bg-[#fef3d7] text-[#92400e] px-2.5 py-[3px] rounded-[12px]">
-      Watch
-    </span>
-  )
-}
-
-function PipelinePill({ v }: { v: PipelineVerdict }) {
+  if (v === 'watch') {
+    return <span className={`${PILL_BASE} bg-[#FEF3D7] text-[#92400E]`}>Watch</span>
+  }
   if (v === 'validated') {
     return (
-      <span className="text-[11px] font-medium bg-brand-bg text-brand px-2.5 py-[3px] rounded-[12px] tracking-[0.03em]">
+      <span className={`${PILL_BASE} bg-[#EAF3DE] text-[#27500A] tracking-[0.03em]`}>
         VALIDATED
       </span>
     )
   }
   if (v === 'testing') {
     return (
-      <span className="text-[11px] font-medium bg-[#f0f1f3] text-ink px-2.5 py-[3px] rounded-[12px] tracking-[0.03em]">
+      <span className={`${PILL_BASE} bg-[#F0F1F3] text-[#4B5563] tracking-[0.03em]`}>
         TESTING
       </span>
     )
   }
   if (v === 'wind-down') {
     return (
-      <span className="text-[11px] font-medium bg-[#fef3d7] text-[#92400e] px-2.5 py-[3px] rounded-[12px] tracking-[0.03em]">
+      <span className={`${PILL_BASE} bg-[#FEF3D7] text-[#92400E] tracking-[0.03em]`}>
         WIND DOWN
       </span>
     )
   }
   return (
-    <span className="text-[11px] font-medium bg-[#fcebeb] text-[#791f1f] px-2.5 py-[3px] rounded-[12px] tracking-[0.03em]">
+    <span className={`${PILL_BASE} bg-[#FCEBEB] text-[#791F1F] tracking-[0.03em]`}>
       KILLED
     </span>
   )
 }
 
-// ─── Stats row (Dashboard market-signals pattern) ────────────────────────────
+// ─── Stats row ───────────────────────────────────────────────────────────────
 
-function StatCell({ label, value }: { label: string; value: ReactNode }) {
+function StatCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex-1 min-w-0 flex flex-col gap-2">
-      <div className="text-[10px] font-medium text-ink uppercase tracking-[0.04em]">{label}</div>
-      <div className="text-[26px] font-medium text-ink leading-none">{value}</div>
+    <div className="px-7 flex flex-col">
+      <div className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink mb-1">
+        {label}
+      </div>
+      <div className="text-[20px] font-medium text-ink leading-none">{value}</div>
     </div>
   )
 }
 
 function StatDivider() {
-  return <div className="w-px h-9 bg-[#6b7280] self-center shrink-0" />
+  return <div className="w-[0.5px] h-9 bg-[#E5E7EB] self-center shrink-0" />
 }
 
-// ─── Cards ───────────────────────────────────────────────────────────────────
+// ─── Card ────────────────────────────────────────────────────────────────────
 
 function MetricCol({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col">
-      <div className="text-[10px] font-medium text-ink uppercase tracking-[0.03em] mb-0.5">{label}</div>
+    <div>
+      <div className="text-[10px] font-medium uppercase tracking-[0.03em] text-ink mb-0.5">
+        {label}
+      </div>
       <div className="text-[15px] font-medium text-ink leading-tight">{value}</div>
     </div>
   )
 }
 
-function ActiveCard({ p, onClick }: { p: ActiveProduct; onClick: () => void }) {
+function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
       className="bg-white border-[0.5px] border-[#e5e7eb] rounded-[10px] px-[18px] py-5 cursor-pointer transition-colors hover:border-[#d1d5db] hover:bg-[#fafafa]"
     >
       <div className="flex items-center gap-3 mb-4">
-        <img
-          src={p.img}
-          alt=""
-          className="w-11 h-11 rounded-md object-cover shrink-0 border-[0.5px] border-[#e5e7eb]"
-        />
+        {p.img ? (
+          <img
+            src={p.img}
+            alt=""
+            className="w-11 h-11 rounded-[6px] object-cover shrink-0 border-[0.5px] border-[#e5e7eb]"
+          />
+        ) : (
+          <div className={`w-11 h-11 rounded-[6px] shrink-0 bg-gradient-to-br ${p.gradient}`} />
+        )}
         <div className="flex-1 min-w-0">
           <div className="text-[13px] font-medium text-ink truncate">{p.name}</div>
           <div className="text-[11px] text-ink mt-0.5">{p.status}</div>
         </div>
+        {p.pipeline && (
+          <span
+            className="text-[8px] font-medium tracking-[0.05em] uppercase text-white px-1.5 py-px rounded shrink-0"
+            style={{ background: 'rgba(15, 30, 60, 0.9)' }}
+          >
+            PIPELINE
+          </span>
+        )}
       </div>
 
       <div className="flex items-start justify-between mb-4">
@@ -202,47 +205,9 @@ function ActiveCard({ p, onClick }: { p: ActiveProduct; onClick: () => void }) {
         <MetricCol label="CVR" value={p.cvr} />
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t-[0.5px] border-[#f0f1f3]">
-        <ActivePill v={p.verdict} />
+      <div className="flex items-center justify-between pt-3 border-t-[0.5px] border-[#F0F1F3]">
+        <StatusPill v={p.verdict} />
         <span className="text-[11px] font-medium text-ink cursor-pointer">View details →</span>
-      </div>
-    </div>
-  )
-}
-
-function PipelineCard({ p, onClick }: { p: PipelineProduct; onClick: () => void }) {
-  const deltaCls =
-    p.vsAvg.sign === 'pos' ? 'text-brand' : p.vsAvg.sign === 'neg' ? 'text-[#791f1f]' : 'text-ink'
-  return (
-    <div
-      onClick={onClick}
-      className="bg-white border-[0.5px] border-[#e5e7eb] rounded-[10px] px-[18px] py-5 cursor-pointer transition-colors hover:border-[#d1d5db] hover:bg-[#fafafa]"
-    >
-      <div className="flex items-center gap-3 mb-4">
-        <div className={`w-11 h-11 rounded-md shrink-0 bg-gradient-to-br ${p.gradient}`} />
-        <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-medium text-ink truncate">{p.name}</div>
-          <div className="text-[11px] text-ink mt-0.5">{p.status}</div>
-        </div>
-        <span className="text-[9px] font-semibold tracking-[0.05em] uppercase text-ink bg-[#f0f1f3] px-1.5 py-px rounded shrink-0">
-          PIPELINE
-        </span>
-      </div>
-
-      <div className="flex items-start justify-between mb-4">
-        <MetricCol label="SPEND" value={p.spend} />
-        <MetricCol label="ROAS" value={p.roas} />
-        <MetricCol label="CVR" value={p.cvr} />
-      </div>
-
-      <div className="pt-3 border-t-[0.5px] border-[#f0f1f3]">
-        <div className="text-[10px] text-ink mb-2">
-          vs catalog avg: <span className={`font-semibold ${deltaCls}`}>{p.vsAvg.delta}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <PipelinePill v={p.verdict} />
-          <span className="text-[11px] font-medium text-ink cursor-pointer">View details →</span>
-        </div>
       </div>
     </div>
   )
@@ -255,16 +220,19 @@ type Tab = 'active' | 'pipeline'
 function Performance() {
   const navigate = useNavigate()
   const [tab, setTab] = useState<Tab>('active')
+  const products = tab === 'active' ? ACTIVE_PRODUCTS : PIPELINE_PRODUCTS
 
   return (
     <div className="font-sans">
       <div className="max-w-[1200px] mx-auto px-6 pt-5 pb-12">
+        {/* Header */}
         <div className="mb-[22px]">
           <div className="text-[22px] font-medium text-ink tracking-[-0.02em] mb-1">Performance</div>
           <div className="text-[13px] text-ink">Live creative across active and pipeline products</div>
         </div>
 
-        <div className="border-b-[0.5px] border-line mb-[22px]">
+        {/* Sub-tabs */}
+        <div className="border-b-[0.5px] border-[#E5E7EB] mb-[22px]">
           <div className="flex gap-7">
             {([
               { id: 'active', label: 'Active products' },
@@ -275,10 +243,8 @@ function Performance() {
                 <button
                   key={t.id}
                   onClick={() => setTab(t.id)}
-                  className={`text-[13px] pb-3 cursor-pointer bg-transparent border-0 ${
-                    sel
-                      ? 'font-medium text-ink border-b-2 border-ink -mb-[0.5px]'
-                      : 'font-normal text-ink'
+                  className={`text-[13px] pb-3 cursor-pointer bg-transparent border-0 text-ink ${
+                    sel ? 'font-medium border-b-2 border-ink -mb-[0.5px]' : 'font-normal'
                   }`}
                 >
                   {t.label}
@@ -288,7 +254,8 @@ function Performance() {
           </div>
         </div>
 
-        <div className="flex items-stretch gap-4 mb-[22px]">
+        {/* Stats row */}
+        <div className="flex items-stretch mb-[22px]">
           <StatCell label="ACTIVE CREATIVES" value="14" />
           <StatDivider />
           <StatCell label="TOTAL SPEND · 30D" value="$24.6k" />
@@ -300,16 +267,17 @@ function Performance() {
           <StatCell label="PRODUCTS LIVE" value="3" />
         </div>
 
+        {/* Section header */}
         <div className="flex items-center justify-between mb-4">
-          <span className="text-[14px] font-semibold text-ink">Products</span>
+          <span className="text-[14px] font-medium text-ink">Products</span>
           <div className="flex gap-2 items-center">
-            <select className="text-[12px] text-ink border-[0.5px] border-[#d1d5db] rounded-md px-2.5 py-[5px] bg-white outline-none cursor-pointer">
+            <select className="text-[12px] text-ink border-[0.5px] border-[#D1D5DB] rounded-md py-[5px] px-2.5 bg-white outline-none cursor-pointer">
               <option>Sort: Spend ↓</option>
               <option>Sort: ROAS ↓</option>
               <option>Sort: CVR ↓</option>
               <option>Sort: Name</option>
             </select>
-            <select className="text-[12px] text-ink border-[0.5px] border-[#d1d5db] rounded-md px-2.5 py-[5px] bg-white outline-none cursor-pointer">
+            <select className="text-[12px] text-ink border-[0.5px] border-[#D1D5DB] rounded-md py-[5px] px-2.5 bg-white outline-none cursor-pointer">
               <option>Last 30 days</option>
               <option>Last 7 days</option>
               <option>Last 90 days</option>
@@ -318,22 +286,15 @@ function Performance() {
           </div>
         </div>
 
+        {/* Cards grid */}
         <div className="grid grid-cols-3 gap-2.5">
-          {tab === 'active'
-            ? ACTIVE_PRODUCTS.map(p => (
-                <ActiveCard
-                  key={p.slug}
-                  p={p}
-                  onClick={() => navigate(`/performance/${p.slug}`)}
-                />
-              ))
-            : PIPELINE_PRODUCTS.map(p => (
-                <PipelineCard
-                  key={p.slug}
-                  p={p}
-                  onClick={() => navigate(`/performance/${p.slug}`)}
-                />
-              ))}
+          {products.map(p => (
+            <ProductCard
+              key={p.slug}
+              p={p}
+              onClick={() => navigate(`/performance/${p.slug}`)}
+            />
+          ))}
         </div>
       </div>
     </div>
