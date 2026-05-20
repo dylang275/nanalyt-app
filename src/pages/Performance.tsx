@@ -17,7 +17,6 @@ type Product = {
   cvr: string
   pipeline: boolean
   verdict: Verdict | PipelineVerdict
-  vsAvg?: string
 }
 
 const ACTIVE_PRODUCTS: Product[] = [
@@ -44,20 +43,6 @@ const ACTIVE_PRODUCTS: Product[] = [
     verdict: 'stable',
   },
   {
-    slug: 'vitamin-d3-k2-complex',
-    name: 'Vitamin D3 + K2 Complex',
-    gradient: 'from-[#fde68a] to-[#f59e0b]',
-    status: '1 PDP · 2 ads',
-    spend: '$5.8k',
-    roas: '3.2×',
-    cvr: '2.3%',
-    pipeline: false,
-    verdict: 'stable',
-  },
-]
-
-const PIPELINE_PRODUCTS: Product[] = [
-  {
     slug: 'ashwagandha-plus',
     name: 'ASHWAGANDHA+',
     img: '/uploads/IMG_3476.jpg',
@@ -65,10 +50,12 @@ const PIPELINE_PRODUCTS: Product[] = [
     spend: '$3.6k',
     roas: '2.1×',
     cvr: '1.4%',
-    pipeline: true,
-    verdict: 'validated',
-    vsAvg: '+14%',
+    pipeline: false,
+    verdict: 'watch',
   },
+]
+
+const PIPELINE_PRODUCTS: Product[] = [
   {
     slug: 'magnesium-ashwagandha-gummies',
     name: 'Magnesium + Ashwagandha Gummies',
@@ -79,7 +66,6 @@ const PIPELINE_PRODUCTS: Product[] = [
     cvr: '3.1%',
     pipeline: true,
     verdict: 'validated',
-    vsAvg: '+21%',
   },
   {
     slug: 'sleep-stress-tincture',
@@ -91,7 +77,6 @@ const PIPELINE_PRODUCTS: Product[] = [
     cvr: '2.4%',
     pipeline: true,
     verdict: 'testing',
-    vsAvg: 'even',
   },
   {
     slug: 'probiotic-calm-blend',
@@ -103,7 +88,6 @@ const PIPELINE_PRODUCTS: Product[] = [
     cvr: '1.6%',
     pipeline: true,
     verdict: 'wind-down',
-    vsAvg: '-40%',
   },
 ]
 
@@ -221,27 +205,9 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
         <MetricCol label="CVR" value={p.cvr} />
       </div>
 
-      <div className="pt-3 border-t-[0.5px] border-[#F0F1F3]">
-        {p.vsAvg && (
-          <div className="text-[10px] text-ink mb-2">
-            vs catalog avg:{' '}
-            <span
-              className={`font-semibold ${
-                p.vsAvg.startsWith('+')
-                  ? 'text-[#27500A]'
-                  : p.vsAvg.startsWith('-')
-                    ? 'text-[#791F1F]'
-                    : 'text-ink'
-              }`}
-            >
-              {p.vsAvg}
-            </span>
-          </div>
-        )}
-        <div className="flex items-center justify-between">
-          <StatusPill v={p.verdict} />
-          <span className="text-[11px] font-medium text-ink cursor-pointer">View details →</span>
-        </div>
+      <div className="flex items-center justify-between pt-3 border-t-[0.5px] border-[#F0F1F3]">
+        <StatusPill v={p.verdict} />
+        <span className="text-[11px] font-medium text-ink cursor-pointer">View details →</span>
       </div>
     </div>
   )
