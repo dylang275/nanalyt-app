@@ -950,6 +950,201 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
   )
 }
 
+// ─── Confirmation Modal (scope before generation) ───────────────────────────
+
+type AssetFormat = 'PDP' | 'UGC' | 'VIDEO' | 'STATIC'
+
+type Asset = {
+  id: string
+  format: AssetFormat
+  title: string
+  badge?: 'HERO-LED' | 'RECOMMENDED'
+  desc: string
+}
+
+const CONFIRM_ASSETS: Asset[] = [
+  {
+    id: 'pdp',
+    format: 'PDP',
+    title: 'Product page',
+    badge: 'HERO-LED',
+    desc: 'Full product page with Sleep-Anxiety Crossover positioning, headline, sub-headline, ingredient breakdown, and Subscribe & Save block · 1 variant',
+  },
+  {
+    id: 'ugc1',
+    format: 'UGC',
+    title: 'UGC creative variant 1',
+    badge: 'RECOMMENDED',
+    desc: '9:16 vertical · Talking head with text overlays · "Couldn\'t shut my brain off" hook · 15 seconds',
+  },
+  {
+    id: 'video',
+    format: 'VIDEO',
+    title: 'Animated video creative',
+    desc: '15s · Animated explainer with product · "Tried everything for sleep" hook · 9:16 vertical',
+  },
+  {
+    id: 'static',
+    format: 'STATIC',
+    title: 'Static image creative',
+    desc: '1:1 square · Designed image · Lifestyle composition with product and headline',
+  },
+  {
+    id: 'ugc2',
+    format: 'UGC',
+    title: 'UGC creative variant 2',
+    desc: '9:16 vertical · Talking head · Alternative hook for A/B testing · 15 seconds',
+  },
+]
+
+const FORMAT_COLOR: Record<AssetFormat, { bg: string; text: string }> = {
+  PDP: { bg: '#F0F9F4', text: '#27500A' },
+  UGC: { bg: '#FCE7F3', text: '#831843' },
+  VIDEO: { bg: '#EDE9FE', text: '#5B21B6' },
+  STATIC: { bg: '#FEF3C7', text: '#92400E' },
+}
+
+function ConfirmGenerateModal({ onClose, onGenerate }: { onClose: () => void; onGenerate: () => void }) {
+  const [checked, setChecked] = useState<Record<string, boolean>>(
+    Object.fromEntries(CONFIRM_ASSETS.map(a => [a.id, true])),
+  )
+  const selectedCount = Object.values(checked).filter(Boolean).length
+  const toggle = (id: string) => setChecked(prev => ({ ...prev, [id]: !prev[id] }))
+  const selectAll = () => setChecked(Object.fromEntries(CONFIRM_ASSETS.map(a => [a.id, true])))
+  const deselectAll = () => setChecked(Object.fromEntries(CONFIRM_ASSETS.map(a => [a.id, false])))
+
+  return (
+    <div
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      className="fixed inset-0 z-[300] flex items-center justify-center font-sans"
+      style={{ background: 'rgba(0, 0, 0, 0.4)' }}
+    >
+      <div
+        className="bg-surf rounded-xl w-[580px] max-w-[calc(100vw-48px)] max-h-[calc(100vh-48px)] overflow-y-auto shadow-[0_12px_48px_rgba(0,0,0,0.2)]"
+        style={{ padding: '28px 24px' }}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <div className="text-[11px] font-medium uppercase text-ink mb-1" style={{ letterSpacing: '0.05em' }}>
+              GENERATE ASSETS
+            </div>
+            <div className="text-[18px] font-medium text-ink leading-tight">Launch Magnesium Glycinate Complex</div>
+          </div>
+          <button
+            onClick={onClose}
+            className="bg-transparent border-0 text-ink cursor-pointer flex p-1 hover:opacity-70"
+            aria-label="Close"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M3 3l12 12M15 3l-12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Context paragraph */}
+        <p className="text-[12px] text-ink leading-[1.5] mb-5">
+          We'll generate a product page and a creative package targeting the winning angle from your finding. Review and adjust before we start.
+        </p>
+
+        {/* Winning angle callout */}
+        <div
+          className="rounded-lg mb-[22px]"
+          style={{ background: '#F0F9F4', border: '0.5px solid #1D9E75', padding: '12px 14px' }}
+        >
+          <div className="text-[11px] font-medium uppercase text-ink mb-1" style={{ letterSpacing: '0.04em' }}>
+            WINNING ANGLE
+          </div>
+          <div className="text-[13px] font-medium text-ink mb-1">Sleep-Anxiety Crossover</div>
+          <div className="text-[11px] text-ink">Validated by 3 competitors · Avg 18d longevity · 28% of category spend</div>
+        </div>
+
+        {/* Assets header */}
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[12px] font-medium uppercase text-ink" style={{ letterSpacing: '0.04em' }}>
+            ASSETS TO GENERATE · {CONFIRM_ASSETS.length}
+          </span>
+          <div className="flex items-center gap-2 text-[11px] font-medium text-ink">
+            <span onClick={selectAll} className="cursor-pointer hover:opacity-70">Select all</span>
+            <span>·</span>
+            <span onClick={deselectAll} className="cursor-pointer hover:opacity-70">Deselect all</span>
+          </div>
+        </div>
+
+        {/* Asset rows */}
+        <div className="flex flex-col gap-1.5 mb-[22px]">
+          {CONFIRM_ASSETS.map(a => {
+            const fc = FORMAT_COLOR[a.format]
+            return (
+              <div
+                key={a.id}
+                onClick={() => toggle(a.id)}
+                className="flex items-start gap-3 bg-white border-[0.5px] border-[#E5E7EB] rounded-lg cursor-pointer hover:border-[#d1d5db]"
+                style={{ padding: '12px 14px' }}
+              >
+                <input
+                  type="checkbox"
+                  checked={!!checked[a.id]}
+                  onChange={() => toggle(a.id)}
+                  onClick={e => e.stopPropagation()}
+                  className="w-4 h-4 mt-1 shrink-0 cursor-pointer"
+                  style={{ accentColor: '#1D9E75' }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span
+                      className="text-[9px] font-medium uppercase rounded-[4px]"
+                      style={{ background: fc.bg, color: fc.text, padding: '2px 8px', letterSpacing: '0.04em' }}
+                    >
+                      {a.format}
+                    </span>
+                    <span className="text-[13px] font-medium text-ink">{a.title}</span>
+                    {a.badge && (
+                      <span
+                        className="text-[9px] font-medium uppercase rounded-[8px]"
+                        style={{ background: '#F0F9F4', color: '#27500A', padding: '1px 7px', letterSpacing: '0.03em' }}
+                      >
+                        {a.badge}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-ink leading-[1.5]">{a.desc}</div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-4 border-t-[0.5px] border-[#F0F1F3]">
+          <div className="text-[11px] text-ink">
+            Estimated <span className="font-medium">3 minutes</span> · You can navigate while we work
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={onClose}
+              className="bg-white text-ink border-[0.5px] border-[#D1D5DB] rounded-md cursor-pointer text-[12px] hover:bg-[#fafafa]"
+              style={{ padding: '7px 14px' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => selectedCount > 0 && onGenerate()}
+              disabled={selectedCount === 0}
+              className={`text-white border-0 rounded-md text-[12px] font-medium ${
+                selectedCount === 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-90'
+              }`}
+              style={{ background: '#1D9E75', padding: '7px 14px' }}
+            >
+              Generate {selectedCount} {selectedCount === 1 ? 'asset' : 'assets'} →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Take Action Modal ───────────────────────────────────────────────────────
 
 function TakeActionModal({ onClose }: { onClose: () => void }) {
@@ -993,7 +1188,13 @@ function TakeActionModal({ onClose }: { onClose: () => void }) {
 function Findings() {
   const [activeFilter, setActiveFilter] = useState<Filter>('All')
   const [openFinding, setOpenFinding] = useState<Finding | null>(null)
+  const [confirmFinding, setConfirmFinding] = useState<Finding | null>(null)
   const [actionFinding, setActionFinding] = useState<Finding | null>(null)
+
+  const startAction = (f: Finding) => {
+    if (f.type === 'NEW PRODUCT') setConfirmFinding(f)
+    else setActionFinding(f)
+  }
 
   const filtered =
     activeFilter === 'All' ? FINDINGS : FINDINGS.filter(f => f.type === TYPE_MAP[activeFilter])
@@ -1058,7 +1259,7 @@ function Findings() {
               key={f.id}
               finding={f}
               onOpen={setOpenFinding}
-              onTakeAction={setActionFinding}
+              onTakeAction={startAction}
             />
           ))
         )}
@@ -1069,10 +1270,20 @@ function Findings() {
         onClose={() => setOpenFinding(null)}
         onTakeAction={f => {
           setOpenFinding(null)
-          setActionFinding(f)
+          startAction(f)
         }}
       />
 
+      {confirmFinding && (
+        <ConfirmGenerateModal
+          onClose={() => setConfirmFinding(null)}
+          onGenerate={() => {
+            const f = confirmFinding
+            setConfirmFinding(null)
+            setActionFinding(f)
+          }}
+        />
+      )}
       {actionFinding && <TakeActionModal onClose={() => setActionFinding(null)} />}
     </div>
   )
