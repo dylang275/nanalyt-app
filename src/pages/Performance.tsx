@@ -21,17 +21,6 @@ type Product = {
 
 const ACTIVE_PRODUCTS: Product[] = [
   {
-    slug: 'magnesium-glycinate-complex',
-    name: 'Magnesium Glycinate Complex',
-    img: '/uploads/IMG_3472.jpg',
-    status: '1 PDP · 3 ads',
-    spend: '$12.4k',
-    roas: '4.1×',
-    cvr: '2.8%',
-    pipeline: false,
-    verdict: 'performing',
-  },
-  {
     slug: 'zzzplex-sleep-support',
     name: 'ZzzPlex Sleep Support',
     img: '/uploads/IMG_3474.jpg',
@@ -256,15 +245,15 @@ function Performance() {
 
         {/* Stats row */}
         <div className="flex items-stretch mb-[22px]">
-          <StatCell label="ACTIVE CREATIVES" value="14" />
+          <StatCell label="ACTIVE CREATIVES" value="9" />
           <StatDivider />
-          <StatCell label="TOTAL SPEND · 30D" value="$24.6k" />
+          <StatCell label="TOTAL SPEND · 30D" value="$12.2k" />
           <StatDivider />
-          <StatCell label="BLENDED ROAS" value="3.8×" />
+          <StatCell label="BLENDED ROAS" value="3.4×" />
           <StatDivider />
-          <StatCell label="AVG CVR" value="2.4%" />
+          <StatCell label="AVG CVR" value="2.1%" />
           <StatDivider />
-          <StatCell label="PRODUCTS LIVE" value="3" />
+          <StatCell label="PRODUCTS LIVE" value="2" />
         </div>
 
         {/* Section header */}

@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect, type ReactNode } from 'react'
 
 // ─── Types & data ────────────────────────────────────────────────────────────
 
-type ProductState = 'In Market' | 'Testing' | 'Researching' | 'Suggested'
+type ProductState = 'In Market' | 'Testing' | 'Generating' | 'Researching' | 'Suggested'
 type AdSat = 'Low' | 'Mod' | 'High'
 
 type Product = {
@@ -35,7 +35,7 @@ const PRODUCT_IMAGES = [
 ]
 
 const ALL_PRODUCTS: Product[] = [
-  { id: 1, name: 'Magnesium Glycinate Complex', sku: 'MAG-GLY-120', state: 'In Market', platforms: 'Meta · TikTok · Amazon · Reddit', price: '$34.99', rev: '$18,420', margin: '38.4%', score: 84, sentiment: 'Positive', adSat: 'Mod', adCount: 20, findings: 2, spark: [60, 65, 70, 72, 78, 82, 84], sparkPos: true, imgIdx: 0 },
+  { id: 1, name: 'Magnesium Glycinate Complex', sku: 'MAG-GLY-120', state: 'Generating', platforms: 'Meta · TikTok · Amazon · Reddit', price: '$34.99', rev: '—', margin: '—', score: 84, sentiment: 'Positive', adSat: 'Low', adCount: 0, findings: 2, spark: [], sparkPos: true, imgIdx: 0 },
   { id: 2, name: 'ZzzPlex Sleep Support', sku: 'ZZZ-SLP-60', state: 'In Market', platforms: 'Meta · Google · Amazon', price: '$28.99', rev: '$11,340', margin: '31.2%', score: 71, sentiment: 'Neutral', adSat: 'High', adCount: 34, findings: 1, spark: [75, 72, 68, 65, 69, 71, 71], sparkPos: false, imgIdx: 1 },
   { id: 3, name: 'Vitamin D3 + K2 Complex', sku: 'VIT-D3K2-90', state: 'In Market', platforms: 'Amazon · Google', price: '$22.99', rev: '$7,840', margin: '42.1%', score: 68, sentiment: 'Positive', adSat: 'Low', adCount: 8, findings: 0, spark: [50, 52, 55, 58, 60, 65, 68], sparkPos: true, imgIdx: 2 },
   { id: 4, name: 'ASHWAGANDHA+', sku: 'ASH-PLUS-60', state: 'Testing', platforms: 'Meta · TikTok', price: '$29.99', rev: '—', margin: '36.8%', score: 63, sentiment: 'Positive', adSat: 'Low', adCount: 4, findings: 0, spark: [40, 45, 52, 58, 60, 61, 63], sparkPos: true, imgIdx: 3 },
@@ -57,17 +57,19 @@ const PLATFORM_DOT: Record<string, string> = {
 const STATE_LABEL: Record<ProductState, string> = {
   'In Market': 'IN MARKET',
   Testing: 'TESTING',
+  Generating: 'GENERATING',
   Researching: 'RESEARCHING',
   Suggested: 'SUGGESTED',
 }
 const STATE_COLOR: Record<ProductState, string> = {
   'In Market': '#2d5c3a',
   Testing: '#2563eb',
+  Generating: '#a16207',
   Researching: '#a16207',
   Suggested: '#a09d98',
 }
 
-const STATE_OPTIONS: ('All' | ProductState)[] = ['All', 'Suggested', 'Researching', 'Testing', 'In Market']
+const STATE_OPTIONS: ('All' | ProductState)[] = ['All', 'Suggested', 'Researching', 'Generating', 'Testing', 'In Market']
 const SORT_OPTIONS = ['Score', 'Revenue', 'Findings'] as const
 type Sort = (typeof SORT_OPTIONS)[number]
 
@@ -167,6 +169,7 @@ function ProductRow({ product, last }: { product: Product; last: boolean }) {
   const adSatColor = adSat === 'Low' ? '#2d5c3a' : adSat === 'High' ? '#dc2626' : '#a16207'
   const stateColor = STATE_COLOR[state]
   const platList = platforms.split(' · ').slice(0, 5)
+  const generating = state === 'Generating'
 
   return (
     <div className={`group grid ${GRID_COLS} gap-4 items-center px-6 py-3.5 cursor-pointer hover:bg-black/[0.02] ${last ? '' : 'border-b border-line-soft'}`}>
@@ -201,29 +204,44 @@ function ProductRow({ product, last }: { product: Product; last: boolean }) {
       </div>
 
       <div className="text-center">
-        <div className={`text-[13px] font-medium font-mono tabular-nums ${rev === '—' ? 'text-ink' : 'text-ink'}`}>{rev}</div>
-        {rev !== '—' && <div className="text-[10px] text-ink mt-px">30d</div>}
+        <div className="text-[13px] font-medium font-mono tabular-nums text-ink">{rev}</div>
+        {!generating && rev !== '—' && <div className="text-[10px] text-ink mt-px">30d</div>}
       </div>
 
       <div className="text-center">
         <div className="text-[12px] font-mono text-ink font-medium">{margin}</div>
-        <div className="text-[10px] text-ink mt-px">margin</div>
+        {!generating && margin !== '—' && <div className="text-[10px] text-ink mt-px">margin</div>}
       </div>
 
       <div className="text-center">
-        <div className="text-[12px] font-medium" style={{ color: adSatColor }}>{adSat}</div>
-        <div className="text-[10px] text-ink font-mono mt-px">{adCount}</div>
+        {generating ? (
+          <div className="text-[13px] font-medium font-mono tabular-nums text-ink">—</div>
+        ) : (
+          <>
+            <div className="text-[12px] font-medium" style={{ color: adSatColor }}>{adSat}</div>
+            <div className="text-[10px] text-ink font-mono mt-px">{adCount}</div>
+          </>
+        )}
       </div>
 
       <div className="flex justify-center">
-        <Spark data={spark} color={sparkPos ? '#2d7a4f' : '#dc2626'} w={60} h={20} />
+        {generating ? (
+          <div className="text-[13px] font-medium font-mono tabular-nums text-ink">—</div>
+        ) : (
+          <Spark data={spark} color={sparkPos ? '#2d7a4f' : '#dc2626'} w={60} h={20} />
+        )}
       </div>
 
       <div className="flex items-center gap-1 cursor-pointer">
+        {generating && (
+          <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0 animate-soft-pulse" />
+        )}
         <span className="text-[10px] font-bold tracking-[0.06em] whitespace-nowrap" style={{ color: stateColor }}>{STATE_LABEL[state]}</span>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke={stateColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M2 5h6M6 3l2 2-2 2" />
-        </svg>
+        {!generating && (
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke={stateColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 5h6M6 3l2 2-2 2" />
+          </svg>
+        )}
       </div>
 
       <div className="flex justify-center">
@@ -263,6 +281,11 @@ function ActiveProducts() {
     } else if (sort === 'Findings') {
       list = [...list].sort((a, b) => b.findings - a.findings)
     }
+    list = [...list].sort((a, b) => {
+      if (a.state === 'Generating' && b.state !== 'Generating') return -1
+      if (b.state === 'Generating' && a.state !== 'Generating') return 1
+      return 0
+    })
     return list
   }, [stateFilter, sort, search])
 
