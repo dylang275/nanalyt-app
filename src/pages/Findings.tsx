@@ -789,6 +789,8 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
   const isNewAngle = f.id === 1
   const isNewProduct = f.id === 2
   const isRich = isNewAngle || isNewProduct
+  const { open: chatOpen } = useAskNanalyt()
+  const offset = chatOpen ? 440 : 0
 
   return (
     <>
@@ -797,11 +799,11 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
         className={`fixed inset-0 z-[200] bg-black/[0.18] transition-opacity duration-200 ${
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
+        style={{ right: offset }}
       />
       <div
-        className={`fixed top-0 right-0 bottom-0 z-[201] w-1/2 min-w-[540px] max-w-[760px] bg-canvas border-l border-line flex flex-col shadow-drawer transition-transform duration-200 ease-out font-sans ${
-          open ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        style={{ right: offset, transform: open ? 'translateX(0)' : `translateX(calc(100% + ${offset}px))` }}
+        className="fixed top-0 bottom-0 z-[201] w-1/2 min-w-[540px] max-w-[760px] bg-canvas border-l border-line flex flex-col shadow-drawer transition-[transform,right] duration-200 ease-out font-sans"
       >
         {isRich ? (
           <>
