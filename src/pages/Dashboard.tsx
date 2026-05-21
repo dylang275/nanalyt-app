@@ -100,7 +100,7 @@ function MarketSignals() {
       <SignalDivider />
 
       <SignalCard label="ACTIVE TESTS">
-        <div className="text-[26px] font-medium text-ink leading-none mb-1.5">3</div>
+        <div className="text-[26px] font-medium text-ink leading-none mb-1.5">1</div>
         <div className="text-[11px] text-ink">2 completed 7d</div>
       </SignalCard>
     </div>
