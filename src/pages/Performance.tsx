@@ -121,7 +121,7 @@ function StatusPill({ v }: { v: Verdict | PipelineVerdict }) {
 
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="px-7 flex flex-col">
+    <div className="flex-1 px-7 flex flex-col">
       <div className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink mb-1">
         {label}
       </div>
