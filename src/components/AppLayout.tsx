@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import type { ReactNode } from 'react'
-import { AskNanalytProvider, AskNanalytPanel, useAskNanalyt } from './AskNanalytPanel'
+import { AskNanalytProvider, AskNanalytPanel, AgentDrawer, useAskNanalyt } from './AskNanalytPanel'
 
 type NavItem = {
   to: string
@@ -139,7 +139,7 @@ function LeftNav() {
 }
 
 function TopBar() {
-  const { openGeneral } = useAskNanalyt()
+  const { openGeneral, openAgent } = useAskNanalyt()
   return (
     <div className="h-[46px] flex items-center px-5 gap-4 shrink-0 font-sans">
       <div className="flex-1" />
@@ -158,7 +158,10 @@ function TopBar() {
         <span className="text-[9px] text-ink font-mono bg-surf-2 px-[5px] py-[1px] rounded-[3px] shrink-0">⌘K</span>
       </div>
       <div className="flex-1 flex items-center justify-end gap-3">
-        <div className="flex items-center gap-1.5 bg-brand-bg border border-brand-dim rounded-md px-[11px] py-1 cursor-pointer">
+        <div
+          onClick={openAgent}
+          className="flex items-center gap-1.5 bg-brand-bg border border-brand-dim rounded-md px-[11px] py-1 cursor-pointer hover:bg-brand-dim/40"
+        >
           <span className="w-[5px] h-[5px] bg-brand rounded-full block shrink-0 animate-soft-pulse" />
           <span className="text-[10px] font-medium text-brand whitespace-nowrap">Your agent</span>
         </div>
@@ -178,11 +181,11 @@ function TopBar() {
 }
 
 function AppLayoutInner() {
-  const { open } = useAskNanalyt()
+  const { panelOpen } = useAskNanalyt()
   return (
     <div
       className="flex h-screen w-full bg-white transition-[padding] duration-200"
-      style={{ paddingRight: open ? 440 : 0 }}
+      style={{ paddingRight: panelOpen ? 440 : 0 }}
     >
       <LeftNav />
       <div className="flex-1 flex flex-col min-w-0 bg-canvas">
@@ -200,6 +203,7 @@ function AppLayout() {
     <AskNanalytProvider>
       <AppLayoutInner />
       <AskNanalytPanel />
+      <AgentDrawer />
     </AskNanalytProvider>
   )
 }

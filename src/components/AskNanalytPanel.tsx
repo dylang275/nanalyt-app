@@ -31,11 +31,15 @@ const REVEAL_STEP_DELAY = 320
 
 type Ctx = {
   open: boolean
+  agentOpen: boolean
+  panelOpen: boolean
   mode: Mode
   context: FindingContext | null
   messages: Message[]
   openForFinding: (c: FindingContext) => void
   openGeneral: () => void
+  openAgent: () => void
+  closeAgent: () => void
   closePanel: () => void
   submitNext: () => void
   removeContext: () => void
@@ -51,11 +55,13 @@ export function useAskNanalyt() {
 
 export function AskNanalytProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
+  const [agentOpen, setAgentOpen] = useState(false)
   const [mode, setMode] = useState<Mode>('general')
   const [context, setContext] = useState<FindingContext | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
 
   const openForFinding = (c: FindingContext) => {
+    setAgentOpen(false)
     setMode('finding')
     setContext(c)
     setMessages([])
@@ -63,6 +69,7 @@ export function AskNanalytProvider({ children }: { children: ReactNode }) {
   }
 
   const openGeneral = () => {
+    setAgentOpen(false)
     setMode('general')
     setContext(null)
     setMessages([])
@@ -70,6 +77,12 @@ export function AskNanalytProvider({ children }: { children: ReactNode }) {
   }
 
   const closePanel = () => setOpen(false)
+
+  const openAgent = () => {
+    setOpen(false)
+    setAgentOpen(true)
+  }
+  const closeAgent = () => setAgentOpen(false)
 
   const submitNext = () => {
     setMessages(prev => {
@@ -119,11 +132,15 @@ export function AskNanalytProvider({ children }: { children: ReactNode }) {
     <AskNanalytContext.Provider
       value={{
         open,
+        agentOpen,
+        panelOpen: open || agentOpen,
         mode,
         context,
         messages,
         openForFinding,
         openGeneral,
+        openAgent,
+        closeAgent,
         closePanel,
         submitNext,
         removeContext,
@@ -558,6 +575,206 @@ export function AskNanalytPanel() {
             </svg>
           </button>
         </form>
+      </div>
+    </aside>
+  )
+}
+
+// ─── Agent drawer ───────────────────────────────────────────────────────────
+
+type WorkingCard =
+  | { kind: 'progress'; name: string; sub: string; pct: number }
+  | { kind: 'continuous'; name: string; right: string; sub: string }
+  | { kind: 'pulse'; name: string; sub: string }
+  | { kind: 'remaining'; name: string; right: string; sub: string }
+
+const WORKING: WorkingCard[] = [
+  {
+    kind: 'progress',
+    name: 'Generating assets for Magnesium Glycinate Complex',
+    sub: 'PDP + 4 ad creatives · 2m remaining',
+    pct: 72,
+  },
+  {
+    kind: 'continuous',
+    name: 'Monitoring 5 competitors',
+    right: 'Continuous',
+    sub: 'Last refresh: 3m ago · Next: 12m',
+  },
+  {
+    kind: 'pulse',
+    name: 'Refreshing TikTok signal data',
+    sub: 'Pulling creator content for sleep + magnesium tags',
+  },
+  {
+    kind: 'remaining',
+    name: 'Scoring 14 new product candidates',
+    right: '~8m remaining',
+    sub: 'Researching demand and saturation for adjacent SKUs',
+  },
+]
+
+const NEXT_UP = [
+  { name: 'Re-evaluate Sleep-Anxiety Crossover angle freshness', schedule: 'Scheduled · Daily' },
+  { name: 'Run weekly market entrants scan', schedule: 'Scheduled · Sunday 2am' },
+  { name: 'Generate creative refresh for ZzzPlex', schedule: 'Triggered when avg ad longevity exceeds 18d' },
+]
+
+const COMPLETED = [
+  { text: 'Surfaced new finding · ZzzPlex needs Sleep-Anxiety angle coverage', time: '14m ago' },
+  { text: 'Detected Moon Juice paused 8 of 14 active ads', time: '1h ago' },
+  { text: 'Validated Magnesium + Ashwagandha Tablets at 4.6× ROAS', time: '3h ago' },
+  { text: 'Ran competitive intelligence pass · 47 ads analyzed', time: '6h ago' },
+]
+
+function WorkingCardItem({ c }: { c: WorkingCard }) {
+  return (
+    <div
+      className="bg-white"
+      style={{ border: '0.5px solid #E5E7EB', borderRadius: 8, padding: '10px 12px' }}
+    >
+      <div className="flex items-center justify-between gap-2 mb-1">
+        <span className="text-[12px] font-medium text-ink">{c.name}</span>
+        {(c.kind === 'progress' || c.kind === 'pulse') && (
+          <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0 animate-soft-pulse" />
+        )}
+        {c.kind === 'continuous' && <span className="text-[10px] text-ink shrink-0">{c.right}</span>}
+        {c.kind === 'remaining' && <span className="text-[10px] text-ink shrink-0">{c.right}</span>}
+      </div>
+      <div className={`text-[11px] text-ink ${c.kind === 'progress' ? 'mb-1.5' : ''}`}>{c.sub}</div>
+      {c.kind === 'progress' && (
+        <div className="h-[3px] rounded-[2px] overflow-hidden" style={{ background: '#F0F1F3' }}>
+          <div className="h-full bg-brand" style={{ width: `${c.pct}%`, borderRadius: 2 }} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SectionHead({ left, right }: { left: ReactNode; right?: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between mb-2.5">
+      <span
+        className="text-[11px] font-medium uppercase text-ink"
+        style={{ letterSpacing: '0.04em' }}
+      >
+        {left}
+      </span>
+      {right}
+    </div>
+  )
+}
+
+export function AgentDrawer() {
+  const { agentOpen, closeAgent } = useAskNanalyt()
+  if (!agentOpen) return null
+
+  return (
+    <aside
+      className="fixed top-0 right-0 bottom-0 w-[440px] bg-white z-[401] flex flex-col font-sans"
+      style={{ borderLeft: '0.5px solid #E5E7EB' }}
+    >
+      {/* Header */}
+      <div className="shrink-0 border-b-[0.5px] border-[#E5E7EB]">
+        <div className="flex items-center justify-between" style={{ padding: '16px 18px 0 18px' }}>
+          <span className="text-[14px] font-medium text-ink">Your agent</span>
+          <button
+            onClick={closeAgent}
+            className="bg-transparent border-0 text-ink cursor-pointer flex p-1 hover:opacity-70"
+            aria-label="Close agent drawer"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M3 3l12 12M15 3l-12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex items-center gap-1.5" style={{ padding: '6px 18px 14px 18px' }}>
+          <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0" />
+          <span className="text-[11px] text-ink">
+            Active · <b className="font-medium">4 tasks in flight</b> · 12 queued
+          </span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto" style={{ padding: 18 }}>
+        <div className="flex flex-col gap-[22px]">
+          {/* CURRENTLY WORKING ON */}
+          <section>
+            <SectionHead
+              left="CURRENTLY WORKING ON"
+              right={<span className="text-[11px] text-ink">{WORKING.length}</span>}
+            />
+            <div className="flex flex-col gap-1.5">
+              {WORKING.map((c, i) => (
+                <WorkingCardItem key={i} c={c} />
+              ))}
+            </div>
+          </section>
+
+          {/* NEXT UP */}
+          <section>
+            <SectionHead
+              left="NEXT UP"
+              right={
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] font-medium text-ink cursor-pointer hover:opacity-70">
+                    Edit queue
+                  </span>
+                  <span className="text-[11px] font-medium text-ink cursor-pointer hover:opacity-70">
+                    View all 12 →
+                  </span>
+                </div>
+              }
+            />
+            <div className="flex flex-col gap-1.5">
+              {NEXT_UP.map((n, i) => (
+                <div
+                  key={i}
+                  className="bg-white flex items-center justify-between gap-2"
+                  style={{ border: '0.5px solid #E5E7EB', borderRadius: 8, padding: '10px 12px' }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[12px] font-medium text-ink mb-0.5">{n.name}</div>
+                    <div className="text-[11px] text-ink">{n.schedule}</div>
+                  </div>
+                  <span className="text-[14px] text-ink cursor-pointer leading-none pl-2 shrink-0 hover:opacity-70">
+                    ⋯
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* RECENTLY COMPLETED */}
+          <section>
+            <SectionHead
+              left="RECENTLY COMPLETED"
+              right={
+                <span className="text-[11px] font-medium text-ink cursor-pointer hover:opacity-70">
+                  View activity log →
+                </span>
+              }
+            />
+            <div className="flex flex-col">
+              {COMPLETED.map((c, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-2.5 py-2 ${i < COMPLETED.length - 1 ? 'border-b border-line-soft' : ''}`}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full bg-brand shrink-0"
+                    style={{ marginTop: 5 }}
+                  />
+                  <div className="flex-1">
+                    <div className="text-[12px] text-ink leading-[1.4]">{c.text}</div>
+                    <div className="text-[10px] text-ink mt-0.5">{c.time}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
     </aside>
   )

@@ -789,8 +789,8 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
   const isNewAngle = f.id === 1
   const isNewProduct = f.id === 2
   const isRich = isNewAngle || isNewProduct
-  const { open: chatOpen } = useAskNanalyt()
-  const offset = chatOpen ? 440 : 0
+  const { panelOpen } = useAskNanalyt()
+  const offset = panelOpen ? 440 : 0
 
   return (
     <>
