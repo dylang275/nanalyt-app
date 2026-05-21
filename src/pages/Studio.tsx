@@ -42,14 +42,14 @@ const INITIAL_PRODUCTS: Product[] = [
     name: 'Magnesium Glycinate Complex',
     img: '/uploads/IMG_3472.jpg',
     status: 'In market',
-    newCount: 3,
+    newCount: 5,
     pdps: [
       {
         id: 'pdp1',
-        state: 'READY',
+        state: 'NEW',
         version: 'v1',
         angle: 'Next-day calm',
-        time: 'Drafted 4 days ago',
+        time: 'Generated 10 seconds ago',
         img: '/uploads/Screenshot 2026-05-18 at 9.56.07 AM.png',
       },
     ],
@@ -661,17 +661,24 @@ type GenContext = {
 
 function Studio() {
   const navigate = useNavigate()
-  const [selectedProduct, setSelectedProduct] = useState(0)
+  const [selectedProduct, setSelectedProduct] = useState<number | null>(null)
+  const [bannerDismissed, setBannerDismissed] = useState(false)
   const [assetFilter, setAssetFilter] = useState<AssetFilter>('All')
   const [assets] = useState<Product[]>(INITIAL_PRODUCTS)
   const [wizardMode, setWizardMode] = useState<WizardMode | null>(null)
   const [genContext, setGenContext] = useState<GenContext | null>(null)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 
-  const product = assets[selectedProduct]
-  const totalNew = assets.reduce((s, p) => s + p.newCount, 0)
+  const product = selectedProduct !== null ? assets[selectedProduct] : null
+  const showBanner = selectedProduct === null && !bannerDismissed
+
+  const selectProduct = (i: number) => {
+    setSelectedProduct(i)
+    setBannerDismissed(true)
+  }
 
   const handleWizardGenerate = (mode: WizardMode, r: WizardResult) => {
+    if (product === null || selectedProduct === null) return
     setWizardMode(null)
     setGenContext({
       mode,
@@ -703,8 +710,8 @@ function Studio() {
       return a.state !== 'ARCHIVED'
     })
 
-  const filteredPdps = filterPdps(product.pdps)
-  const filteredAds = filterAds(product.ads)
+  const filteredPdps = product ? filterPdps(product.pdps) : []
+  const filteredAds = product ? filterAds(product.ads) : []
 
   return (
     <div className="font-sans">
@@ -714,30 +721,34 @@ function Studio() {
             <div className="text-[20px] font-medium text-ink tracking-[-0.02em] mb-1">Studio</div>
             <div className="text-[12px] text-ink">Generated and uploaded creatives, organized by product</div>
           </div>
-          <div className="flex gap-2 items-center mt-1">
-            <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-[5px] bg-surf outline-none cursor-pointer">
-              <option>All products</option>
-              <option>Current catalog</option>
-              <option>Pipeline</option>
-            </select>
-            <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-[5px] bg-surf outline-none cursor-pointer">
-              <option>Format: All</option>
-              <option>PDP</option>
-              <option>Static</option>
-              <option>UGC</option>
-              <option>Video</option>
-            </select>
-          </div>
+          {product && (
+            <div className="flex gap-2 items-center mt-1">
+              <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-[5px] bg-surf outline-none cursor-pointer">
+                <option>All products</option>
+                <option>Current catalog</option>
+                <option>Pipeline</option>
+              </select>
+              <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-[5px] bg-surf outline-none cursor-pointer">
+                <option>Format: All</option>
+                <option>PDP</option>
+                <option>Static</option>
+                <option>UGC</option>
+                <option>Video</option>
+              </select>
+            </div>
+          )}
         </div>
 
-        {totalNew > 0 && (
-          <div className="flex items-center justify-between bg-brand-bg border-[0.5px] border-brand-dim rounded-lg px-4 py-2.5 mb-5">
+        {showBanner && (
+          <div
+            onClick={() => selectProduct(0)}
+            className="flex items-center justify-between bg-brand-bg border-[0.5px] border-brand-dim rounded-lg px-4 py-2.5 mb-5 cursor-pointer transition-colors hover:bg-brand-dim/40"
+          >
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-brand shrink-0" />
-              <span className="text-[12px] text-brand font-medium">{totalNew} new creatives pending review</span>
-              <span className="text-[12px] text-brand/70">· From last 24 hours</span>
+              <div className="w-2 h-2 rounded-full bg-brand shrink-0 animate-soft-pulse" />
+              <span className="text-[12px] text-brand font-medium">5 new assets just generated for Magnesium Glycinate Complex</span>
             </div>
-            <span className="text-[12px] text-brand font-semibold cursor-pointer">Review →</span>
+            <span className="text-[12px] text-brand font-semibold">Review →</span>
           </div>
         )}
 
@@ -752,7 +763,7 @@ function Studio() {
                 return (
                   <div
                     key={p.id}
-                    onClick={() => setSelectedProduct(pi)}
+                    onClick={() => selectProduct(pi)}
                     className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors border-[0.5px] ${
                       sel ? 'bg-brand border-brand' : 'bg-surf border-[#e5e7eb] hover:bg-[#fafafa]'
                     }`}
@@ -785,6 +796,17 @@ function Studio() {
           </div>
 
           <div>
+          {!product && (
+            <div className="flex flex-col items-center justify-center min-h-[420px] text-ink">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="opacity-30 mb-3">
+                <rect x="5" y="9" width="22" height="16" rx="1.5" />
+                <rect x="9" y="5" width="14" height="4" rx="1" />
+                <path d="M11 16h10M11 19h7" />
+              </svg>
+              <div className="text-base text-ink">Select a product to view assets</div>
+            </div>
+          )}
+          {product && (<>
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border-[0.5px] border-line">
                 <img src={product.img} alt="" className="w-full h-full object-cover" />
@@ -929,11 +951,12 @@ function Studio() {
                 ))}
               </div>
             </div>
+          </>)}
           </div>
         </div>
       </div>
 
-      {wizardMode && (
+      {wizardMode && product && (
         <GenerationWizard
           mode={wizardMode}
           product={product}
