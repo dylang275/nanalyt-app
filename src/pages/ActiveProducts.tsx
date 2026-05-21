@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, type ReactNode } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 
 // ─── Types & data ────────────────────────────────────────────────────────────
 

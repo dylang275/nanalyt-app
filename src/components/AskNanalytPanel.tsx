@@ -12,15 +12,7 @@ type Message =
   | { role: 'user'; text: string }
   | { role: 'agent'; key: AgentKey; revealed: number }
 
-const FINDING_QUESTIONS = [
-  'What price should I launch this at?',
-  'Who would buy this and why?',
-  "What angles are competitors testing that haven't hit yet?",
-] as const
-
 const FINDING_KEYS: AgentKey[] = ['q1', 'q2', 'q3']
-
-const GENERAL_QUESTION = "What's the biggest gap in the sleep category right now?"
 
 const BLOCK_COUNTS: Record<AgentKey, number> = { q1: 5, q2: 4, q3: 6, qgap: 6 }
 

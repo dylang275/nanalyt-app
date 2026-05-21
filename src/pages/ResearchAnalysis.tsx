@@ -776,7 +776,7 @@ function OverviewTabContent() {
               <div key={i} className="text-[9px] font-bold tracking-[0.06em] text-white/85">{h}</div>
             ))}
           </div>
-          {SHOP_ROWS.map(([s, p, sh, rv, ad], i) => (
+          {SHOP_ROWS.map(([s, p, sh, rv, ad]) => (
             <div
               key={s}
               className="grid grid-cols-[minmax(0,1fr)_80px_80px_80px_90px_50px] px-3.5 py-2 border-t-[0.5px] border-[#f5f4f2] items-center first:border-t-0"

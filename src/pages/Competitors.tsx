@@ -341,12 +341,6 @@ function TopMovingAngles() {
 
 // ─── Competitor card ─────────────────────────────────────────────────────────
 
-function MoveIcon({ type }: { type: MoveType }) {
-  if (type === 'up') return <span className="text-[13px] text-brand font-bold leading-none">↑</span>
-  if (type === 'plus') return <span className="text-[13px] text-ink font-bold leading-none">+</span>
-  return <span className="text-[13px] text-danger font-bold leading-none">×</span>
-}
-
 function CompetitorCard({ comp, onOpen }: { comp: Competitor; onOpen: (c: Competitor) => void }) {
   const dotColor =
     comp.activityLevel === 'High' ? '#2d5c3a' : comp.activityLevel === 'Medium' ? '#6B7280' : '#D1D5DB'
@@ -904,43 +898,6 @@ const ANGLE_READS: Record<string, AngleRead> = {
     positioning: 'Transparency-first messaging — no fillers, no artificial sweeteners, traceable sourcing. Appeals to ingredient-conscious buyers.',
     corePromise: 'Nothing you can\'t pronounce.',
   },
-}
-
-const EXAMPLE_ADS = [
-  { format: 'STATIC', img: '/uploads/Screenshot 2026-05-13 at 10.15.26 PM.png', title: 'Next-day calm · Product lifestyle', sub: 'Static · 1:1', hasPlay: false },
-  { format: 'UGC', img: '/uploads/IMG_3486.jpg', title: 'Sleep anxiety · Creator review', sub: 'UGC · 9:16', hasPlay: true },
-  { format: 'VIDEO', img: '/uploads/IMG_3488.jpg', title: 'Ingredient story · Science angle', sub: 'Video · 9:16', hasPlay: true },
-]
-
-function ExampleAds() {
-  return (
-    <div className="flex gap-4">
-      {EXAMPLE_ADS.map((ad, j) => (
-        <div key={j} className="flex-1 flex flex-col gap-2 min-w-0">
-          <div className="aspect-[9/14] rounded-lg overflow-hidden relative bg-[#111]">
-            <img src={ad.img} alt="" className="absolute inset-0 w-full h-full object-cover block" />
-            <div className="absolute inset-0 bg-black/[0.18]" />
-            <span className="absolute top-2.5 left-2.5 text-[9px] font-bold tracking-[0.05em] bg-black/55 text-white px-2 py-[3px] rounded-[3px]">
-              {ad.format}
-            </span>
-            {ad.hasPlay && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-11 h-11 rounded-full bg-black/40 border-[1.5px] border-white/60 flex items-center justify-center">
-                  <svg width="14" height="16" viewBox="0 0 14 16" fill="white">
-                    <path d="M2 1l11 7L2 15V1z" />
-                  </svg>
-                </div>
-              </div>
-            )}
-          </div>
-          <div>
-            <div className="text-[12px] font-medium text-ink mb-px">{ad.title}</div>
-            <div className="text-[10px] text-ink">{ad.sub} · 18d running</div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
 }
 
 // ─── Angle selector + angle detail views ─────────────────────────────────────
