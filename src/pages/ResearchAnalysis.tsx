@@ -25,7 +25,7 @@ const SCORE_BREAKDOWN: [string, number, number][] = [
   ['Angle Quality', 17.9, 30],
   ['Signal Volume', 8.5, 10],
   ['Reddit Engagement', 9.8, 12],
-  ['Platform Presence', 10.5, 10],
+  ['Platform Presence', 10, 10],
   ['Sales Momentum', 0.0, 8],
   ['YouTube Engagement', 4.2, 10],
 ]
