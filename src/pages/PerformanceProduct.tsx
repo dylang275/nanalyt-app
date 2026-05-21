@@ -92,7 +92,7 @@ const MAG_CREATIVES: CreativeRow[] = [
 const GUMMIES_CREATIVES: CreativeRow[] = [
   {
     id: 'g0', format: 'PDP',
-    bg: 'linear-gradient(140deg, #ddd3e8, #6b45a8)',
+    bg: "url('/uploads/magnesium-ashwagandha-tablets-pdp.png') center/cover",
     name: 'Magnesium + Ashwagandha tablets landing page',
     angle: 'v1 · Sleep & Stress Combo · PDP',
     daysLive: '32d', spend: '—', roas: '—', cvr: '2.8%', ctr: '—',
