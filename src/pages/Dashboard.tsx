@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // ─── Shared atoms ────────────────────────────────────────────────────────────
 
@@ -371,24 +372,25 @@ const DASH_FINDINGS = [
     typeColor: '#2d5c3a',
     typeBg: '#e4ede7',
     time: 'Yesterday',
-    rec: 'Start running "next-day calm" as a new angle for Magnesium Glycinate Complex.',
+    rec: 'Start running "next-day calm" as a new angle for ZzzPlex Sleep Support.',
     m1: { label: 'VALIDATED BY', value: '3 competitors, 30d+' },
     m2: { label: 'CATEGORY DEMAND', value: '64% of buyer mentions' },
-    product: { name: 'Magnesium Glycinate Complex', img: '/uploads/IMG_3472.jpg' },
+    product: { name: 'ZzzPlex Sleep Support', img: '/uploads/IMG_3474.jpg' },
   },
   {
     type: 'NEW PRODUCT',
     typeColor: '#2d5c3a',
     typeBg: '#e4ede7',
     time: 'Yesterday',
-    rec: 'Add magnesium + ashwagandha gummies to your catalog — fits your existing buyer.',
+    rec: 'Add Magnesium Glycinate Complex to your catalog — fits your existing buyer.',
     m1: { label: 'EARLY ENTRANTS', value: '3 in last 17d' },
     m2: { label: 'DEMAND TREND', value: '+4.1× search in 60d' },
-    product: { name: 'Magnesium + Ashwagandha Gummies', img: '/uploads/IMG_3476.jpg' },
+    product: { name: 'Magnesium Glycinate Complex', img: '/uploads/IMG_3472.jpg' },
   },
 ] as const
 
 function DashFindingCards() {
+  const navigate = useNavigate()
   return (
     <div className="grid grid-cols-2 gap-2.5 items-stretch">
       {DASH_FINDINGS.map((f, i) => (
@@ -419,8 +421,19 @@ function DashFindingCards() {
             <span className="text-[11px] font-medium text-ink">{f.product.name}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[12px] text-brand font-medium cursor-pointer">View finding →</span>
-            <button className="bg-ink text-white border-0 px-2.5 py-1 rounded-md text-[11px] font-medium cursor-pointer">
+            <span
+              onClick={() => navigate('/findings')}
+              className="text-[12px] text-brand font-medium cursor-pointer"
+            >
+              View finding →
+            </span>
+            <button
+              onClick={() => {
+                if (f.type === 'NEW PRODUCT') navigate('/findings?action=mgc-newproduct')
+                else navigate('/findings')
+              }}
+              className="bg-ink text-white border-0 px-2.5 py-1 rounded-md text-[11px] font-medium cursor-pointer hover:opacity-90"
+            >
               Take action
             </button>
           </div>
@@ -433,7 +446,7 @@ function DashFindingCards() {
 // ─── Top performing ads ──────────────────────────────────────────────────────
 
 const TOP_ADS = [
-  { format: 'STATIC', product: 'Magnesium Glycinate', roas: '4.2×', delta: '+0.3', pos: true, cpa: '$22.40', cpaRed: false, spend: '$2.1k/wk', img: '/uploads/IMG_3472.jpg' },
+  { format: 'STATIC', product: 'Vitamin D3 + K2 Complex', roas: '3.6×', delta: '+0.4', pos: true, cpa: '$19.80', cpaRed: false, spend: '$2.4k/wk', img: '/uploads/Screenshot 2026-05-11 at 9.01.38 PM.png' },
   { format: 'VIDEO', product: 'ZzzPlex Sleep Support', roas: '3.1×', delta: '-0.4', pos: false, cpa: '$38.20', cpaRed: true, spend: '$1.6k/wk', img: '/uploads/IMG_3474.jpg' },
   { format: 'UGC', product: 'ASHWAGANDHA+', roas: '2.8×', delta: '+0.6', pos: true, cpa: '$28.10', cpaRed: false, spend: '$0.3k/wk', img: '/uploads/IMG_3476.jpg' },
 ]

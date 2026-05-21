@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 // ─── Types & data ────────────────────────────────────────────────────────────
 
@@ -1195,6 +1196,15 @@ function Findings() {
     if (f.type === 'NEW PRODUCT') setConfirmFinding(f)
     else setActionFinding(f)
   }
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  useEffect(() => {
+    if (searchParams.get('action') === 'mgc-newproduct') {
+      const f = FINDINGS.find(x => x.id === 2)
+      if (f) setConfirmFinding(f)
+      setSearchParams({}, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
 
   const filtered =
     activeFilter === 'All' ? FINDINGS : FINDINGS.filter(f => f.type === TYPE_MAP[activeFilter])

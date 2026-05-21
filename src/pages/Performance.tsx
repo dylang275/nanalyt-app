@@ -42,6 +42,17 @@ const ACTIVE_PRODUCTS: Product[] = [
     pipeline: false,
     verdict: 'watch',
   },
+  {
+    slug: 'vitamin-d3-k2-complex',
+    name: 'Vitamin D3 + K2 Complex',
+    img: '/uploads/Screenshot 2026-05-11 at 9.01.38 PM.png',
+    status: '1 PDP · 1 ad',
+    spend: '$4.2k',
+    roas: '2.9×',
+    cvr: '1.9%',
+    pipeline: false,
+    verdict: 'stable',
+  },
 ]
 
 const PIPELINE_PRODUCTS: Product[] = [
@@ -245,15 +256,15 @@ function Performance() {
 
         {/* Stats row */}
         <div className="flex items-stretch mb-[22px]">
-          <StatCell label="ACTIVE CREATIVES" value="9" />
+          <StatCell label="ACTIVE CREATIVES" value="11" />
           <StatDivider />
-          <StatCell label="TOTAL SPEND · 30D" value="$12.2k" />
+          <StatCell label="TOTAL SPEND · 30D" value="$16.4k" />
           <StatDivider />
-          <StatCell label="BLENDED ROAS" value="3.4×" />
+          <StatCell label="BLENDED ROAS" value="3.2×" />
           <StatDivider />
-          <StatCell label="AVG CVR" value="2.1%" />
+          <StatCell label="AVG CVR" value="2.0%" />
           <StatDivider />
-          <StatCell label="PRODUCTS LIVE" value="2" />
+          <StatCell label="PRODUCTS LIVE" value="3" />
         </div>
 
         {/* Section header */}
