@@ -25,6 +25,7 @@ type Competitor = {
   activityLevel: ActivityLevel
   activeAds: number
   activeAngles: number
+  avgLongevity: number
   adsLast30: number
   productsActive: number
   topProduct: { name: string; ads: number; spendShare: number }
@@ -37,8 +38,8 @@ const COMPETITORS: Competitor[] = [
     id: 1, name: 'Olly', initials: 'OL',
     heroImg: '/uploads/Screenshot 2026-05-11 at 10.35.38 PM.png',
     heroGrad: 'linear-gradient(90deg, rgba(232,99,26,0.82) 0%, rgba(210,80,10,0.6) 100%)',
-    tagline: 'Mass-market supplements · TikTok-heavy',
-    activityLevel: 'High', activeAds: 31, activeAngles: 7, adsLast30: 62, productsActive: 12,
+    tagline: 'Mass-market · TikTok-heavy',
+    activityLevel: 'High', activeAds: 31, activeAngles: 7, avgLongevity: 14, adsLast30: 62, productsActive: 12,
     topProduct: { name: 'Goodbye Stress Gummies', ads: 19, spendShare: 42 },
     recentMoves: [
       { text: 'Launched 3 new UGC video ads · nighttime recovery angle', time: '3h ago', type: 'up' },
@@ -55,8 +56,8 @@ const COMPETITORS: Competitor[] = [
     id: 2, name: 'Beam', initials: 'BM',
     heroImg: '/uploads/Screenshot 2026-05-11 at 10.34.39 PM.png',
     heroGrad: 'linear-gradient(90deg, rgba(20,22,48,0.85) 0%, rgba(30,40,80,0.65) 100%)',
-    tagline: 'Science-backed sleep · Dream Powder',
-    activityLevel: 'Medium', activeAds: 18, activeAngles: 4, adsLast30: 31, productsActive: 5,
+    tagline: 'Science-backed sleep',
+    activityLevel: 'Medium', activeAds: 18, activeAngles: 4, avgLongevity: 22, adsLast30: 31, productsActive: 5,
     topProduct: { name: 'Dream Powder', ads: 11, spendShare: 61 },
     recentMoves: [
       { text: 'Launched 2 static ads · sleep-anxiety crossover', time: '1d ago', type: 'up' },
@@ -73,8 +74,8 @@ const COMPETITORS: Competitor[] = [
     id: 3, name: 'Moon Juice', initials: 'MJ',
     heroImg: '/uploads/Screenshot 2026-05-11 at 10.38.42 PM.png',
     heroGrad: 'linear-gradient(90deg, rgba(100,60,110,0.82) 0%, rgba(140,90,140,0.6) 100%)',
-    tagline: 'Adaptogen wellness · Magnesi-Om',
-    activityLevel: 'Medium', activeAds: 14, activeAngles: 3, adsLast30: 24, productsActive: 6,
+    tagline: 'Adaptogen wellness',
+    activityLevel: 'Medium', activeAds: 14, activeAngles: 3, avgLongevity: 18, adsLast30: 24, productsActive: 6,
     topProduct: { name: 'Magnesi-Om', ads: 8, spendShare: 54 },
     recentMoves: [
       { text: 'Refreshed static creative · Magnesi-Om lifestyle angle', time: '2d ago', type: 'up' },
@@ -90,8 +91,8 @@ const COMPETITORS: Competitor[] = [
     id: 4, name: 'Ritual', initials: 'RT',
     heroImg: '/uploads/Screenshot 2026-05-11 at 10.39.26 PM.png',
     heroGrad: 'linear-gradient(90deg, rgba(80,100,80,0.82) 0%, rgba(110,130,100,0.6) 100%)',
-    tagline: 'Transparent formulas · Magnesium+',
-    activityLevel: 'Medium', activeAds: 12, activeAngles: 3, adsLast30: 18, productsActive: 4,
+    tagline: 'Transparent formulas',
+    activityLevel: 'Medium', activeAds: 12, activeAngles: 3, avgLongevity: 25, adsLast30: 18, productsActive: 4,
     topProduct: { name: 'Magnesium+', ads: 7, spendShare: 58 },
     recentMoves: [
       { text: 'Launched clean static product ads · transparency angle', time: '3d ago', type: 'up' },
@@ -104,11 +105,11 @@ const COMPETITORS: Competitor[] = [
     ],
   },
   {
-    id: 5, name: 'Pure Enc.', initials: 'PE',
+    id: 5, name: 'Pure Encapsulations', initials: 'PE',
     heroImg: '/uploads/Screenshot 2026-05-11 at 10.40.07 PM.png',
     heroGrad: 'linear-gradient(90deg, rgba(10,50,140,0.85) 0%, rgba(20,80,180,0.6) 100%)',
     tagline: 'Practitioner-grade · Magnesium Glycinate',
-    activityLevel: 'Low', activeAds: 9, activeAngles: 2, adsLast30: 14, productsActive: 4,
+    activityLevel: 'Low', activeAds: 9, activeAngles: 2, avgLongevity: 31, adsLast30: 14, productsActive: 4,
     topProduct: { name: 'Magnesium Glycinate', ads: 5, spendShare: 54 },
     recentMoves: [
       { text: 'Clinical messaging refresh · practitioner focus', time: '2d ago', type: 'up' },
@@ -347,15 +348,16 @@ function MoveIcon({ type }: { type: MoveType }) {
 }
 
 function CompetitorCard({ comp, onOpen }: { comp: Competitor; onOpen: (c: Competitor) => void }) {
-  const actLevelCls =
-    comp.activityLevel === 'High' ? 'text-brand' : comp.activityLevel === 'Medium' ? 'text-warn' : 'text-ink'
+  const dotColor =
+    comp.activityLevel === 'High' ? '#2d5c3a' : comp.activityLevel === 'Medium' ? '#6B7280' : '#D1D5DB'
 
   return (
     <div
       onClick={() => onOpen(comp)}
-      className="bg-surf rounded-[10px] shadow-lift overflow-hidden flex flex-col cursor-pointer transition-shadow hover:shadow-card-hover font-sans"
+      className="bg-white border-[0.5px] border-[#E5E7EB] rounded-[10px] overflow-hidden cursor-pointer transition-colors hover:border-[#d1d5db] font-sans"
     >
-      <div className="relative w-full pb-[32%] overflow-hidden shrink-0">
+      {/* Banner */}
+      <div className="relative h-[76px] overflow-hidden">
         <img
           src={comp.heroImg}
           alt=""
@@ -363,84 +365,82 @@ function CompetitorCard({ comp, onOpen }: { comp: Competitor; onOpen: (c: Compet
           style={{ objectPosition: 'center top' }}
         />
         <div className="absolute inset-0" style={{ background: comp.heroGrad }} />
-        <div className="absolute bottom-0 left-0 right-0 px-2.5 py-2 flex items-end justify-between">
-          <div>
-            <div className="text-[13px] font-semibold text-white tracking-[-0.01em] leading-[1.1]">{comp.name}</div>
-            <div className="text-[9px] text-white/85 mt-px">{comp.tagline}</div>
+        <div
+          className="relative h-full flex flex-col justify-between"
+          style={{ padding: '14px 18px' }}
+        >
+          <div className="flex justify-end">
+            <span
+              className="inline-flex items-center gap-1.5 text-[10px] font-medium text-ink rounded-[12px] whitespace-nowrap"
+              style={{ background: 'rgba(255,255,255,0.95)', padding: '3px 9px' }}
+            >
+              <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{ background: dotColor }} />
+              {comp.activityLevel} activity
+            </span>
           </div>
-          <span className="text-[10px] font-medium text-white/95 bg-white/[0.18] border border-white/25 px-2.5 py-[3px] rounded-[20px] whitespace-nowrap">
-            {comp.activityLevel} activity
-          </span>
+          <div>
+            <div className="text-[16px] font-medium text-white leading-tight" style={{ marginBottom: 1 }}>
+              {comp.name}
+            </div>
+            <div className="text-[10px]" style={{ color: 'rgba(255,255,255,0.85)' }}>
+              {comp.tagline}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="px-3 py-2.5 flex flex-col gap-2.5 flex-1">
-        <div className="flex gap-6">
-          {[
-            { label: 'ACTIVE ADS', value: String(comp.activeAds) },
-            { label: 'ACTIVE ANGLES', value: String(comp.activeAngles) },
-          ].map(m => (
-            <div key={m.label}>
-              <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-[3px]">{m.label}</div>
-              <div className={`text-[14px] font-medium ${m.label === 'ACTIVE ADS' ? actLevelCls : 'text-ink'}`}>
-                {m.value}
-              </div>
+      {/* Metrics row */}
+      <div className="flex justify-between" style={{ padding: '16px 20px 0 20px', marginBottom: 16 }}>
+        {[
+          { label: 'ACTIVE ADS', value: String(comp.activeAds) },
+          { label: 'ANGLES', value: String(comp.activeAngles) },
+          { label: 'AVG LONGEVITY', value: `${comp.avgLongevity}d` },
+        ].map(m => (
+          <div key={m.label}>
+            <div
+              className="text-[10px] font-medium uppercase text-ink"
+              style={{ letterSpacing: '0.03em', marginBottom: 3 }}
+            >
+              {m.label}
             </div>
-          ))}
-        </div>
+            <div className="text-[17px] font-medium text-ink leading-none">{m.value}</div>
+          </div>
+        ))}
+      </div>
 
-        <div>
-          <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-1.5">Top Product</div>
-          <div className="flex items-center gap-2 bg-surf-2 rounded-md px-2 py-[7px]">
-            <div className="w-7 h-7 rounded shrink-0 overflow-hidden bg-white border-[0.5px] border-line">
+      {/* Top product row */}
+      <div className="border-t-[0.5px] border-[#F0F1F3]" style={{ padding: '14px 18px 18px 18px' }}>
+        <div
+          className="text-[10px] font-medium uppercase text-ink"
+          style={{ letterSpacing: '0.03em', marginBottom: 8 }}
+        >
+          TOP PRODUCT
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+            <div
+              className="w-8 h-8 rounded-md shrink-0 overflow-hidden bg-white border-[0.5px] border-line"
+            >
               <img src={comp.heroImg} alt="" className="w-full h-full object-cover block" />
             </div>
             <div className="min-w-0">
-              <div className="text-[12px] font-medium text-ink truncate">{comp.topProduct.name}</div>
-              <div className="text-[10px] text-ink mt-px">
-                {comp.topProduct.ads} active ads · {comp.topProduct.spendShare}% of their spend
+              <div className="text-[12px] font-medium text-ink truncate" style={{ marginBottom: 1 }}>
+                {comp.topProduct.name}
+              </div>
+              <div className="text-[11px] text-ink">
+                {comp.topProduct.ads} ads · {comp.topProduct.spendShare}% of spend
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="mt-auto border-[0.5px] border-line rounded-md px-2 py-[7px]">
-          <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-2">Recent Moves</div>
-          {comp.recentMoves.slice(0, 2).map((a, i) => {
-            const parts = a.text.split(' · ')
-            return (
-              <div
-                key={i}
-                className={`grid grid-cols-[14px_36px_1fr] gap-1.5 items-baseline ${i === 0 ? 'mb-1.5' : ''}`}
-              >
-                <span className="flex items-center justify-center">
-                  <MoveIcon type={a.type} />
-                </span>
-                <span className="text-[10px] text-ink font-mono">{a.time}</span>
-                <span className="text-[11px] text-ink leading-[1.4]">
-                  {parts.map((part, pi) => (
-                    <span key={pi}>
-                      {pi > 0 && ' · '}
-                      {pi === 0 ? <strong className="font-semibold">{part}</strong> : part}
-                    </span>
-                  ))}
-                </span>
-              </div>
-            )
-          })}
-        </div>
-
-        <div className="flex justify-end">
-          <button
+          <span
             onClick={e => {
               e.stopPropagation()
               onOpen(comp)
             }}
-            className="bg-brand text-white border-0 rounded-md px-3 py-1 text-[12px] font-medium cursor-pointer flex items-center gap-1 hover:opacity-90"
+            className="text-[11px] font-medium text-ink cursor-pointer shrink-0 pl-2 hover:opacity-70"
           >
-            Open profile
-            <ArrowR />
-          </button>
+            View →
+          </span>
         </div>
       </div>
     </div>
@@ -483,7 +483,7 @@ function WatchlistView({ onOpen }: { onOpen: (c: Competitor) => void }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 items-stretch">
+      <div className="grid grid-cols-3 gap-2.5 items-stretch">
         {COMPETITORS.map(comp => (
           <CompetitorCard key={comp.id} comp={comp} onOpen={onOpen} />
         ))}
