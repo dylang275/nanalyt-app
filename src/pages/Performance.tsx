@@ -67,28 +67,6 @@ const PIPELINE_PRODUCTS: Product[] = [
     pipeline: true,
     verdict: 'validated',
   },
-  {
-    slug: 'sleep-stress-tincture',
-    name: 'Sleep + Stress Tincture',
-    gradient: 'from-[#c4b5fd] to-[#8b5cf6]',
-    status: '1 PDP · 3 ads',
-    spend: '$2.1k',
-    roas: '3.8×',
-    cvr: '2.4%',
-    pipeline: true,
-    verdict: 'testing',
-  },
-  {
-    slug: 'probiotic-calm-blend',
-    name: 'Probiotic + Calm Blend',
-    gradient: 'from-[#fecdd3] to-[#fb7185]',
-    status: '1 PDP · 2 ads',
-    spend: '$0.9k',
-    roas: '2.3×',
-    cvr: '1.6%',
-    pipeline: true,
-    verdict: 'wind-down',
-  },
 ]
 
 // ─── Pills ───────────────────────────────────────────────────────────────────

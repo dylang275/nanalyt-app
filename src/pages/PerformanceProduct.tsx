@@ -215,53 +215,6 @@ const PRODUCTS: ProductDetail[] = [
     roasLine: GUMMIES_ROAS,
     creatives: GUMMIES_CREATIVES,
   },
-  {
-    slug: 'sleep-stress-tincture',
-    name: 'Sleep + Stress Tincture',
-    kind: 'pipeline',
-    gradient: 'from-[#c4b5fd] to-[#8b5cf6]',
-    subline: 'In test · 1 PDP · 3 ads · last 30 days',
-    spend: '$2.1k', roas: '3.8×', cvr: '2.4%',
-    pipelineVerdict: 'testing',
-    vsAvg: 'even',
-    kpis: [
-      { label: 'Impressions', value: '286k', delta: '+4%', deltaSign: 'pos' },
-      { label: 'CTR', value: '1.1%', delta: '+0.1', deltaSign: 'pos' },
-      { label: 'ATCs', value: '684', delta: '+2%', deltaSign: 'pos' },
-      { label: 'CPA', value: '$22.40', delta: '+$0.30', deltaSign: 'neg' },
-    ],
-    bars: [128, 132, 136, 130, 142, 138, 148, 144, 152, 156, 150, 162, 158, 168, 164, 174, 170, 178, 176, 184, 180, 188, 186, 192, 190, 198, 196, 204, 202, 210],
-    roasLine: [3.6, 3.7, 3.8, 3.7, 3.8, 3.9, 3.8, 3.7, 3.8, 3.9, 3.8, 3.9, 3.8, 3.7, 3.8, 3.9, 3.8, 3.7, 3.8, 3.8, 3.9, 3.8, 3.7, 3.8, 3.9, 3.8, 3.8, 3.9, 3.8, 3.9],
-    creatives: [
-      { id: 'tp', format: 'PDP', bg: 'linear-gradient(140deg, #EDE9FE, #C4B5FD)', name: 'Story-led tincture PDP', angle: 'v1 · Sleep-Anxiety · PDP', daysLive: '14d', spend: '—', roas: '—', cvr: '2.4%', ctr: '—', verdict: 'stable' },
-      { id: 't1', format: 'UGC', bg: 'linear-gradient(140deg, #C4B5FD, #7C3AED)', name: 'Tincture morning routine', angle: 'Sleep-Anxiety · UGC', daysLive: '11d', spend: '$0.9k', roas: '4.0×', cvr: '2.6%', ctr: '1.3%', verdict: 'stable' },
-      { id: 't2', format: 'STATIC', bg: 'linear-gradient(140deg, #DDD6FE, #A78BFA)', name: 'Dropper still life', angle: 'Lifestyle · Static', daysLive: '9d', spend: '$0.7k', roas: '3.6×', cvr: '2.2%', ctr: '1.0%', verdict: 'stable' },
-      { id: 't3', format: 'VIDEO', bg: 'linear-gradient(140deg, #C4B5FD, #6D28D9)', name: 'Calm in 20 minutes', angle: 'Sleep-Anxiety · Video', daysLive: '7d', spend: '$0.5k', roas: '3.4×', cvr: '2.1%', ctr: '0.9%', verdict: 'stable' },
-    ],
-  },
-  {
-    slug: 'probiotic-calm-blend',
-    name: 'Probiotic + Calm Blend',
-    kind: 'pipeline',
-    gradient: 'from-[#fecdd3] to-[#fb7185]',
-    subline: 'In test · 1 PDP · 2 ads · last 30 days',
-    spend: '$0.9k', roas: '2.3×', cvr: '1.6%',
-    pipelineVerdict: 'wind-down',
-    vsAvg: '-40%',
-    kpis: [
-      { label: 'Impressions', value: '128k', delta: '-12%', deltaSign: 'neg' },
-      { label: 'CTR', value: '0.8%', delta: '-0.2', deltaSign: 'neg' },
-      { label: 'ATCs', value: '210', delta: '-18%', deltaSign: 'neg' },
-      { label: 'CPA', value: '$34.80', delta: '+$5.20', deltaSign: 'neg' },
-    ],
-    bars: [138, 134, 132, 128, 126, 124, 120, 118, 116, 112, 110, 108, 104, 102, 100, 96, 94, 92, 88, 86, 82, 80, 78, 74, 72, 70, 66, 64, 62, 58],
-    roasLine: [3.0, 2.9, 2.8, 2.9, 2.7, 2.6, 2.7, 2.6, 2.5, 2.4, 2.5, 2.4, 2.3, 2.2, 2.3, 2.2, 2.1, 2.2, 2.1, 2.2, 2.3, 2.3, 2.2, 2.1, 2.2, 2.1, 2.0, 2.1, 2.2, 2.3],
-    creatives: [
-      { id: 'pp', format: 'PDP', bg: 'linear-gradient(140deg, #FEE2E2, #FECDD3)', name: 'Gut-mind landing page', angle: 'v1 · Wellness · PDP', daysLive: '21d', spend: '—', roas: '—', cvr: '1.6%', ctr: '—', verdict: 'watch' },
-      { id: 'p1', format: 'UGC', bg: 'linear-gradient(140deg, #FECDD3, #E11D48)', name: 'Gut-mind connection test', angle: 'Wellness · UGC', daysLive: '16d', spend: '$0.6k', roas: '2.5×', cvr: '1.8%', ctr: '0.9%', verdict: 'wind-down' },
-      { id: 'p2', format: 'STATIC', bg: 'linear-gradient(140deg, #FEE2E2, #FB7185)', name: 'Bottle hero shot', angle: 'Wellness · Static', daysLive: '12d', spend: '$0.3k', roas: '2.1×', cvr: '1.4%', ctr: '0.7%', verdict: 'watch' },
-    ],
-  },
 ]
 
 // ─── Pills ───────────────────────────────────────────────────────────────────
