@@ -406,13 +406,16 @@ export function AskNanalytPanel() {
   const submitted = messages.filter(m => m.role === 'user').length
   const limit = mode === 'finding' ? 3 : 1
   const allDone = submitted >= limit
-  const nextQuestion =
-    !allDone && !isStreaming
-      ? mode === 'finding'
-        ? FINDING_QUESTIONS[submitted]
-        : GENERAL_QUESTION
-      : null
   const placeholder = mode === 'finding' ? 'Ask a follow-up...' : 'Ask anything about the market...'
+
+  // Decorative starter chips — shown before the first message. They don't
+  // advance the script (the user types + sends to trigger the next scripted
+  // response).
+  const starterChips =
+    mode === 'finding'
+      ? ['What suppliers can fulfill this?', 'Should I bundle this?', 'Will this cannibalize ZzzPlex?']
+      : ['What should I avoid spending on?']
+  const showStarterChips = messages.length === 0
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -516,15 +519,18 @@ export function AskNanalytPanel() {
 
       {/* Input */}
       <div className="shrink-0 border-t-[0.5px] border-[#E5E7EB]" style={{ padding: '12px 14px' }}>
-        {nextQuestion && (
+        {showStarterChips && (
           <div className="mb-2 flex flex-wrap gap-1.5">
-            <button
-              onClick={() => submitNext()}
-              className="text-[11px] text-ink bg-white border-[0.5px] border-[#D1D5DB] rounded-md cursor-pointer hover:bg-[#fafafa]"
-              style={{ padding: '4px 10px' }}
-            >
-              {nextQuestion}
-            </button>
+            {starterChips.map(c => (
+              <button
+                key={c}
+                type="button"
+                className="text-[11px] text-ink bg-white border-[0.5px] border-[#D1D5DB] rounded-md cursor-pointer hover:bg-[#fafafa]"
+                style={{ padding: '4px 10px' }}
+              >
+                {c}
+              </button>
+            ))}
           </div>
         )}
         <form
