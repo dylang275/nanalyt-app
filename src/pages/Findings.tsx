@@ -998,10 +998,10 @@ const CONFIRM_ASSETS: Asset[] = [
 ]
 
 const FORMAT_COLOR: Record<AssetFormat, { bg: string; text: string }> = {
-  PDP: { bg: '#F0F9F4', text: '#27500A' },
-  UGC: { bg: '#FCE7F3', text: '#831843' },
-  VIDEO: { bg: '#EDE9FE', text: '#5B21B6' },
-  STATIC: { bg: '#FEF3C7', text: '#92400E' },
+  PDP: { bg: '#e4ede7', text: '#2d5c3a' },
+  UGC: { bg: '#dbeafe', text: '#1e40af' },
+  VIDEO: { bg: '#dbeafe', text: '#1e40af' },
+  STATIC: { bg: '#dbeafe', text: '#1e40af' },
 }
 
 function ConfirmGenerateModal({ onClose, onGenerate }: { onClose: () => void; onGenerate: () => void }) {
@@ -1050,7 +1050,7 @@ function ConfirmGenerateModal({ onClose, onGenerate }: { onClose: () => void; on
         {/* Winning angle callout */}
         <div
           className="rounded-lg mb-[22px]"
-          style={{ background: '#F0F9F4', border: '0.5px solid #1D9E75', padding: '12px 14px' }}
+          style={{ background: '#e4ede7', border: '0.5px solid #2d5c3a', padding: '12px 14px' }}
         >
           <div className="text-[11px] font-medium uppercase text-ink mb-1" style={{ letterSpacing: '0.04em' }}>
             WINNING ANGLE
@@ -1088,7 +1088,7 @@ function ConfirmGenerateModal({ onClose, onGenerate }: { onClose: () => void; on
                   onChange={() => toggle(a.id)}
                   onClick={e => e.stopPropagation()}
                   className="w-4 h-4 mt-1 shrink-0 cursor-pointer"
-                  style={{ accentColor: '#1D9E75' }}
+                  style={{ accentColor: '#2d5c3a' }}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -1102,7 +1102,7 @@ function ConfirmGenerateModal({ onClose, onGenerate }: { onClose: () => void; on
                     {a.badge && (
                       <span
                         className="text-[9px] font-medium uppercase rounded-[8px]"
-                        style={{ background: '#F0F9F4', color: '#27500A', padding: '1px 7px', letterSpacing: '0.03em' }}
+                        style={{ background: '#e4ede7', color: '#2d5c3a', padding: '1px 7px', letterSpacing: '0.03em' }}
                       >
                         {a.badge}
                       </span>
@@ -1134,7 +1134,7 @@ function ConfirmGenerateModal({ onClose, onGenerate }: { onClose: () => void; on
               className={`text-white border-0 rounded-md text-[12px] font-medium ${
                 selectedCount === 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-90'
               }`}
-              style={{ background: '#1D9E75', padding: '7px 14px' }}
+              style={{ background: '#2d5c3a', padding: '7px 14px' }}
             >
               Generate {selectedCount} {selectedCount === 1 ? 'asset' : 'assets'} →
             </button>
