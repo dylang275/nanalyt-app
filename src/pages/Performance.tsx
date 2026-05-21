@@ -125,13 +125,13 @@ function StatCell({ label, value }: { label: string; value: string }) {
       <div className="text-[10px] font-medium uppercase tracking-[0.04em] text-ink mb-1">
         {label}
       </div>
-      <div className="text-[20px] font-medium text-ink leading-none">{value}</div>
+      <div className="text-[22px] font-medium text-ink leading-none">{value}</div>
     </div>
   )
 }
 
 function StatDivider() {
-  return <div className="w-[0.5px] h-9 bg-[#E5E7EB] self-center shrink-0" />
+  return <div className="w-[0.5px] h-10 bg-[#E5E7EB] self-center shrink-0" />
 }
 
 // ─── Card ────────────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ function MetricCol({ label, value }: { label: string; value: string }) {
       <div className="text-[10px] font-medium uppercase tracking-[0.03em] text-ink mb-0.5">
         {label}
       </div>
-      <div className="text-[15px] font-medium text-ink leading-tight">{value}</div>
+      <div className="text-[17px] font-medium text-ink leading-tight">{value}</div>
     </div>
   )
 }
@@ -151,17 +151,17 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="bg-white border-[0.5px] border-[#e5e7eb] rounded-[10px] px-[18px] py-5 cursor-pointer transition-colors hover:border-[#d1d5db] hover:bg-[#fafafa]"
+      className="bg-white border-[0.5px] border-[#e5e7eb] rounded-[10px] px-[20px] py-[22px] cursor-pointer transition-colors hover:border-[#d1d5db] hover:bg-[#fafafa]"
     >
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-[18px]">
         {p.img ? (
           <img
             src={p.img}
             alt=""
-            className="w-11 h-11 rounded-[6px] object-cover shrink-0 border-[0.5px] border-[#e5e7eb]"
+            className="w-[52px] h-[52px] rounded-lg object-cover shrink-0 border-[0.5px] border-[#e5e7eb]"
           />
         ) : (
-          <div className={`w-11 h-11 rounded-[6px] shrink-0 bg-gradient-to-br ${p.gradient}`} />
+          <div className={`w-[52px] h-[52px] rounded-lg shrink-0 bg-gradient-to-br ${p.gradient}`} />
         )}
         <div className="flex-1 min-w-0">
           <div className="text-[13px] font-medium text-ink truncate">{p.name}</div>
@@ -177,7 +177,7 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
         )}
       </div>
 
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-[18px]">
         <MetricCol label="SPEND" value={p.spend} />
         <MetricCol label="ROAS" value={p.roas} />
         <MetricCol label="CVR" value={p.cvr} />
@@ -233,20 +233,22 @@ function Performance() {
         </div>
 
         {/* Stats row */}
-        <div className="flex items-stretch mb-[22px]">
-          <StatCell label="ACTIVE CREATIVES" value="11" />
-          <StatDivider />
-          <StatCell label="TOTAL SPEND · 30D" value="$16.4k" />
-          <StatDivider />
-          <StatCell label="BLENDED ROAS" value="3.2×" />
-          <StatDivider />
-          <StatCell label="AVG CVR" value="2.0%" />
-          <StatDivider />
-          <StatCell label="PRODUCTS LIVE" value="3" />
+        <div className="bg-white border-[0.5px] border-[#E5E7EB] rounded-[10px] px-[18px] py-[22px] mb-[22px]">
+          <div className="flex items-stretch">
+            <StatCell label="ACTIVE CREATIVES" value="11" />
+            <StatDivider />
+            <StatCell label="TOTAL SPEND · 30D" value="$16.4k" />
+            <StatDivider />
+            <StatCell label="BLENDED ROAS" value="3.2×" />
+            <StatDivider />
+            <StatCell label="AVG CVR" value="2.0%" />
+            <StatDivider />
+            <StatCell label="PRODUCTS LIVE" value="3" />
+          </div>
         </div>
 
         {/* Section header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-[14px]">
           <span className="text-[14px] font-medium text-ink">Products</span>
           <div className="flex gap-2 items-center">
             <select className="text-[12px] text-ink border-[0.5px] border-[#D1D5DB] rounded-md py-[5px] px-2.5 bg-white outline-none cursor-pointer">
