@@ -1,5 +1,6 @@
 import { useState, useEffect, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useAskNanalyt } from '../components/AskNanalytPanel'
 
 // ─── Types & data ────────────────────────────────────────────────────────────
 
@@ -389,6 +390,7 @@ function ArrowR() {
 // ─── Rich detail: New Angle (id:1) ───────────────────────────────────────────
 
 function NewAngleDetail() {
+  const { openPanel } = useAskNanalyt()
   const supporting = [
     { num: '3', label: 'Category winners', sub: 'DreamWell, Beam, Pure Enc.' },
     { num: '30d+', label: 'Median longevity', sub: 'Their ads using this' },
@@ -572,7 +574,10 @@ function NewAngleDetail() {
             <span>Run full intelligence pass on ZzzPlex Sleep Support</span>
             <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
-          <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
+          <button
+            onClick={() => openPanel({ label: 'New angle · ZzzPlex Sleep Support' })}
+            className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}
+          >
             <span>Ask Nanalyt about this finding</span>
             <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
@@ -585,6 +590,7 @@ function NewAngleDetail() {
 // ─── Rich detail: New Product (id:2) ─────────────────────────────────────────
 
 function NewProductDetail() {
+  const { openPanel } = useAskNanalyt()
   const stats = [
     { num: '2', label: 'New advertisers', sub: 'DreamWell + SleepBlend Co. in 17d' },
     { num: '38', label: 'Reviews in 14 days', sub: 'Competitor lead SKU — scaling' },
@@ -758,7 +764,10 @@ function NewProductDetail() {
             <span>Run full intelligence pass on magnesium glycinate complex</span>
             <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
-          <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
+          <button
+            onClick={() => openPanel({ label: 'New product opportunity · Magnesium Glycinate Complex' })}
+            className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}
+          >
             <span>Ask Nanalyt about this finding</span>
             <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>

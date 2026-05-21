@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { AskNanalytProvider, AskNanalytPanel } from './AskNanalytPanel'
 
 type NavItem = {
   to: string
@@ -174,15 +175,18 @@ function TopBar() {
 
 function AppLayout() {
   return (
-    <div className="flex h-screen w-full bg-white">
-      <LeftNav />
-      <div className="flex-1 flex flex-col min-w-0 bg-canvas">
-        <TopBar />
-        <main className="flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
+    <AskNanalytProvider>
+      <div className="flex h-screen w-full bg-white">
+        <LeftNav />
+        <div className="flex-1 flex flex-col min-w-0 bg-canvas">
+          <TopBar />
+          <main className="flex-1 overflow-y-auto">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+      <AskNanalytPanel />
+    </AskNanalytProvider>
   )
 }
 
