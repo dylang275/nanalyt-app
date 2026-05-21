@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 
 // ─── Types & data ────────────────────────────────────────────────────────────
 
@@ -31,21 +31,21 @@ const FINDINGS: Finding[] = [
     confidence: 'High',
     related: 3,
     impact: { kind: 'opportunity', label: '~$3–5k revenue opportunity' },
-    headline: "Buyer language is shifting toward 'next-day calm' instead of 'fall asleep fast' across reviews and Reddit.",
+    headline: "Buyers are shifting from 'fall asleep fast' to 'next-day calm' — 3 category winners running this for 30+ days. ZzzPlex Sleep Support doesn't address it.",
     sources: [
       { platform: 'Amazon', metric: '63 review phrases' },
       { platform: 'Reddit', metric: '29 threads' },
       { platform: 'YouTube', metric: '11 review videos' },
       { platform: 'Meta', metric: '3 of 14 ads use this framing' },
     ],
-    action: "Update the narrative map and create a static image (with built-in policy gate) around the 'next-day calm' positioning.",
-    why: "Organic search queries for 'next-day calm' have increased 3.2× over 30 days. Reddit threads in r/sleep and r/insomnia show a clear shift in how buyers describe what they want — not falling asleep faster, but waking up without grogginess. Only 3 of your 14 active ads use this framing.",
+    action: "Update ZzzPlex Sleep Support's PDP and creative to address the 'next-day calm' positioning before more category winners arrive.",
+    why: "Organic search queries for 'next-day calm' have increased 3.2× over 30 days. Reddit threads in r/sleep and r/insomnia show a clear shift in how buyers describe what they want — not falling asleep faster, but waking up without grogginess. ZzzPlex's 2 active ads don't use this framing.",
     steps: [
       { label: 'Update narrative map', cta: 'Open narrative map' },
       { label: 'Generate static creative with next-day calm angle', cta: 'Generate creative' },
       { label: 'Set reminder to review performance in 7 days', cta: 'Set reminder' },
     ],
-    linkedProduct: 'Magnesium Glycinate Complex',
+    linkedProduct: 'ZzzPlex Sleep Support',
     linkedCompetitors: ['DreamWell', 'Beam'],
   },
   {
@@ -56,17 +56,17 @@ const FINDINGS: Finding[] = [
     confidence: 'Medium',
     related: 1,
     impact: { kind: 'opportunity', label: 'Whitespace opportunity' },
-    headline: 'Two stores in your scope launched magnesium + ashwagandha gummies and early creative is gaining traction.',
+    headline: 'Magnesium glycinate complex is gaining traction — DreamWell and SleepBlend Co. both launched in the last 17 days, early creative is scaling, and the category is still defensible.',
     sources: [
       { platform: 'Meta Ad Library', metric: '3 new advertisers in 17d' },
       { platform: 'Shopify', metric: '38 review count growth in 14d' },
       { platform: 'TikTok', metric: 'Comment sentiment trending high' },
     ],
     action: 'Open the product brief, compare positioning against your current SKUs, and queue a sourcing + creative review.',
-    why: "DreamWell and SleepBlend Co. both launched magnesium + ashwagandha gummies within 17 days of each other, running UGC creative focusing on the stress-sleep connection. DreamWell's top ad has 2.1k comments in 9 days.",
+    why: "DreamWell and SleepBlend Co. both launched magnesium glycinate complex within 17 days of each other, running UGC creative focusing on the sleep-anxiety connection. DreamWell's top ad has 2.1k comments in 9 days.",
     steps: [
       { label: 'Review product brief and positioning', cta: 'Open product brief' },
-      { label: 'Compare against your current Mag Glycinate SKU', cta: 'Open Active Products' },
+      { label: 'Compare against your current sleep SKUs', cta: 'Open Active Products' },
       { label: 'Queue sourcing review', cta: 'Add to Research' },
     ],
     linkedProduct: 'Magnesium Glycinate Complex',
@@ -405,7 +405,7 @@ function NewAngleDetail() {
     { num: '0%', label: 'Your coverage', sub: '0 of 6 active ads' },
   ]
   const actions = [
-    { n: '01', title: 'Generate PDP variant', sub: 'Update Magnesium Glycinate PDP to address next-day calm angle', btn: 'Generate PDP →' },
+    { n: '01', title: 'Generate PDP variant', sub: 'Update ZzzPlex Sleep PDP to address next-day calm angle', btn: 'Generate PDP →' },
     { n: '02', title: 'Generate creative', sub: 'Static image ad · angle and buyer language pre-populated', btn: 'Generate →' },
   ]
 
@@ -523,24 +523,24 @@ function NewAngleDetail() {
         <div className={cardCls}>
           <div className="flex items-center justify-between px-3.5 py-3">
             <div className="flex items-center gap-2.5">
-              <img src="/uploads/IMG_3472.jpg" alt="" className="w-8 h-8 rounded-[7px] object-cover shrink-0 border border-line" />
-              <span className="text-[13px] font-medium text-ink">Magnesium Glycinate Complex</span>
+              <img src="/uploads/IMG_3474.jpg" alt="" className="w-8 h-8 rounded-[7px] object-cover shrink-0 border border-line" />
+              <span className="text-[13px] font-medium text-ink">ZzzPlex Sleep Support</span>
             </div>
             <span className="text-[11px] text-brand cursor-pointer font-medium">Open product →</span>
           </div>
           <div className="px-3.5 py-3 flex flex-col gap-[7px]">
             <div className="flex items-baseline gap-2">
               <span className="text-[12px] text-ink min-w-[90px] shrink-0">Active ads</span>
-              <span className="text-[12px] text-ink">6 running</span>
+              <span className="text-[12px] text-ink">2 running</span>
               <span className="text-[12px] text-ink">· none use this angle</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-[12px] text-ink min-w-[90px] shrink-0">PDP</span>
-              <span className="text-[12px] text-ink">Not addressed — "fast-acting" ×4, "morning" ×0</span>
+              <span className="text-[12px] text-ink">Not addressed — "fast-acting" ×2, "morning" ×0</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-[12px] text-ink min-w-[90px] shrink-0">Last creative</span>
-              <span className="text-[12px] text-ink">23 days ago</span>
+              <span className="text-[12px] text-ink">18 days ago</span>
             </div>
           </div>
         </div>
@@ -568,7 +568,7 @@ function NewAngleDetail() {
         <div className="text-[11px] font-medium text-ink mb-2.5">Go deeper</div>
         <div className="flex flex-col gap-2.5">
           <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
-            <span>Run full intelligence pass on Magnesium Glycinate Complex</span>
+            <span>Run full intelligence pass on ZzzPlex Sleep Support</span>
             <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
           <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
@@ -616,10 +616,10 @@ function NewProductDetail() {
         </div>
         <div className="flex items-start gap-3.5">
           <p className="text-[15px] font-medium leading-[1.55] tracking-[-0.01em] text-ink m-0 flex-1">
-            Magnesium + ashwagandha gummies are gaining traction — DreamWell and SleepBlend Co. both launched in the last 17 days, early creative is scaling, and the category is still defensible.
+            Magnesium glycinate complex is gaining traction — DreamWell and SleepBlend Co. both launched in the last 17 days, early creative is scaling, and the category is still defensible.
           </p>
           <div className="shrink-0 text-center">
-            <img src="/uploads/IMG_3476.jpg" alt="" className="w-[72px] h-[72px] rounded-lg object-cover border border-line block" />
+            <img src="/uploads/IMG_3472.jpg" alt="" className="w-[72px] h-[72px] rounded-lg object-cover border border-line block" />
             <div className="text-[9px] text-ink mt-1">Representative</div>
           </div>
         </div>
@@ -632,7 +632,7 @@ function NewProductDetail() {
         <div className={`${cardCls} px-4 py-3.5 mb-2`}>
           <div className="text-[34px] font-medium text-ink font-mono tracking-[-0.04em] leading-none mb-1.5">4.1×</div>
           <div className="text-[13px] font-medium text-ink mb-[3px]">Buyer attention growth in 60 days</div>
-          <div className="text-[12px] text-ink">Search volume for "magnesium ashwagandha gummies" · TikTok sentiment trending positive</div>
+          <div className="text-[12px] text-ink">Search volume for "magnesium glycinate complex" · TikTok sentiment trending positive</div>
         </div>
         <div className="grid grid-cols-3 gap-3 mb-2">
           {stats.map((s, i) => (
@@ -711,7 +711,7 @@ function NewProductDetail() {
             <div className="flex items-center gap-2.5 mb-2.5">
               <img src="/uploads/IMG_3472.jpg" alt="" className="w-12 h-12 rounded-[7px] object-cover border border-line shrink-0" />
               <span className="text-base text-ink font-light">+</span>
-              <img src="/uploads/IMG_3476.jpg" alt="" className="w-12 h-12 rounded-[7px] object-cover border border-line shrink-0" />
+              <img src="/uploads/IMG_3474.jpg" alt="" className="w-12 h-12 rounded-[7px] object-cover border border-line shrink-0" />
               <span className="text-base text-ink font-light">→</span>
               <div className="ml-auto text-right">
                 <div className="text-[10px] text-ink mb-[2px]">Estimated AOV</div>
@@ -722,7 +722,7 @@ function NewProductDetail() {
               </div>
             </div>
             <div className="text-[11px] text-ink">
-              Pairs with <span className="text-brand cursor-pointer font-medium">Magnesium Glycinate Complex</span> — same buyer segment, complementary use case.
+              Pairs with <span className="text-brand cursor-pointer font-medium">ZzzPlex Sleep Support</span> — same buyer segment, complementary use case.
             </div>
           </div>
           <div className={`${cardCls} px-3.5 py-3`}>
@@ -754,7 +754,7 @@ function NewProductDetail() {
         <SubLabel label="Go deeper" />
         <div className="flex flex-col gap-2.5">
           <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] font-medium text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
-            <span>Run full intelligence pass on magnesium + ashwagandha gummies</span>
+            <span>Run full intelligence pass on magnesium glycinate complex</span>
             <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
           <button className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}>
@@ -800,7 +800,7 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
                 <span className="text-[12px] text-ink shrink-0">Findings</span>
                 <span className="text-[12px] text-ink shrink-0">›</span>
                 <span className="text-[12px] text-ink font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                  {isNewAngle ? 'New angle · Next-day calm' : 'New product · Mag + Ashwagandha Gummies'}
+                  {isNewAngle ? 'New angle · Next-day calm' : 'New product · Magnesium Glycinate Complex'}
                 </span>
               </div>
               <button
@@ -952,268 +952,36 @@ function DetailDrawer({ finding, onClose, onTakeAction }: {
 
 // ─── Take Action Modal ───────────────────────────────────────────────────────
 
-const PACKAGE_FIELDS = [
-  { label: 'Product', value: 'Magnesium + Ashwagandha Gummies' },
-  { label: 'Recommended angle', value: 'Sleep-Anxiety Crossover' },
-  { label: 'PDP sections', value: 'Hero, Testimonials, Feature breakdown, FAQ, Trust badges, Risk reversal' },
-  { label: 'Creative format mix', value: '2 UGC + 2 Static (matched to category winners)' },
-  { label: 'Buyer language', value: '12 verbatim phrases from r/sleep, r/anxiety, Amazon reviews' },
-  { label: 'Avatars (UGC)', value: 'Casual female · Skeptical-convert male' },
-  { label: 'Settings (UGC)', value: 'Kitchen · Desk' },
-  { label: 'Sourcing', value: '2 supplier matches via Alibaba + 1 US supplier' },
-]
-
-const OUTPUT_CREATIVES = [
-  { format: 'UGC' as const, label: 'UGC #1', score: 84, desc: 'Casual female · Kitchen', hook: 'Struggling with sleep AND anxiety?' },
-  { format: 'UGC' as const, label: 'UGC #2', score: 78, desc: 'Skeptical-convert · Desk', hook: 'I was skeptical about magnesium…' },
-  { format: 'STATIC' as const, label: 'Static #1', score: 81, desc: 'Soft palette · 1:1', hook: 'Finally. Sleep without the groggy.' },
-  { format: 'STATIC' as const, label: 'Static #2', score: 76, desc: 'Bold claim · 9:16', hook: 'Calm your mind. Sleep through the night.' },
-]
-
-const FORMAT_BG: Record<'UGC' | 'STATIC' | 'VIDEO', string> = {
-  UGC: '#4f86c6',
-  STATIC: '#8b6fbf',
-  VIDEO: '#3ba8a0',
-}
-
-type ModalState = 'confirm' | 'progress' | 'output'
-
 function TakeActionModal({ onClose }: { onClose: () => void }) {
-  const [state, setState] = useState<ModalState>('confirm')
-  const [progress, setProgress] = useState({ pct: 0, step: 'Initializing…' })
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  useEffect(() => {
-    if (state === 'progress') {
-      const steps = [
-        { pct: 15, step: 'Writing PDP copy…' },
-        { pct: 28, step: 'Selecting imagery…' },
-        { pct: 42, step: 'Generating UGC scripts…' },
-        { pct: 58, step: 'Rendering UGC #1 (casual female, kitchen)…' },
-        { pct: 70, step: 'Rendering UGC #2 (skeptical-convert, desk)…' },
-        { pct: 82, step: 'Generating static creatives…' },
-        { pct: 91, step: 'Running policy gate…' },
-        { pct: 100, step: 'Done!' },
-      ]
-      let i = 0
-      timerRef.current = setInterval(() => {
-        if (i < steps.length) {
-          setProgress(steps[i])
-          i++
-        } else {
-          if (timerRef.current) clearInterval(timerRef.current)
-          setTimeout(() => setState('output'), 600)
-        }
-      }, 600)
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [state])
-
-  const perAsset = [
-    { label: 'PDP', desc: 'Writing copy · selecting imagery · building layout', pct: state === 'progress' ? Math.min(100, progress.pct + 5) : 100 },
-    { label: 'UGC #1', desc: 'Casual female · kitchen · sleep-anxiety angle', pct: state === 'progress' ? Math.max(0, progress.pct - 10) : 100 },
-    { label: 'UGC #2', desc: 'Skeptical-convert male · desk · next-day calm', pct: state === 'progress' ? Math.max(0, progress.pct - 20) : 100 },
-    { label: 'Static #1', desc: 'Soft palette · 1:1 · lifestyle', pct: state === 'progress' ? Math.max(0, progress.pct - 15) : 100 },
-    { label: 'Static #2', desc: 'Bold claim · 9:16 · dark background', pct: state === 'progress' ? Math.max(0, progress.pct - 25) : 100 },
-  ]
-
   return (
     <div
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
-      className="fixed inset-0 z-[300] bg-black/25 flex items-center justify-center"
+      className="fixed inset-0 z-[300] bg-black/35 flex items-center justify-center font-sans"
     >
-      <div className="bg-surf border border-line rounded-xl w-[560px] max-w-[calc(100vw-48px)] max-h-[calc(100vh-80px)] flex flex-col shadow-[0_8px_48px_rgba(0,0,0,0.14)] overflow-hidden">
-        <div className="px-5 py-4 border-b border-line flex items-start justify-between gap-3 shrink-0">
-          <div>
-            <div className="text-[9px] font-semibold tracking-[0.1em] uppercase text-ink mb-1.5">
-              {state === 'confirm' ? 'State 1 · Confirmation' : state === 'progress' ? 'State 2 · In progress' : 'State 3 · Output'}
-            </div>
-            <div className="text-[15px] font-medium text-ink leading-[1.3]">
-              {state === 'confirm' && "Generate launch package for 'Magnesium + Ashwagandha Gummies'"}
-              {state === 'progress' && 'Building your launch package'}
-              {state === 'output' && 'Launch package ready'}
-            </div>
-            {state === 'confirm' && (
-              <div className="text-[11px] text-ink mt-1">Pre-configured based on the finding · Est. 8 minutes</div>
-            )}
-            {state === 'progress' && (
-              <div className="text-[11px] text-ink mt-1">
-                {progress.step} · {Math.max(0, Math.round(100 - (progress.pct / 100) * 95))} sec remaining
-              </div>
-            )}
-            {state === 'output' && (
-              <div className="text-[11px] text-ink mt-1">
-                Generated for 'Magnesium + Ashwagandha Gummies' · Sleep-Anxiety Crossover angle
-              </div>
-            )}
-          </div>
-          <button
-            onClick={onClose}
-            className="bg-transparent border-0 text-ink flex p-1 cursor-pointer shrink-0 hover:text-ink"
-            aria-label="Close"
-          >
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-              <path d="M2 2l9 9M11 2l-9 9" />
+      <div className="bg-surf border border-line rounded-xl px-8 pt-8 pb-9 w-[420px] max-w-[calc(100vw-48px)] relative shadow-[0_8px_48px_rgba(0,0,0,0.14)]">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 bg-transparent border-0 text-ink p-1 cursor-pointer flex hover:opacity-70"
+          aria-label="Close"
+        >
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M2 2l9 9M11 2l-9 9" />
+          </svg>
+        </button>
+
+        <div className="flex justify-center mb-5">
+          <div className="w-12 h-12 rounded-full bg-brand-bg flex items-center justify-center">
+            <svg width="28" height="28" viewBox="0 0 28 28" className="animate-spin">
+              <circle cx="14" cy="14" r="11" fill="none" stroke="#e4ede7" strokeWidth="2.5" />
+              <path d="M14 3A11 11 0 0 1 25 14" fill="none" stroke="#2d5c3a" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
-          </button>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4">
-          {state === 'confirm' && (
-            <div className="flex flex-col gap-0">
-              {PACKAGE_FIELDS.map((field, i) => (
-                <div
-                  key={field.label}
-                  className={`flex items-start gap-3 py-2.5 ${i < PACKAGE_FIELDS.length - 1 ? 'border-b border-line-soft' : ''}`}
-                >
-                  <div className="text-[11px] text-ink w-[140px] shrink-0 pt-px">{field.label}</div>
-                  <div className="flex-1 text-[12px] text-ink leading-[1.4]">{field.value}</div>
-                  <span className="text-ink cursor-pointer flex shrink-0 pt-px">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
-                      <circle cx="6.5" cy="2.5" r="1.1" />
-                      <circle cx="6.5" cy="6.5" r="1.1" />
-                      <circle cx="6.5" cy="10.5" r="1.1" />
-                    </svg>
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {state === 'progress' && (
-            <div className="flex flex-col gap-3">
-              <div className="bg-surf-2 border border-line rounded-lg px-4 py-3.5 mb-1">
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-[12px] font-medium text-ink">Overall progress</span>
-                  <span className="text-[13px] font-medium text-brand font-mono">{progress.pct}%</span>
-                </div>
-                <div className="h-1 bg-line rounded-sm overflow-hidden">
-                  <div
-                    className="h-full bg-brand rounded-sm transition-[width] duration-500"
-                    style={{ width: `${progress.pct}%` }}
-                  />
-                </div>
-                <div className="text-[11px] text-ink mt-2">{progress.step}</div>
-              </div>
-              {perAsset.map((a, i) => (
-                <div key={i} className="flex items-center gap-2.5 px-3 py-2 bg-surf-2 border border-line rounded-lg">
-                  <span
-                    className={`text-[9px] font-semibold tracking-[0.08em] px-1.5 py-[2px] rounded-sm shrink-0 w-[46px] text-center ${
-                      a.pct >= 100 ? 'bg-brand-bg text-brand' : 'bg-line text-ink'
-                    }`}
-                  >
-                    {a.pct >= 100 ? 'DONE' : a.label}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[11px] text-ink mb-1">{a.desc}</div>
-                    <div className="h-0.5 bg-line rounded-[1px] overflow-hidden">
-                      <div
-                        className="h-full rounded-[1px] transition-[width] duration-500"
-                        style={{ width: `${a.pct}%`, background: a.pct >= 100 ? '#2d5c3a' : '#4f86c6' }}
-                      />
-                    </div>
-                  </div>
-                  <span className="text-[10px] text-ink font-mono shrink-0 w-7 text-right">{a.pct}%</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {state === 'output' && (
-            <div>
-              <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-ink mb-2.5">Product page</div>
-              <div className="bg-surf-2 border border-line rounded-lg px-4 py-3.5 mb-5 flex items-center gap-3">
-                <div className="w-20 h-[60px] bg-brand-bg border border-brand-dim rounded-md flex items-center justify-center shrink-0">
-                  <span className="text-[9px] font-bold text-brand tracking-[0.08em]">PDP</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[12px] font-medium text-ink">Magnesium + Ashwagandha Gummies PDP</span>
-                    <span className="text-[11px] font-medium text-brand font-mono">Score: 84</span>
-                  </div>
-                  <div className="text-[11px] text-ink">Hero · Testimonials · Feature breakdown · FAQ · Trust badges · Risk reversal</div>
-                </div>
-                <span className="text-[11px] text-brand cursor-pointer flex items-center gap-[3px] shrink-0">
-                  Preview
-                  <ArrowR />
-                </span>
-              </div>
-
-              <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-ink mb-2.5">Creatives</div>
-              <div className="grid grid-cols-2 gap-2">
-                {OUTPUT_CREATIVES.map((c, i) => (
-                  <div key={i} className="bg-surf-2 border border-line rounded-lg overflow-hidden">
-                    <div className="h-20 bg-[#e8f0fe] relative flex items-center justify-center">
-                      <span className="text-[11px] italic opacity-70" style={{ color: '#4f86c6' }}>
-                        {c.format === 'UGC' ? '▶ UGC video' : '🖼 Static'}
-                      </span>
-                      <span
-                        className="absolute top-1.5 left-2 text-[9px] font-bold text-white px-1.5 py-[2px] rounded-sm tracking-[0.06em]"
-                        style={{ background: FORMAT_BG[c.format] }}
-                      >
-                        {c.format}
-                      </span>
-                      <span className="absolute top-1.5 right-2 text-[11px] font-medium text-brand font-mono bg-white/85 px-[5px] py-px rounded-sm">
-                        {c.score}
-                      </span>
-                    </div>
-                    <div className="px-2.5 py-2">
-                      <div className="text-[11px] text-ink mb-[2px]">{c.desc}</div>
-                      <div className="text-[11px] font-medium text-ink italic">"{c.hook}"</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="px-5 py-3.5 border-t border-line flex gap-2 items-center shrink-0">
-          {state === 'confirm' && (
-            <>
-              <button
-                onClick={() => setState('progress')}
-                className="bg-brand text-white border-0 rounded-md px-3.5 py-1.5 text-[12px] font-medium cursor-pointer hover:opacity-90"
-              >
-                Generate package
-              </button>
-              <button className="bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
-                Customize fully
-              </button>
-              <button
-                onClick={onClose}
-                className="ml-auto bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
-              >
-                Cancel
-              </button>
-            </>
-          )}
-          {state === 'progress' && (
-            <button
-              onClick={onClose}
-              className="ml-auto bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
-            >
-              Close · continue in background
-            </button>
-          )}
-          {state === 'output' && (
-            <>
-              <button className="bg-brand text-white border-0 rounded-md px-3.5 py-1.5 text-[12px] font-medium cursor-pointer hover:opacity-90">
-                Add to library + start validation test
-              </button>
-              <button className="bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft">
-                Add to library only
-              </button>
-              <button
-                onClick={onClose}
-                className="ml-auto bg-surf text-ink border border-line rounded-md px-3.5 py-1.5 text-[12px] cursor-pointer hover:bg-line-soft"
-              >
-                Save and exit
-              </button>
-            </>
-          )}
+        <div className="text-center">
+          <div className="text-[15px] font-medium text-ink mb-1.5">Generating assets in the background</div>
+          <div className="text-[12px] text-ink">Will notify you when complete</div>
+          <div className="text-[11px] text-ink mt-2.5">Estimated 3 minutes</div>
         </div>
       </div>
     </div>
