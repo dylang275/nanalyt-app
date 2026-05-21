@@ -41,7 +41,7 @@ type Ctx = {
   openAgent: () => void
   closeAgent: () => void
   closePanel: () => void
-  submitNext: () => void
+  submitNext: (userText: string) => void
   removeContext: () => void
 }
 
@@ -84,7 +84,9 @@ export function AskNanalytProvider({ children }: { children: ReactNode }) {
   }
   const closeAgent = () => setAgentOpen(false)
 
-  const submitNext = () => {
+  const submitNext = (userText: string) => {
+    const trimmed = userText.trim()
+    if (!trimmed) return
     setMessages(prev => {
       const sent = prev.filter(m => m.role === 'user').length
       const limit = mode === 'finding' ? 3 : 1
@@ -94,15 +96,11 @@ export function AskNanalytProvider({ children }: { children: ReactNode }) {
       const settled = prev.map(m =>
         m.role === 'agent' ? { ...m, revealed: BLOCK_COUNTS[m.key] } : m,
       )
-      if (mode === 'finding') {
-        const q = FINDING_QUESTIONS[sent]
-        const key = FINDING_KEYS[sent]
-        return [...settled, { role: 'user', text: q }, { role: 'agent', key, revealed: 0 }]
-      }
+      const agentKey: AgentKey = mode === 'finding' ? FINDING_KEYS[sent] : 'qgap'
       return [
         ...settled,
-        { role: 'user', text: GENERAL_QUESTION },
-        { role: 'agent', key: 'qgap', revealed: 0 },
+        { role: 'user', text: trimmed },
+        { role: 'agent', key: agentKey, revealed: 0 },
       ]
     })
   }
@@ -437,8 +435,10 @@ export function AskNanalytPanel() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (allDone || isStreaming) return
+    const text = draft.trim()
+    if (!text) return
     setDraft('')
-    submitNext()
+    submitNext(text)
   }
 
   const handleTakeAction = () => {
@@ -565,7 +565,7 @@ export function AskNanalytPanel() {
           />
           <button
             type="submit"
-            disabled={allDone || isStreaming}
+            disabled={allDone || isStreaming || draft.trim().length === 0}
             aria-label="Send"
             className="bg-brand text-white border-0 flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ width: 26, height: 26, borderRadius: 6 }}
