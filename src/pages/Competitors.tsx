@@ -1050,7 +1050,6 @@ type ExampleAd = {
 
 const ANGLE_DETAIL_ADS: ExampleAd[] = [
   { format: 'UGC', img: '/uploads/IMG_3486.jpg', hook: '"Couldn\'t shut my brain off"', meta: '42 days running · 9:16 vertical', hasPlay: true, durationSec: 18 },
-  { format: 'STATIC', img: '/uploads/Screenshot 2026-05-13 at 10.15.26 PM.png', hook: 'Lifestyle composition', meta: '38 days running · 1:1 square', hasPlay: false, durationSec: 0 },
   { format: 'VIDEO', img: '/uploads/IMG_3488.jpg', hook: '"Tried everything for sleep"', meta: '23 days running · 15s · 9:16', hasPlay: true, durationSec: 15 },
 ]
 
