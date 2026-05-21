@@ -58,8 +58,8 @@ const ACTIVE_PRODUCTS: Product[] = [
 const PIPELINE_PRODUCTS: Product[] = [
   {
     slug: 'magnesium-ashwagandha-gummies',
-    name: 'Magnesium + Ashwagandha Gummies',
-    gradient: 'from-[#a7f3d0] to-[#34d399]',
+    name: 'Magnesium + Ashwagandha Tablets',
+    img: '/uploads/IMG_3505.jpg',
     status: '1 PDP · 4 ads',
     spend: '$4.2k',
     roas: '4.6×',
