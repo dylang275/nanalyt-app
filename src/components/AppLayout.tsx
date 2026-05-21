@@ -139,10 +139,14 @@ function LeftNav() {
 }
 
 function TopBar() {
+  const { openGeneral } = useAskNanalyt()
   return (
     <div className="h-[46px] flex items-center px-5 gap-4 shrink-0 font-sans">
       <div className="flex-1" />
-      <div className="flex items-center gap-2 bg-white border border-line rounded-lg px-3 h-[30px] w-[460px] cursor-text shrink-0">
+      <div
+        onClick={openGeneral}
+        className="flex items-center gap-2 bg-white border border-line rounded-lg px-3 h-[30px] w-[460px] cursor-pointer shrink-0 hover:border-[#d1d5db]"
+      >
         <span className="flex-1 text-[12px] text-ink">Ask Nanalyt anything…</span>
         <span className="text-ink flex">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.2">

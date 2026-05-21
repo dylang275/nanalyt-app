@@ -390,7 +390,7 @@ function ArrowR() {
 // ─── Rich detail: New Angle (id:1) ───────────────────────────────────────────
 
 function NewAngleDetail() {
-  const { openPanel } = useAskNanalyt()
+  const { openForFinding } = useAskNanalyt()
   const supporting = [
     { num: '3', label: 'Category winners', sub: 'DreamWell, Beam, Pure Enc.' },
     { num: '30d+', label: 'Median longevity', sub: 'Their ads using this' },
@@ -575,7 +575,7 @@ function NewAngleDetail() {
             <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
           <button
-            onClick={() => openPanel({ label: 'New angle · ZzzPlex Sleep Support' })}
+            onClick={() => openForFinding({ label: 'New angle · ZzzPlex Sleep Support' })}
             className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}
           >
             <span>Ask Nanalyt about this finding</span>
@@ -590,7 +590,7 @@ function NewAngleDetail() {
 // ─── Rich detail: New Product (id:2) ─────────────────────────────────────────
 
 function NewProductDetail() {
-  const { openPanel } = useAskNanalyt()
+  const { openForFinding } = useAskNanalyt()
   const stats = [
     { num: '2', label: 'New advertisers', sub: 'DreamWell + SleepBlend Co. in 17d' },
     { num: '38', label: 'Reviews in 14 days', sub: 'Competitor lead SKU — scaling' },
@@ -765,7 +765,7 @@ function NewProductDetail() {
             <span className="text-ink ml-3 shrink-0 group-hover:text-white">→</span>
           </button>
           <button
-            onClick={() => openPanel({ label: 'New product opportunity · Magnesium Glycinate Complex' })}
+            onClick={() => openForFinding({ label: 'New product opportunity · Magnesium Glycinate Complex' })}
             className={`group ${cardCls} w-full flex items-center justify-between px-3.5 py-[11px] text-[12px] text-ink cursor-pointer text-left transition-colors hover:bg-ink hover:text-white`}
           >
             <span>Ask Nanalyt about this finding</span>
@@ -1210,11 +1210,20 @@ function Findings() {
 
   const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
-    if (searchParams.get('action') === 'mgc-newproduct') {
+    const action = searchParams.get('action')
+    const findingId = searchParams.get('finding')
+    let changed = false
+    if (action === 'mgc-newproduct') {
       const f = FINDINGS.find(x => x.id === 2)
       if (f) setConfirmFinding(f)
-      setSearchParams({}, { replace: true })
+      changed = true
     }
+    if (findingId) {
+      const f = FINDINGS.find(x => x.id === Number(findingId))
+      if (f) setOpenFinding(f)
+      changed = true
+    }
+    if (changed) setSearchParams({}, { replace: true })
   }, [searchParams, setSearchParams])
 
   const filtered =

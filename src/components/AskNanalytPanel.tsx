@@ -4,22 +4,25 @@ import { useNavigate } from 'react-router-dom'
 // ─── Types + scripted content ────────────────────────────────────────────────
 
 type FindingContext = { label: string }
+type Mode = 'finding' | 'general'
 
-type AgentKey = 'q1' | 'q2' | 'q3'
+type AgentKey = 'q1' | 'q2' | 'q3' | 'qgap'
 
 type Message =
   | { role: 'user'; text: string }
   | { role: 'agent'; key: AgentKey; revealed: number }
 
-const SCRIPTED_QUESTIONS = [
+const FINDING_QUESTIONS = [
   'What price should I launch this at?',
   'Who would buy this and why?',
   "What angles are competitors testing that haven't hit yet?",
 ] as const
 
-const ANSWER_KEYS: AgentKey[] = ['q1', 'q2', 'q3']
+const FINDING_KEYS: AgentKey[] = ['q1', 'q2', 'q3']
 
-const BLOCK_COUNTS: Record<AgentKey, number> = { q1: 5, q2: 4, q3: 6 }
+const GENERAL_QUESTION = "What's the biggest gap in the sleep category right now?"
+
+const BLOCK_COUNTS: Record<AgentKey, number> = { q1: 5, q2: 4, q3: 6, qgap: 6 }
 
 const REVEAL_FIRST_DELAY = 900
 const REVEAL_STEP_DELAY = 320
@@ -28,9 +31,11 @@ const REVEAL_STEP_DELAY = 320
 
 type Ctx = {
   open: boolean
+  mode: Mode
   context: FindingContext | null
   messages: Message[]
-  openPanel: (c: FindingContext) => void
+  openForFinding: (c: FindingContext) => void
+  openGeneral: () => void
   closePanel: () => void
   submitNext: () => void
   removeContext: () => void
@@ -46,11 +51,20 @@ export function useAskNanalyt() {
 
 export function AskNanalytProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
+  const [mode, setMode] = useState<Mode>('general')
   const [context, setContext] = useState<FindingContext | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
 
-  const openPanel = (c: FindingContext) => {
+  const openForFinding = (c: FindingContext) => {
+    setMode('finding')
     setContext(c)
+    setMessages([])
+    setOpen(true)
+  }
+
+  const openGeneral = () => {
+    setMode('general')
+    setContext(null)
     setMessages([])
     setOpen(true)
   }
@@ -60,20 +74,27 @@ export function AskNanalytProvider({ children }: { children: ReactNode }) {
   const submitNext = () => {
     setMessages(prev => {
       const sent = prev.filter(m => m.role === 'user').length
-      if (sent >= 3) return prev
-      // Any in-progress agent message snaps to fully revealed so a rapid
-      // follow-up doesn't leave an earlier answer half-streamed.
+      const limit = mode === 'finding' ? 3 : 1
+      if (sent >= limit) return prev
+      // Settle any in-progress agent message so a fast follow-up doesn't leave
+      // an earlier answer half-streamed.
       const settled = prev.map(m =>
         m.role === 'agent' ? { ...m, revealed: BLOCK_COUNTS[m.key] } : m,
       )
-      const q = SCRIPTED_QUESTIONS[sent]
-      const key = ANSWER_KEYS[sent]
-      return [...settled, { role: 'user', text: q }, { role: 'agent', key, revealed: 0 }]
+      if (mode === 'finding') {
+        const q = FINDING_QUESTIONS[sent]
+        const key = FINDING_KEYS[sent]
+        return [...settled, { role: 'user', text: q }, { role: 'agent', key, revealed: 0 }]
+      }
+      return [
+        ...settled,
+        { role: 'user', text: GENERAL_QUESTION },
+        { role: 'agent', key: 'qgap', revealed: 0 },
+      ]
     })
   }
 
-  // Streaming-reveal effect — watches the last message and ticks the agent
-  // response's reveal count forward until all blocks are visible.
+  // Streaming reveal — ticks the last agent message's revealed count forward.
   useEffect(() => {
     const last = messages[messages.length - 1]
     if (!last || last.role !== 'agent') return
@@ -96,7 +117,17 @@ export function AskNanalytProvider({ children }: { children: ReactNode }) {
 
   return (
     <AskNanalytContext.Provider
-      value={{ open, context, messages, openPanel, closePanel, submitNext, removeContext }}
+      value={{
+        open,
+        mode,
+        context,
+        messages,
+        openForFinding,
+        openGeneral,
+        closePanel,
+        submitNext,
+        removeContext,
+      }}
     >
       {children}
     </AskNanalytContext.Provider>
@@ -124,6 +155,17 @@ function CardLabel({ children }: { children: ReactNode }) {
   )
 }
 
+function TagPill({ children }: { children: ReactNode }) {
+  return (
+    <span
+      className="inline-block text-[9px] font-medium uppercase bg-brand-bg text-brand mb-2"
+      style={{ padding: '2px 7px', borderRadius: 4, letterSpacing: '0.03em' }}
+    >
+      {children}
+    </span>
+  )
+}
+
 function Para({ children, size = 12 }: { children: ReactNode; size?: 11 | 12 }) {
   return (
     <p className="m-0 text-ink leading-[1.5]" style={{ fontSize: size }}>
@@ -146,7 +188,7 @@ function TypingDots() {
   )
 }
 
-// ─── Block builders ─────────────────────────────────────────────────────────
+// ─── Q1 · Price ─────────────────────────────────────────────────────────────
 
 function priceBlocks(): ReactNode[] {
   return [
@@ -176,6 +218,8 @@ function priceBlocks(): ReactNode[] {
     </Para>,
   ]
 }
+
+// ─── Q2 · Buyer ─────────────────────────────────────────────────────────────
 
 function buyerBlocks(): ReactNode[] {
   return [
@@ -217,6 +261,8 @@ function buyerBlocks(): ReactNode[] {
     </Para>,
   ]
 }
+
+// ─── Q3 · Angles ────────────────────────────────────────────────────────────
 
 function AngleBlockCard({ title, days, desc }: { title: string; days: string; desc: string }) {
   return (
@@ -280,10 +326,60 @@ function anglesBlocks(onTakeAction: () => void): ReactNode[] {
   ]
 }
 
+// ─── Qgap · General gap question ────────────────────────────────────────────
+
+function gapBlocks(handlers: {
+  onViewFinding: () => void
+  onViewCompetitors: () => void
+}): ReactNode[] {
+  return [
+    <Para key="i">
+      The clearest gap is <B>combination supplements addressing anxiety as the root cause of poor sleep,</B> not sleep onset directly. Three signals point to this:
+    </Para>,
+    <ResponseCard key="a">
+      <TagPill>BUYER LANGUAGE</TagPill>
+      <Para>
+        Reddit and Amazon reviews show a <B>3.2× shift</B> in 12 months from "fall asleep faster" to "calm my racing thoughts" / "next-day calm." Buyers are reframing the problem.
+      </Para>
+    </ResponseCard>,
+    <ResponseCard key="b">
+      <TagPill>COMPETITOR ACTIVITY</TagPill>
+      <Para>
+        <B>4 of 12 tracked competitors</B> launched magnesium + ashwagandha combos in the last 45 days. Olly, Beam, and Moon Juice are running "Sleep-Anxiety Crossover" angle ads at 28% of category spend. Category attention is at <B>64%</B>, ad coverage at <B>21%</B> — a 43-point execution gap.
+      </Para>
+    </ResponseCard>,
+    <ResponseCard key="c">
+      <TagPill>CATEGORY DEMAND</TagPill>
+      <Para>
+        Search volume for "magnesium glycinate" up <B>4.1× in 60 days</B>. TikTok creator content tagging the combo grew <B>+180% in 30 days</B>. Demand is outpacing supply.
+      </Para>
+    </ResponseCard>,
+    <Para key="o">
+      <B>What this means for you:</B> your existing portfolio (ZzzPlex, ASHWAGANDHA+, Vitamin D3 + K2) doesn't address this combined positioning. You have two paths: (1) launch a combo SKU into the whitespace, or (2) reposition existing creative around the next-day calm angle on ZzzPlex.
+    </Para>,
+    <div key="btns" className="flex gap-1.5 flex-wrap">
+      <button
+        onClick={handlers.onViewFinding}
+        className="bg-brand text-white border-0 cursor-pointer hover:opacity-90 text-[11px] font-medium"
+        style={{ padding: '6px 12px', borderRadius: 6 }}
+      >
+        View related finding →
+      </button>
+      <button
+        onClick={handlers.onViewCompetitors}
+        className="text-ink bg-white border-[0.5px] border-[#D1D5DB] cursor-pointer hover:bg-[#fafafa] text-[11px] font-medium"
+        style={{ padding: '6px 12px', borderRadius: 6 }}
+      >
+        See competitor activity →
+      </button>
+    </div>,
+  ]
+}
+
 // ─── Panel ──────────────────────────────────────────────────────────────────
 
 export function AskNanalytPanel() {
-  const { open, context, messages, closePanel, submitNext, removeContext } = useAskNanalyt()
+  const { open, mode, context, messages, closePanel, submitNext, removeContext } = useAskNanalyt()
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -308,8 +404,15 @@ export function AskNanalytPanel() {
   const last = messages[messages.length - 1]
   const isStreaming = !!last && last.role === 'agent' && last.revealed < BLOCK_COUNTS[last.key]
   const submitted = messages.filter(m => m.role === 'user').length
-  const allDone = submitted >= 3
-  const nextQuestion = !allDone && !isStreaming ? SCRIPTED_QUESTIONS[submitted] : null
+  const limit = mode === 'finding' ? 3 : 1
+  const allDone = submitted >= limit
+  const nextQuestion =
+    !allDone && !isStreaming
+      ? mode === 'finding'
+        ? FINDING_QUESTIONS[submitted]
+        : GENERAL_QUESTION
+      : null
+  const placeholder = mode === 'finding' ? 'Ask a follow-up...' : 'Ask anything about the market...'
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -323,6 +426,14 @@ export function AskNanalytPanel() {
     navigate('/findings?action=mgc-newproduct')
   }
 
+  const handleViewFinding = () => {
+    navigate('/findings?finding=2')
+  }
+
+  const handleViewCompetitors = () => {
+    navigate('/competitors')
+  }
+
   return (
     <aside
       className="fixed top-0 right-0 bottom-0 w-[440px] bg-white z-[401] flex flex-col font-sans"
@@ -330,7 +441,7 @@ export function AskNanalytPanel() {
     >
       {/* Header */}
       <div className="shrink-0 border-b-[0.5px] border-[#E5E7EB]">
-        <div className="flex items-center justify-between px-[18px] pt-[14px] pb-2">
+        <div className="flex items-center justify-between px-[18px] pt-[14px] pb-[14px]">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-brand" />
             <span className="text-[14px] font-medium text-ink">Ask Nanalyt</span>
@@ -346,7 +457,7 @@ export function AskNanalytPanel() {
           </button>
         </div>
         {context && (
-          <div className="px-[18px] pb-3">
+          <div className="px-[18px] pb-3 -mt-2">
             <div
               className="flex items-center gap-2 rounded-lg bg-brand-bg"
               style={{ border: '0.5px solid #2d5c3a', padding: '8px 10px' }}
@@ -392,7 +503,9 @@ export function AskNanalytPanel() {
               ? priceBlocks()
               : m.key === 'q2'
                 ? buyerBlocks()
-                : anglesBlocks(handleTakeAction)
+                : m.key === 'q3'
+                  ? anglesBlocks(handleTakeAction)
+                  : gapBlocks({ onViewFinding: handleViewFinding, onViewCompetitors: handleViewCompetitors })
           return (
             <div key={i} className="flex flex-col gap-3" style={{ maxWidth: '94%' }}>
               {m.revealed === 0 ? <TypingDots /> : blocks.slice(0, m.revealed)}
@@ -423,7 +536,7 @@ export function AskNanalytPanel() {
             ref={inputRef}
             value={draft}
             onChange={e => setDraft(e.target.value)}
-            placeholder="Ask a follow-up..."
+            placeholder={placeholder}
             className="flex-1 bg-transparent border-0 outline-none text-[12px] text-ink"
             style={{ minWidth: 0 }}
           />
