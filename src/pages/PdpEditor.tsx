@@ -406,6 +406,20 @@ function PdpEditor() {
   const [regenSpinning, setRegenSpinning] = useState(false)
   const [focusField, setFocusField] = useState<'headline' | 'sub' | null>(null)
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
+  const [pushState, setPushState] = useState<'idle' | 'pushing' | 'live'>('idle')
+
+  const handlePush = () => {
+    if (pushState !== 'idle') return
+    setPushState('pushing')
+    window.setTimeout(() => setPushState('live'), 2500)
+  }
+  const handleOpenInShopify = () => {
+    window.open(
+      'https://nanalyt-demo.myshopify.com/products/magnesium-glycinate-complex',
+      '_blank',
+      'noopener,noreferrer',
+    )
+  }
 
   const headlineRef = useRef<HTMLInputElement>(null)
   const subRef = useRef<HTMLTextAreaElement>(null)
@@ -468,12 +482,37 @@ function PdpEditor() {
           >
             Discard
           </button>
-          <button
-            onClick={() => navigate('/studio')}
-            className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3.5 py-1.5 cursor-pointer hover:opacity-90"
-          >
-            Mark ready
-          </button>
+          {pushState === 'idle' && (
+            <button
+              onClick={handlePush}
+              className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3.5 py-1.5 cursor-pointer hover:opacity-90"
+            >
+              Push to Shopify
+            </button>
+          )}
+          {pushState === 'pushing' && (
+            <button
+              disabled
+              className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3.5 py-1.5 cursor-default opacity-90 flex items-center gap-1.5"
+            >
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" className="animate-spin">
+                <circle cx="6" cy="6" r="4.5" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <path d="M6 1.5A4.5 4.5 0 0110.5 6" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+              </svg>
+              Pushing…
+            </button>
+          )}
+          {pushState === 'live' && (
+            <button
+              onClick={handleOpenInShopify}
+              className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3.5 py-1.5 cursor-pointer hover:opacity-90 flex items-center gap-1.5"
+            >
+              Open in new window
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 9L9 2M4 2h5v5" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
