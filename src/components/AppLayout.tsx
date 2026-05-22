@@ -80,11 +80,11 @@ function LeftNav() {
     <div className="w-[280px] min-w-[280px] h-full bg-nav-bg border-r border-line flex flex-col font-sans">
       <div className="px-[18px] pt-[18px] pb-4 border-b border-line">
         <div className="flex items-center gap-[9px]">
-          <div className="w-[26px] h-[26px] bg-brand rounded-[7px] flex items-center justify-center shrink-0">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2 10L6 2.5 10 10" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
+          <img
+            src="/nanalyt-logo.png"
+            alt="Nanalyt"
+            className="w-[26px] h-[26px] object-contain shrink-0"
+          />
           <div>
             <div className="text-[14px] font-medium text-ink leading-none tracking-[-0.03em]">Nanalyt</div>
             <div className="text-[9px] text-ink tracking-[0.03em] mt-[2px]">Sleep supplements</div>
