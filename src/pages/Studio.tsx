@@ -660,17 +660,12 @@ type GenContext = {
 }
 
 function getInitialStudioState() {
-  // Reset to the empty state on a full page reload; otherwise restore what
-  // we saved before navigating away (e.g., into /studio/pdp/edit). This is
-  // why coming Back to Studio from the PDP editor keeps MGC's workspace
-  // pulled up instead of dropping back to "Select a product to view assets".
+  // Persist selectedProduct + bannerDismissed in sessionStorage so the
+  // workspace stays pulled up across in-app navigation (Back from
+  // /studio/pdp/edit, switching tabs, etc.) and across page reloads. The
+  // banner only resurfaces when sessionStorage is cleared — i.e. a fresh
+  // browser tab — which matches the "show once until acknowledged" UX.
   if (typeof window === 'undefined') return { selectedProduct: null, bannerDismissed: false }
-  const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
-  if (navEntry?.type === 'reload') {
-    sessionStorage.removeItem('studio.selectedProduct')
-    sessionStorage.removeItem('studio.bannerDismissed')
-    return { selectedProduct: null, bannerDismissed: false }
-  }
   const stored = sessionStorage.getItem('studio.selectedProduct')
   const selectedProduct: number | null = stored !== null ? Number(stored) : null
   const bannerDismissed = sessionStorage.getItem('studio.bannerDismissed') === '1'
