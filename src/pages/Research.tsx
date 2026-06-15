@@ -1,423 +1,233 @@
-import { useState, useEffect, useRef } from 'react'
+// Research.tsx — ask the agent to scan a market (Direction A).
+// Ported from design_handoff_nanalyt/source/research-page.jsx.
+// Renders content only; the shell is AppLayout.
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { NT, ntCard } from '../system/tokens'
 
-// ─── Data ────────────────────────────────────────────────────────────────────
-
-const TABS = ['Category', 'Product', 'Import URL'] as const
-type Tab = (typeof TABS)[number]
-
-const PLACEHOLDERS: Record<Tab, string> = {
-  Category: 'Category or niche (e.g. magnesium sleep supplements)',
-  Product: 'Product name or ASIN',
+const RES_TABS = ['Category', 'Product', 'Import URL']
+const RES_PLACEHOLDERS: Record<string, string> = {
+  'Category': 'Category or niche (e.g. magnesium sleep supplements)',
+  'Product': 'Product name or ASIN',
   'Import URL': 'Paste a URL (olly.com, amazon.com/dp/…)',
 }
-
-const SOURCE_LIST = ['Amazon Reviews', 'TikTok Ads', 'Meta Ads', 'YouTube', 'Reddit', 'Google'] as const
-type Source = (typeof SOURCE_LIST)[number]
-const SOURCE_ABBR: Record<Source, string> = {
-  'Amazon Reviews': 'A',
-  'TikTok Ads': 'T',
-  'Meta Ads': 'M',
-  YouTube: 'Y',
-  Reddit: 'R',
-  Google: 'G',
-}
-
-const QUICK_START = [
-  { icon: '⊕', label: 'Category scan', sub: 'Find winning products with low competition in a category' },
-  { icon: '◈', label: 'Competitor deep-dive', sub: 'Analyze a specific product or brand by URL' },
-  { icon: '⊞', label: 'Market comparison', sub: 'Compare top products across a category side by side' },
-  { icon: '◉', label: 'Buyer segments', sub: 'Find underserved buyer segments in your niche' },
+const RES_SOURCES = ['Amazon Reviews', 'TikTok Ads', 'Meta Ads', 'YouTube', 'Reddit', 'Google']
+const RES_SEEDS = [
+  { tag: 'From a finding', text: 'Validate demand for the sleep-anxiety crossover angle', sub: 'Olly is scaling it · you have 0 coverage', q: 'sleep anxiety crossover supplements' },
+  { tag: 'From your pipeline', text: 'Sourcing check on Magnesium L-Threonate', sub: 'Score 79 · 2 findings attached', q: 'Magnesium L-Threonate' },
+  { tag: 'From competitors', text: 'Who else is bidding on "next-day calm"?', sub: 'Your differentiated angle · 3 brands adjacent', q: 'next-day calm supplements' },
 ]
-
-const RECENT = [
+const RES_RECENT = [
   { q: 'Magnesium sleep supplements', type: 'Category', found: 6, pipeline: 3, time: '2h ago' },
   { q: 'Melatonin gummies 5mg', type: 'Product', found: 4, pipeline: 2, time: 'Yesterday' },
   { q: 'Ashwagandha stress relief', type: 'Category', found: 8, pipeline: 5, time: '2d ago' },
   { q: 'olly.com/products/sleep-gummies', type: 'URL', found: 1, pipeline: 1, time: '3d ago' },
 ]
-
-const STEP_TEMPLATES = (q: string) => [
-  { label: `Scanning Amazon Reviews for "${q}"`, result: '8 active campaigns' },
-  { label: `Scanning TikTok Ads for "${q}"`, result: '320 relevant threads' },
-  { label: `Scanning Meta Ads for "${q}"`, result: '14 competitor ads found' },
-  { label: `Scanning YouTube content for "${q}"`, result: '11 review videos' },
-  { label: `Scanning Reddit for "${q}"`, result: '29 community threads' },
-  { label: `Scanning Google Trends for "${q}"`, result: '+3.2× search growth' },
-  { label: 'Analyzing buyer language patterns…', result: '63 key phrases extracted' },
-  { label: 'Identifying angle opportunities…', result: '4 angle gaps found' },
+const RES_STEPS = [
+  { label: 'Amazon Reviews', result: '8 active campaigns' },
+  { label: 'TikTok Ads', result: '320 relevant threads' },
+  { label: 'Meta Ads', result: '14 competitor ads found' },
+  { label: 'YouTube', result: '11 review videos' },
+  { label: 'Reddit', result: '29 community threads' },
+  { label: 'Google Trends', result: '+3.2× search growth' },
+  { label: 'Buyer language patterns', result: '63 key phrases extracted' },
+  { label: 'Angle opportunities', result: '4 angle gaps found' },
 ]
 
-// ─── Icons ───────────────────────────────────────────────────────────────────
-
-function ArrowR() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 7h8M8 4l3 3-3 3" />
-    </svg>
-  )
-}
-
-function FilterIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1.5 3h10l-4 4v4l-2-1V7l-4-4z" />
-    </svg>
-  )
-}
-
-function ChevDown() {
-  return (
-    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 4l3 3 3-3" />
-    </svg>
-  )
-}
-
-function XIcon() {
-  return (
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
-      <path d="M2 2l7 7M9 2L2 9" />
-    </svg>
-  )
-}
-
-function CheckCircle({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
-      <circle cx="7" cy="7" r="6.5" fill="#e4ede7" stroke="#2d5c3a" strokeWidth="1" />
-      <path d="M4 7l2.5 2.5 4-4" stroke="#2d5c3a" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function SpinningRing() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="animate-spin">
-      <circle cx="7" cy="7" r="5.5" stroke="#e8e5e0" strokeWidth="1.5" />
-      <path d="M7 1.5A5.5 5.5 0 0112.5 7" stroke="#2d5c3a" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-// ─── Search state ────────────────────────────────────────────────────────────
-
 type Step = { label: string; result: string }
-type SearchState = {
-  query: string
-  steps: Step[]
-  completed: number[]
-  current: number
-  pct: number
-  done: boolean
-  elapsed: number
+type Scan = { query: string; steps: Step[]; current: number; pct: number; done: boolean; elapsed: number }
+
+function ResSecHead({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 22px', background: 'var(--dv-page)', borderTop: `1px solid ${NT.borderS}`, borderBottom: `1px solid ${NT.borderS}` }}>
+      <span style={{ fontSize: 10.5, fontWeight: 500, color: NT.text }}>{children}</span>
+      {right && <span style={{ fontSize: 10.5, color: NT.text }}>{right}</span>}
+    </div>
+  )
+}
+function ResTypePill({ type }: { type: string }) {
+  const m: Record<string, { fg: string; bg: string; br?: boolean }> = { Category: { fg: NT.green, bg: NT.greenBg }, Product: { fg: NT.blue, bg: 'rgba(58,110,168,0.1)' }, URL: { fg: NT.text, bg: 'var(--dv-page)', br: true } }
+  const s = m[type]
+  return <span style={{ fontSize: 10, fontWeight: 550, color: s.fg, background: s.bg, border: s.br ? `1px solid ${NT.borderS}` : 'none', padding: '2.5px 9px', borderRadius: 9, whiteSpace: 'nowrap', justifySelf: 'start' }}>{type}</span>
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
-
-function Research() {
-  const navigate = useNavigate()
-  const [tab, setTab] = useState<Tab>('Category')
-  const [query, setQuery] = useState('')
-  const [showSources, setShowSources] = useState(false)
-  const [sources, setSources] = useState<Record<Source, boolean>>(() => {
-    const init = {} as Record<Source, boolean>
-    SOURCE_LIST.forEach(s => (init[s] = true))
-    return init
-  })
-  const [searching, setSearching] = useState(false)
-  const [searchState, setSearchState] = useState<SearchState | null>(null)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const elapsedRef = useRef(0)
-
-  const enabledSources = SOURCE_LIST.filter(s => sources[s])
-  const enabledCount = enabledSources.length
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [])
-
-  const startSearch = () => {
-    if (!query.trim()) return
-    const steps = STEP_TEMPLATES(query).filter((_, i) => i < enabledCount + 2)
-    elapsedRef.current = 0
-    setSearching(true)
-    setSearchState({ query, steps, completed: [], current: 0, pct: 0, done: false, elapsed: 0 })
-
-    if (timerRef.current) clearInterval(timerRef.current)
-    timerRef.current = setInterval(() => {
-      elapsedRef.current += 1
-      setSearchState(prev => {
-        if (!prev) return prev
-        const newPct = Math.min(100, prev.pct + (Math.random() * 2.5 + 1))
-        const stepDone = newPct > ((prev.current + 1) / prev.steps.length) * 95 && prev.current < prev.steps.length
-        const newCompleted = stepDone ? [...prev.completed, prev.current] : prev.completed
-        const newCurrent = stepDone ? prev.current + 1 : prev.current
-        const done = newPct >= 100
-        if (done && timerRef.current) clearInterval(timerRef.current)
-        return {
-          ...prev,
-          pct: Math.round(newPct),
-          completed: newCompleted,
-          current: Math.min(newCurrent, prev.steps.length),
-          done,
-          elapsed: elapsedRef.current,
-        }
-      })
-    }, 180)
-  }
-
-  const minutes = searchState ? Math.floor(searchState.elapsed / 5) : 0
-  const seconds = searchState ? String((searchState.elapsed % 5) * 12).padStart(2, '0') : '00'
-
+function ResSearchHero({ tab, setTab, query, setQuery, sources, toggleSource, onScan }: {
+  tab: string; setTab: (t: string) => void; query: string; setQuery: (q: string) => void
+  sources: Record<string, boolean>; toggleSource: (s: string) => void; onScan: () => void
+}) {
+  const enabled = RES_SOURCES.filter((s) => sources[s]).length
   return (
-    <div
-      className="max-w-[960px] mx-auto px-16 pt-7 pb-16 font-sans"
-      onClick={() => setShowSources(false)}
-    >
-      <div className="mb-6">
-        <div className="text-[20px] font-medium text-ink tracking-[-0.02em] mb-1">Research</div>
-        <div className="text-[12px] text-ink">Discover products, analyze categories, or import a URL</div>
+    <div style={{ background: 'linear-gradient(120deg, #10180f 0%, #16241a 70%, #1a2f1f 100%)', borderRadius: 18, boxShadow: '0 4px 24px rgba(16,24,15,0.18)', padding: '22px 26px 20px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -130, right: -70, width: 330, height: 330, borderRadius: '50%', background: 'radial-gradient(circle, rgba(92,184,119,0.14) 0%, rgba(92,184,119,0) 70%)', pointerEvents: 'none' }}></div>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 14, position: 'relative' }}>
+        {RES_TABS.map((t) => (
+          <span key={t} onClick={() => setTab(t)} style={{ fontSize: 11.5, fontWeight: tab === t ? 550 : 450, padding: '5.5px 14px', borderRadius: 9, cursor: 'pointer', transition: 'all 0.12s',
+            background: tab === t ? '#fff' : 'rgba(255,255,255,0.07)', color: tab === t ? '#10180f' : 'rgba(255,255,255,0.85)' }}>{t}</span>
+        ))}
       </div>
-
-      <div className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-[10px] mb-7 relative overflow-visible shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-        <div className="flex border-b-[0.5px] border-line">
-          {TABS.map(t => (
-            <button
-              key={t}
-              onClick={() => {
-                if (!searching) setTab(t)
-              }}
-              className={`px-4 py-2.5 text-[12px] bg-transparent cursor-pointer -mb-[1px] border-b-2 transition-all ${
-                tab === t ? 'text-ink font-medium border-ink' : 'text-ink font-normal border-transparent'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-
-        {!searching && (
-          <div className="px-4 pt-4 pb-3.5">
-            <input
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') startSearch()
-              }}
-              placeholder={PLACEHOLDERS[tab]}
-              className="w-full text-[14px] text-ink bg-transparent border-0 outline-none mb-3 placeholder:text-ink/40"
-            />
-            <div className="flex items-center justify-between">
-              <div className="relative">
-                <button
-                  onClick={e => {
-                    e.stopPropagation()
-                    setShowSources(v => !v)
-                  }}
-                  className="flex items-center gap-1.5 text-[11px] text-ink bg-surf-2 border-[0.5px] border-line rounded-md px-2.5 py-1 cursor-pointer"
-                >
-                  <FilterIcon />
-                  {enabledCount} sources
-                  <ChevDown />
-                </button>
-                {showSources && (
-                  <div
-                    onClick={e => e.stopPropagation()}
-                    className="absolute top-[calc(100%+6px)] left-0 bg-surf border-[0.5px] border-[#e5e7eb] rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.1)] z-50 min-w-[220px] overflow-hidden"
-                  >
-                    <div className="flex items-center justify-between px-3.5 py-2.5 border-b-[0.5px] border-line">
-                      <span className="text-[10px] font-bold tracking-[0.07em] uppercase text-ink">Filter by source</span>
-                      <button
-                        onClick={() => {
-                          const all = {} as Record<Source, boolean>
-                          SOURCE_LIST.forEach(s => (all[s] = true))
-                          setSources(all)
-                        }}
-                        className="text-[11px] text-ink bg-transparent border-0 cursor-pointer font-medium hover:opacity-70"
-                      >
-                        Select all
-                      </button>
-                    </div>
-                    {SOURCE_LIST.map((s, i) => (
-                      <div
-                        key={s}
-                        onClick={() => setSources(prev => ({ ...prev, [s]: !prev[s] }))}
-                        className={`flex items-center gap-2.5 px-3.5 py-2 cursor-pointer hover:bg-surf-2 ${
-                          i < SOURCE_LIST.length - 1 ? 'border-b-[0.5px] border-line-soft' : ''
-                        }`}
-                      >
-                        <div
-                          className={`w-4 h-4 rounded-[3px] border-[1.5px] flex items-center justify-center shrink-0 transition-all ${
-                            sources[s] ? 'bg-brand border-brand' : 'bg-transparent border-line'
-                          }`}
-                        >
-                          {sources[s] && (
-                            <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                              <path d="M1 3.5l2.5 2.5 4.5-5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          )}
-                        </div>
-                        <span className="text-[12px] text-ink">{s}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={startSearch}
-                disabled={!query.trim()}
-                className={`w-8 h-8 rounded-[7px] border-0 flex items-center justify-center transition-all ${
-                  query.trim()
-                    ? 'bg-ink text-white cursor-pointer hover:opacity-90'
-                    : 'bg-surf-2 text-ink/30 cursor-default'
-                }`}
-              >
-                <ArrowR />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {searching && searchState && (
-          <div className="px-[18px] py-4">
-            <div className="flex items-center justify-between mb-3.5">
-              <span className="text-[13px] font-medium text-ink">{searchState.query}</span>
-              <div className="flex items-center gap-1.5">
-                <div className="flex gap-[3px]">
-                  {enabledSources.map(s => (
-                    <div
-                      key={s}
-                      className="w-5 h-5 rounded border border-line bg-surf-2 flex items-center justify-center text-[9px] font-bold text-ink"
-                    >
-                      {SOURCE_ABBR[s]}
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center gap-1 ml-1.5">
-                  <div
-                    className="w-1.5 h-1.5 rounded-full shrink-0"
-                    style={{ background: searchState.done ? '#2d5c3a' : '#f59e0b' }}
-                  />
-                  <span className="text-[11px] text-ink font-mono">
-                    {minutes}:{seconds}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5 mb-3.5">
-              {searchState.steps.map((step, i) => {
-                const isCompleted = searchState.completed.includes(i)
-                const isCurrent = searchState.current === i && !searchState.done
-                if (i > searchState.current && !isCompleted) return null
-                return (
-                  <div key={i} className="flex items-center gap-2">
-                    {isCompleted ? <CheckCircle /> : isCurrent ? <SpinningRing /> : null}
-                    <span className={`text-[12px] leading-[1.3] ${isCompleted ? 'text-brand' : 'text-ink'}`}>
-                      {isCompleted ? step.result : step.label + (isCurrent ? '…' : '')}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className={`flex items-center gap-2.5 ${searchState.done ? 'mb-3.5' : ''}`}>
-              <div className="flex-1 h-1 bg-line rounded-sm overflow-hidden">
-                <div
-                  className="h-full bg-brand rounded-sm transition-[width] duration-[180ms] ease-out"
-                  style={{ width: `${searchState.pct}%` }}
-                />
-              </div>
-              <span className="text-[11px] text-ink font-mono shrink-0 min-w-[32px] text-right">
-                {searchState.pct}%
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 12, padding: '6px 8px 6px 16px', marginBottom: 12, position: 'relative' }}>
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.4" style={{ flexShrink: 0 }}><circle cx="6.5" cy="6.5" r="4.5" /><path d="M10.5 10.5L13.5 13.5" /></svg>
+        <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') onScan() }}
+          placeholder={RES_PLACEHOLDERS[tab]}
+          style={{ flex: 1, fontSize: 13.5, color: '#fff', background: 'transparent', border: 'none', outline: 'none', fontFamily: NT.sans, padding: '8px 0', minWidth: 0 }} />
+        <button onClick={onScan} style={{ background: query.trim() ? '#fff' : 'rgba(255,255,255,0.12)', color: query.trim() ? '#10180f' : 'rgba(255,255,255,0.8)', border: 'none', padding: '8px 16px', borderRadius: 9, fontSize: 12, fontWeight: 550, fontFamily: NT.sans, cursor: query.trim() ? 'pointer' : 'default', flexShrink: 0, transition: 'all 0.15s' }}>Scan market →</button>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, position: 'relative', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }}>Sources · {enabled} of 6</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          {RES_SOURCES.map((s) => {
+            const on = sources[s]
+            return (
+              <span key={s} onClick={() => toggleSource(s)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 10.5, fontWeight: 500, padding: '3.5px 11px', borderRadius: 9, cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.12s',
+                color: on ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.8)', background: on ? 'rgba(255,255,255,0.08)' : 'transparent', border: `1px solid ${on ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.10)'}` }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: on ? '#7ac292' : 'rgba(255,255,255,0.25)', display: 'inline-block', transition: 'background 0.12s' }}></span>{s}
               </span>
-            </div>
-
-            {searchState.done && (
-              <div className="flex justify-end pt-3.5">
-                <button
-                  onClick={() => navigate('/research/analysis')}
-                  className="text-[13px] font-medium text-white bg-brand border-0 rounded-md px-4 py-2 cursor-pointer hover:opacity-90"
-                >
-                  View analysis →
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="mb-8">
-        <div className="text-[10px] font-medium tracking-[0.08em] uppercase text-ink mb-3.5">Quick Start</div>
-        <div className="grid grid-cols-4 gap-3">
-          {QUICK_START.map((q, i) => (
-            <div
-              key={i}
-              className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-lg p-4 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
-            >
-              <div className="text-[20px] mb-3 leading-none">{q.icon}</div>
-              <div className="text-[13px] font-medium text-ink mb-1.5 leading-[1.3]">{q.label}</div>
-              <div className="text-[11px] text-ink leading-[1.55]">{q.sub}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <div className="text-[14px] font-medium text-ink mb-3.5">Recent research</div>
-        <div className="bg-surf border-[0.5px] border-[#e5e7eb] rounded-[10px]">
-          <div className="grid grid-cols-[120px_minmax(0,1fr)_90px_200px] gap-3 px-[18px] py-3 border-b-[0.5px] border-[#f0f1f3] items-center">
-            <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink">TYPE</div>
-            <div className="text-[10px] font-medium tracking-[0.04em] uppercase text-ink">QUERY</div>
-            <div />
-            <div className="flex justify-end">
-              <select className="text-[11px] text-ink border-[0.5px] border-line rounded-md px-2.5 py-1 bg-surf outline-none cursor-pointer">
-                <option>All types</option>
-                <option>Category</option>
-                <option>Product</option>
-                <option>URL</option>
-              </select>
-            </div>
-          </div>
-          {RECENT.map((r, i) => (
-            <div
-              key={i}
-              onClick={() => navigate('/research/analysis')}
-              className={`grid grid-cols-[120px_minmax(0,1fr)_90px_200px] gap-3 px-[18px] py-3.5 items-center cursor-pointer hover:bg-black/[0.02] ${
-                i < RECENT.length - 1 ? 'border-b-[0.5px] border-[#f0f1f3]' : ''
-              }`}
-            >
-              <span className="text-[12px] font-medium tracking-[0.025em] uppercase text-ink">{r.type}</span>
-              <div className="min-w-0">
-                <div className="text-[13px] font-medium text-ink truncate">{r.q}</div>
-                <div className="text-[11px] text-ink mt-0.5">
-                  <strong className="font-medium">{r.found}</strong> products found · <strong className="font-medium">{r.pipeline} in pipeline</strong>
-                </div>
-              </div>
-              <span className="text-[11px] text-ink whitespace-nowrap">{r.time}</span>
-              <div className="flex items-center justify-end gap-3">
-                <button
-                  onClick={e => e.stopPropagation()}
-                  className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3 py-[5px] cursor-pointer whitespace-nowrap hover:opacity-90"
-                >
-                  + Pipeline ({r.pipeline})
-                </button>
-                <span
-                  onClick={e => e.stopPropagation()}
-                  className="text-ink cursor-pointer flex hover:opacity-70"
-                >
-                  <XIcon />
-                </span>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>
   )
 }
 
-export default Research
+function ResScanCard({ scan, onCancel, onNew, onView }: { scan: Scan; onCancel: () => void; onNew: () => void; onView: () => void }) {
+  const { query, steps, current, pct, done, elapsed } = scan
+  const mm = Math.floor(elapsed / 60), ss = String(elapsed % 60).padStart(2, '0')
+  return (
+    <div style={{ ...ntCard, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 22px 12px' }}>
+        {done
+          ? <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.5" fill="var(--dv-green-bg)" /><path d="M4 7l2.5 2.5 4-4" stroke="var(--dv-green)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          : <span className="pulse" style={{ width: 6, height: 6, background: 'var(--dv-green-br)', borderRadius: '50%', display: 'block' }}></span>}
+        <span style={{ fontSize: 13, fontWeight: 550, color: NT.text }}>{query}</span>
+        <span style={{ fontSize: 10, fontWeight: 550, color: NT.green, background: NT.greenBg, padding: '2.5px 9px', borderRadius: 9 }}>Category scan</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 11, color: NT.text, fontFamily: NT.mono }}>{mm}:{ss} elapsed</span>
+          <span style={{ fontSize: 11, fontWeight: 550, color: NT.text, fontFamily: NT.mono }}>{pct}%</span>
+        </div>
+      </div>
+      <div style={{ height: 4, background: 'var(--dv-page)', margin: '0 22px 14px', borderRadius: 2, overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: 'var(--dv-green-br)', borderRadius: 2, transition: 'width 0.18s ease' }}></div>
+      </div>
+      <ResSecHead right={`${Math.min(current, steps.length)} of ${steps.length} complete`}>Scan steps</ResSecHead>
+      {steps.map((s, i) => {
+        const isDone = i < current
+        const isCurrent = i === current && !done
+        return (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '190px 1fr', gap: 14, alignItems: 'center', padding: '9.5px 22px', borderBottom: i < steps.length - 1 ? `1px solid ${NT.borderS}` : 'none', opacity: isDone || isCurrent || done ? 1 : 0.55, transition: 'opacity 0.2s' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              {isDone || done ? (
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.5" fill="var(--dv-green-bg)" /><path d="M4 7l2.5 2.5 4-4" stroke="var(--dv-green)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              ) : isCurrent ? (
+                <span className="pulse" style={{ width: 9, height: 9, borderRadius: '50%', border: '2px solid var(--dv-green-br)', display: 'block', margin: 2, flexShrink: 0 }}></span>
+              ) : (
+                <span style={{ width: 9, height: 9, borderRadius: '50%', border: `1.5px solid ${NT.borderS}`, display: 'block', margin: 2, flexShrink: 0 }}></span>
+              )}
+              <span style={{ fontSize: 12, fontWeight: isCurrent ? 550 : 475, color: NT.text }}>{s.label}</span>
+            </div>
+            <span style={{ fontSize: 11.5, color: NT.text, fontFamily: (isDone || done) ? NT.mono : NT.sans }}>
+              {(isDone || done) ? s.result : isCurrent ? 'scanning…' : 'queued'}
+            </span>
+          </div>
+        )
+      })}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '13px 22px', borderTop: `1px solid ${NT.borderS}` }}>
+        {done ? (
+          <Fragment>
+            <button className="dv2-btn-p" onClick={onView} style={{ background: 'var(--dv-btn-bg)', color: 'var(--dv-btn-fg)', border: 'none', padding: '8px 16px', borderRadius: 9, fontSize: 12, fontWeight: 500, fontFamily: NT.sans, cursor: 'pointer' }}>View analysis →</button>
+            <button onClick={onNew} style={{ background: 'var(--dv-surf)', color: NT.text, border: `1px solid ${NT.border}`, padding: '7.5px 14px', borderRadius: 9, fontSize: 12, fontWeight: 450, fontFamily: NT.sans, cursor: 'pointer' }}>New search</button>
+            <span style={{ marginLeft: 'auto', fontSize: 10.5, color: NT.text }}>6 products found · 4 angle gaps</span>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <button onClick={onCancel} style={{ background: 'var(--dv-surf)', color: NT.text, border: `1px solid ${NT.border}`, padding: '7px 14px', borderRadius: 9, fontSize: 11.5, fontWeight: 450, fontFamily: NT.sans, cursor: 'pointer' }}>Cancel scan</button>
+            <span style={{ marginLeft: 'auto', fontSize: 10.5, color: NT.text }}>You'll get a finding when this completes — safe to leave the page</span>
+          </Fragment>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default function Research() {
+  const navigate = useNavigate()
+  const [tab, setTab] = useState('Category')
+  const [query, setQuery] = useState('')
+  const [sources, setSources] = useState<Record<string, boolean>>(() => { const o: Record<string, boolean> = {}; RES_SOURCES.forEach((s) => (o[s] = true)); return o })
+  const [scan, setScan] = useState<Scan | null>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const startScan = () => {
+    if (!query.trim() || scan) return
+    const steps = RES_STEPS.filter((_, i) => (i < 6 ? sources[RES_SOURCES[i]] : true))
+    setScan({ query, steps, current: 0, pct: 0, done: false, elapsed: 0 })
+    let tick = 0
+    timerRef.current = setInterval(() => {
+      tick += 1
+      setScan((prev) => {
+        if (!prev || prev.done) return prev
+        const pct = Math.min(100, prev.pct + Math.random() * 2.6 + 1.2)
+        const current = Math.min(prev.steps.length, Math.floor((pct / 96) * prev.steps.length))
+        const done = pct >= 100
+        if (done && timerRef.current) clearInterval(timerRef.current)
+        return { ...prev, pct: Math.round(pct), current, done, elapsed: Math.round(tick * 0.18) }
+      })
+    }, 180)
+  }
+  const stopScan = () => { if (timerRef.current) clearInterval(timerRef.current); setScan(null) }
+  useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current) }, [])
+
+  return (
+    <div style={{ width: '100%', maxWidth: 1080, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 9, margin: '8px 2px 0' }}>
+        <span style={{ fontSize: 14.5, fontWeight: 550, color: NT.text, letterSpacing: '-0.012em' }}>Research</span>
+        <span style={{ fontSize: 11.5, color: NT.text }}>ask the agent to scan a market</span>
+      </div>
+
+      {scan
+        ? <ResScanCard scan={scan} onCancel={stopScan} onNew={stopScan} onView={() => navigate('/research/analysis')} />
+        : <ResSearchHero tab={tab} setTab={setTab} query={query} setQuery={setQuery} sources={sources}
+          toggleSource={(s) => setSources((prev) => ({ ...prev, [s]: !prev[s] }))} onScan={startScan} />}
+
+      <div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 9, margin: '2px 2px 9px' }}>
+          <span style={{ fontSize: 12.5, fontWeight: 550, color: NT.text }}>Start from what Nanalyt already knows</span>
+          <span style={{ fontSize: 11, color: NT.text }}>seeds from your findings, pipeline, and competitors</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+          {RES_SEEDS.map((s, i) => (
+            <div key={i} className="dv2-card-h" onClick={() => { if (!scan) setQuery(s.q) }} style={{ ...ntCard, padding: '14px 17px', cursor: 'pointer' }}>
+              <span style={{ fontSize: 9.5, fontWeight: 550, color: NT.green, background: NT.greenBg, padding: '2px 8px', borderRadius: 8, display: 'inline-block', marginBottom: 9 }}>{s.tag}</span>
+              <div style={{ fontSize: 12.5, fontWeight: 550, color: NT.text, lineHeight: 1.4, marginBottom: 5 }}>{s.text}</div>
+              <div style={{ fontSize: 10.5, color: NT.text }}>{s.sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ ...ntCard, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '13px 22px 11px' }}>
+          <span style={{ fontSize: 13, fontWeight: 550, color: NT.text }}>Recent research</span>
+          <span style={{ fontSize: 11, color: NT.text, fontFamily: NT.mono, marginLeft: 8 }}>4</span>
+          <span style={{ marginLeft: 'auto', fontSize: 11.5, color: NT.text, cursor: 'pointer' }}>All types ▾</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '90px minmax(0,1.5fr) 150px 70px 120px', gap: 12, padding: '7px 22px', borderTop: `1px solid ${NT.borderS}`, borderBottom: `1px solid ${NT.borderS}`, background: 'var(--dv-page)' }}>
+          {['Type', 'Query', 'Results', 'When', ''].map((h, i) =>
+            <div key={i} style={{ fontSize: 10.5, fontWeight: 500, color: NT.text }}>{h}</div>)}
+        </div>
+        {RES_RECENT.map((r, i) => (
+          <div key={i} className="dv2-row" onClick={() => navigate('/research/analysis')} style={{ display: 'grid', gridTemplateColumns: '90px minmax(0,1.5fr) 150px 70px 120px', gap: 12, alignItems: 'center', padding: '13px 22px', borderBottom: i < RES_RECENT.length - 1 ? `1px solid ${NT.borderS}` : 'none', cursor: 'pointer' }}>
+            <ResTypePill type={r.type} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 525, color: NT.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 2 }}>{r.q}</div>
+              <div style={{ fontSize: 10.5, color: NT.text }}>{r.found} products found · <span style={{ fontWeight: 550, color: NT.green }}>{r.pipeline} in pipeline</span></div>
+            </div>
+            <span style={{ fontSize: 11, color: NT.text, fontFamily: NT.mono }}>{r.found} found · {r.pipeline} piped</span>
+            <span style={{ fontSize: 10.5, color: NT.text, fontFamily: NT.mono, whiteSpace: 'nowrap' }}>{r.time}</span>
+            <button onClick={(e) => { e.stopPropagation(); navigate('/research/analysis') }} style={{ background: 'var(--dv-surf)', color: NT.text, border: `1px solid ${NT.border}`, padding: '5px 12px', borderRadius: 8, fontSize: 10.5, fontWeight: 500, fontFamily: NT.sans, cursor: 'pointer', whiteSpace: 'nowrap', justifySelf: 'end' }}>Open report</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

@@ -1,211 +1,158 @@
-import { NavLink, Outlet } from 'react-router-dom'
-import type { ReactNode } from 'react'
-import { AskNanalytProvider, AskNanalytPanel, AgentDrawer, useAskNanalyt } from './AskNanalytPanel'
+// AppLayout.tsx — the Nanalyt app shell (sidebar + top bar + status bar + content).
+// Ported from design_handoff_nanalyt/source/system/nanalyt-shell.jsx, adapted to
+// react-router: nav uses <navigate>, and per-route chrome (active/title/status/
+// agentNote) is resolved from the current path (src/system/chrome.ts).
+import { Fragment, useState, type ReactNode } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { NT, NI } from '../system/tokens'
+import { NANALYT_NAV_GROUPS, NAV_SETTINGS, NANALYT_ACTIVITY } from '../system/data'
+import { resolveChrome, type Status } from '../system/chrome'
+import { useTheme } from '../system/theme'
+import { AskNanalytHost } from './AskNanalyt'
 
-type NavItem = {
-  to: string
-  label: string
-  icon: ReactNode
-  badge?: string
-}
-
-const navIcon = {
-  dashboard: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <rect x="1.5" y="1.5" width="5" height="5" rx="1.2" />
-      <rect x="8.5" y="1.5" width="5" height="5" rx="1.2" />
-      <rect x="1.5" y="8.5" width="5" height="5" rx="1.2" />
-      <rect x="8.5" y="8.5" width="5" height="5" rx="1.2" />
-    </svg>
-  ),
-  findings: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <path d="M7.5 1.5L13 4.5v6L7.5 13.5 2 10.5v-6z" />
-      <path d="M7.5 5.5v2.5" strokeLinecap="round" />
-      <circle cx="7.5" cy="9.5" r=".75" fill="currentColor" stroke="none" />
-    </svg>
-  ),
-  products: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <path d="M2 4.5L7.5 2l5.5 2.5v6L7.5 13 2 10.5v-6z" />
-      <path d="M7.5 2v11M2 4.5l5.5 3 5.5-3" strokeLinecap="round" />
-    </svg>
-  ),
-  competitors: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <circle cx="5" cy="5.5" r="2.5" />
-      <circle cx="10" cy="5.5" r="2.5" />
-      <path d="M1.5 13.5c0-2 1.5-3 3.5-3M7 13.5c0-2 1.5-3 3.5-3s3.5 1 3.5 3" strokeLinecap="round" />
-    </svg>
-  ),
-  research: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <circle cx="6.5" cy="6.5" r="4.5" />
-      <path d="M10.5 10.5L13.5 13.5" strokeLinecap="round" />
-    </svg>
-  ),
-  studio: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <rect x="1.5" y="1.5" width="12" height="12" rx="1.5" />
-      <path d="M5 8l2.5 2.5 4-5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  ),
-  performance: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1.5 12.5h12" />
-      <path d="M3.5 10.5v-2.5M6.5 10.5v-5M9.5 10.5v-3.5M12.5 10.5v-6.5" />
-    </svg>
-  ),
-  settings: (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-      <circle cx="7.5" cy="7.5" r="2" />
-      <path d="M7.5 1.5v1.5M7.5 12v1.5M1.5 7.5H3M12 7.5h1.5M3.4 3.4l1.1 1.1M10.5 10.5l1.1 1.1M11.6 3.4l-1.1 1.1M4.5 10.5l-1.1 1.1" strokeLinecap="round" />
-    </svg>
-  ),
-}
-
-const navItems: NavItem[] = [
-  { to: '/', label: 'Dashboard', icon: navIcon.dashboard },
-  { to: '/findings', label: 'Findings', icon: navIcon.findings, badge: '12' },
-  { to: '/active-products', label: 'Active Products', icon: navIcon.products },
-  { to: '/competitors', label: 'Competitors', icon: navIcon.competitors },
-  { to: '/research', label: 'Research', icon: navIcon.research },
-  { to: '/studio', label: 'Studio', icon: navIcon.studio },
-  { to: '/performance', label: 'Performance', icon: navIcon.performance },
-  { to: '/settings', label: 'Settings', icon: navIcon.settings },
-]
-
-function LeftNav() {
+// ── Sidebar ──
+function NavSidebar({ active, agentNote }: { active: string; agentNote: string }) {
+  const navigate = useNavigate()
+  const navItem = (id: string, label: string, to: string, badge?: string) => {
+    const isActive = id === active
+    return (
+      <div key={id} className="dv2-nav-item" onClick={() => { if (!isActive) navigate(to) }}
+        style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '8.5px 11px', borderRadius: 8,
+          background: isActive ? 'rgba(255,255,255,0.07)' : 'transparent',
+          color: isActive ? '#ffffff' : NT.inkDim, fontSize: 13, fontWeight: isActive ? 500 : 425, cursor: 'pointer' }}>
+        <span style={{ color: isActive ? NT.greenBr : NT.inkDim, display: 'flex', flexShrink: 0 }}>{NI[id]}</span>
+        <span style={{ flex: 1, letterSpacing: '-0.005em' }}>{label}</span>
+        {badge && <span style={{ fontSize: 10, fontWeight: 500, color: isActive ? '#fff' : NT.inkDim, fontFamily: NT.mono }}>{badge}</span>}
+      </div>
+    )
+  }
   return (
-    <div className="w-[280px] min-w-[280px] h-full bg-nav-bg border-r border-line flex flex-col font-sans">
-      <div className="px-[18px] pt-[18px] pb-4 border-b border-line">
-        <div className="flex items-center gap-[9px]">
-          <img
-            src="/nanalyt-logo.png"
-            alt="Nanalyt"
-            className="w-[26px] h-[26px] object-contain shrink-0"
-          />
+    <div style={{ width: 296, minWidth: 296, background: NT.ink, display: 'flex', flexDirection: 'column', fontFamily: NT.sans }}>
+      <div style={{ padding: '24px 22px 22px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 27, height: 27, background: NT.greenBr, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2 10L6 2.5 10 10" stroke="#0c130b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </div>
           <div>
-            <div className="text-[14px] font-medium text-ink leading-none tracking-[-0.03em]">Nanalyt</div>
-            <div className="text-[9px] text-ink tracking-[0.03em] mt-[2px]">Sleep supplements</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1 }}>Nanalyt</div>
+            <div style={{ fontSize: 9.5, color: NT.inkDim, marginTop: 4 }}>Sleep supplements</div>
           </div>
         </div>
       </div>
-
-      <nav className="flex-1 p-2 flex flex-col gap-[2px] overflow-y-auto">
-        {navItems.map(({ to, label, icon, badge }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            className={({ isActive }) =>
-              `flex items-center gap-[9px] pl-[14px] pr-3 py-2 rounded-md text-[12px] transition-colors ${
-                isActive
-                  ? 'bg-ink text-white font-medium'
-                  : 'text-ink hover:bg-black/[0.04]'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <span className={`flex shrink-0 ${isActive ? 'text-white' : 'text-ink'}`}>{icon}</span>
-                <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{label}</span>
-                {badge && (
-                  <span
-                    className={`text-[9px] font-semibold font-mono px-[5px] py-[1px] rounded-[3px] ${
-                      isActive ? 'bg-white/20 text-white' : 'bg-surf-2 text-ink'
-                    }`}
-                  >
-                    {badge}
-                  </span>
-                )}
-              </>
-            )}
-          </NavLink>
+      <nav style={{ flex: 1, padding: '0 12px', display: 'flex', flexDirection: 'column' }}>
+        {NANALYT_NAV_GROUPS.map((g, gi) => (
+          <div key={gi}>
+            {g.label && <div style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', padding: '16px 11px 6px' }}>{g.label}</div>}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {g.items.map((item) => navItem(item.id, item.label, item.to, item.badge))}
+            </div>
+          </div>
         ))}
+        <div style={{ marginTop: 'auto', paddingBottom: 8 }}>
+          {navItem(NAV_SETTINGS.id, NAV_SETTINGS.label, NAV_SETTINGS.to)}
+        </div>
       </nav>
-
-      <div className="px-[18px] py-[14px] border-t border-line flex items-center gap-[9px]">
-        <div className="w-[26px] h-[26px] rounded-full bg-brand-bg border border-brand-dim flex items-center justify-center text-[11px] font-medium text-brand shrink-0">
-          D
+      <div style={{ margin: '0 12px 14px', padding: '13px 14px', background: NT.inkSoft, borderRadius: 12, cursor: 'pointer' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 7 }}>
+          <span className="pulse" style={{ width: 6, height: 6, background: NT.greenBr, borderRadius: '50%', display: 'block' }}></span>
+          <span style={{ fontSize: 11.5, fontWeight: 550, color: '#fff' }}>Agent working</span>
         </div>
-        <div className="min-w-0">
-          <div className="text-[11px] font-medium text-ink">Dylan</div>
-          <div className="text-[10px] text-ink truncate">Free plan</div>
-        </div>
+        <div style={{ fontSize: 10.5, color: NT.inkDim, lineHeight: 1.5 }}>{agentNote}</div>
+      </div>
+      <div style={{ padding: '15px 22px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(62,132,84,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: NT.greenBr, flexShrink: 0 }}>D</div>
+        <div><div style={{ fontSize: 12, fontWeight: 500, color: '#fff' }}>Dylan</div><div style={{ fontSize: 9.5, color: NT.inkDim }}>Free plan</div></div>
       </div>
     </div>
   )
 }
 
-function TopBar() {
-  const { openGeneral, openAgent } = useAskNanalyt()
+// ── Top bar ──
+function TopBar({ title, children }: { title: string; children?: ReactNode }) {
+  const [bellOpen, setBellOpen] = useState(false)
+  const { theme, toggle } = useTheme()
   return (
-    <div className="h-[46px] flex items-center px-5 gap-4 shrink-0 font-sans">
-      <div className="flex-1" />
-      <div
-        onClick={openGeneral}
-        className="flex items-center gap-2 bg-white border border-line rounded-lg px-3 h-[30px] w-[460px] cursor-pointer shrink-0 hover:border-[#d1d5db]"
-      >
-        <span className="flex-1 text-[12px] text-ink">Ask Nanalyt anything…</span>
-        <span className="text-ink flex">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.2">
-            <rect x="4" y="1" width="5" height="7" rx="2.5" />
-            <path d="M2 6.5a4.5 4.5 0 009 0" strokeLinecap="round" />
-            <path d="M6.5 11V13" strokeLinecap="round" />
-          </svg>
+    <div style={{ height: 58, display: 'flex', alignItems: 'center', padding: '0 34px', gap: 14, flexShrink: 0 }}>
+      <span style={{ fontSize: 13.5, fontWeight: 550, color: NT.text, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>{title}</span>
+      {children}
+      <div style={{ flex: 1 }}></div>
+      <div onClick={() => window.dispatchEvent(new CustomEvent('nanalyt-chat-open'))} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--dv-surf)', border: `1px solid ${NT.border}`, borderRadius: 10, padding: '0 13px', height: 33, width: 380, cursor: 'pointer' }}>
+        <span style={{ color: NT.dim, display: 'flex' }}>{NI.search}</span>
+        <span style={{ flex: 1, fontSize: 12.5, color: NT.dim }}>Ask Nanalyt anything…</span>
+        <span style={{ fontSize: 9.5, color: NT.dim, fontFamily: NT.mono }}>⌘K</span>
+      </div>
+      <button onClick={toggle} title="Toggle light/dark" style={{ background: 'transparent', border: 'none', color: NT.mid, display: 'flex', cursor: 'pointer', padding: 4, borderRadius: 6 }}>
+        {theme === 'light' ? NI.moon : NI.sun}
+      </button>
+      <div style={{ position: 'relative' }}>
+        <span onClick={() => setBellOpen(!bellOpen)} style={{ color: NT.mid, display: 'flex', position: 'relative', cursor: 'pointer', padding: 4, margin: -4 }}>{NI.bell}
+          <span style={{ position: 'absolute', top: 2, right: 2, width: 5, height: 5, background: NT.greenBr, borderRadius: '50%', border: '1.5px solid var(--dv-page)' }}></span>
         </span>
-        <span className="text-[9px] text-ink font-mono bg-surf-2 px-[5px] py-[1px] rounded-[3px] shrink-0">⌘K</span>
+        {bellOpen && <Fragment>
+          <div onClick={() => setBellOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 90 }}></div>
+          <div className="dv2-tip" style={{ position: 'absolute', top: 'calc(100% + 10px)', right: -8, width: 400, background: NT.surf, border: `1px solid ${NT.border}`, borderRadius: 16, boxShadow: '0 2px 6px rgba(20,24,15,0.05), 0 16px 48px rgba(20,24,15,0.14)', overflow: 'hidden', zIndex: 100 }}>
+            <div style={{ display: 'flex', alignItems: 'center', padding: '14px 18px 12px', borderBottom: `1px solid ${NT.borderS}` }}>
+              <span style={{ fontSize: 13.5, fontWeight: 550, color: NT.text }}>Agent activity</span>
+              <span style={{ fontSize: 10.5, fontWeight: 550, color: NT.green, background: NT.greenBg, padding: '2px 9px', borderRadius: 10, marginLeft: 9 }}>2 new</span>
+              <span className="dv2-link" style={{ marginLeft: 'auto', fontSize: 11, color: NT.dim, cursor: 'pointer' }}>Mark all read</span>
+            </div>
+            <div style={{ maxHeight: 330, overflowY: 'auto' }}>
+              {NANALYT_ACTIVITY.map((g, gi) => (
+                <div key={gi}>
+                  <div style={{ fontSize: 10, fontWeight: 550, letterSpacing: '0.07em', textTransform: 'uppercase', color: NT.dim, padding: '12px 18px 6px' }}>{g.day}</div>
+                  {g.items.map((it, i) => (
+                    <div key={i} className="dv2-row" style={{ display: 'flex', alignItems: 'flex-start', gap: 11, padding: '9px 18px', cursor: 'pointer' }}>
+                      <span style={{ width: 26, height: 26, borderRadius: 8, background: it.bg, color: it.tone, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, flexShrink: 0, marginTop: 1 }}>{it.glyph}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12.5, color: NT.text, lineHeight: 1.45 }}>{it.text}</div>
+                        <div style={{ fontSize: 10.5, color: NT.dim, fontFamily: NT.mono, marginTop: 2 }}>{it.time}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div style={{ padding: '11px 18px', borderTop: `1px solid ${NT.borderS}`, textAlign: 'center' }}>
+              <span className="dv2-link" style={{ fontSize: 11.5, fontWeight: 500, color: NT.green, cursor: 'pointer' }}>View full activity log →</span>
+            </div>
+          </div>
+        </Fragment>}
       </div>
-      <div className="flex-1 flex items-center justify-end gap-3">
-        <div
-          onClick={openAgent}
-          className="flex items-center gap-1.5 bg-brand-bg border border-brand-dim rounded-md px-[11px] py-1 cursor-pointer hover:bg-brand-dim/40"
-        >
-          <span className="w-[5px] h-[5px] bg-brand rounded-full block shrink-0 animate-soft-pulse" />
-          <span className="text-[10px] font-medium text-brand whitespace-nowrap">Your agent</span>
-        </div>
-        <span className="text-ink cursor-pointer flex relative">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3">
-            <path d="M7.5 1.5A4 4 0 013.5 5.5v3.5l-1.5 2h11L11.5 9V5.5a4 4 0 01-4-4z" />
-            <path d="M6 12.5a1.5 1.5 0 003 0" strokeLinecap="round" />
-          </svg>
-          <span className="absolute -top-px -right-px w-[5px] h-[5px] bg-brand rounded-full" />
-        </span>
-        <div className="w-[26px] h-[26px] rounded-full bg-brand-bg border border-brand-dim flex items-center justify-center text-[11px] font-medium text-brand cursor-pointer">
-          D
-        </div>
-      </div>
+      <div style={{ width: 27, height: 27, borderRadius: '50%', background: NT.greenBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: NT.green, cursor: 'pointer' }}>D</div>
     </div>
   )
 }
 
-function AppLayoutInner() {
-  const { panelOpen } = useAskNanalyt()
+// ── Status bar ──
+function StatusBar({ live, items, right }: Status) {
   return (
-    <div
-      className="flex h-screen w-full bg-white transition-[padding] duration-200"
-      style={{ paddingRight: panelOpen ? 440 : 0 }}
-    >
-      <LeftNav />
-      <div className="flex-1 flex flex-col min-w-0 bg-canvas">
-        <TopBar />
-        <main className="flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
-      </div>
+    <div style={{ height: 34, borderTop: `1px solid ${NT.borderS}`, display: 'flex', alignItems: 'center', gap: 20, padding: '0 44px', flexShrink: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10.5, color: NT.dim, fontFamily: NT.mono, whiteSpace: 'nowrap', flexShrink: 0 }}>
+        <span className="pulse" style={{ width: 5, height: 5, background: NT.greenBr, borderRadius: '50%', display: 'block' }}></span>
+        {live}
+      </span>
+      {items.map((it, i) => <span key={i} style={{ fontSize: 10.5, color: NT.dim, fontFamily: NT.mono, whiteSpace: 'nowrap', flexShrink: 0 }}>{it}</span>)}
+      <span style={{ marginLeft: 'auto', fontSize: 10.5, color: NT.dim, fontFamily: NT.mono, whiteSpace: 'nowrap' }}>{right}</span>
     </div>
   )
 }
 
-function AppLayout() {
+export default function AppLayout() {
+  const { pathname } = useLocation()
+  const chrome = resolveChrome(pathname)
   return (
-    <AskNanalytProvider>
-      <AppLayoutInner />
-      <AskNanalytPanel />
-      <AgentDrawer />
-    </AskNanalytProvider>
+    <div style={{ display: 'flex', width: '100%', minWidth: 1240, height: '100%', background: NT.page, fontFamily: NT.sans, overflow: 'hidden' }}>
+      <NavSidebar active={chrome.active} agentNote={chrome.agentNote} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
+        <TopBar title={chrome.title} />
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '14px 44px 60px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <Outlet />
+          </div>
+        </div>
+        <StatusBar {...chrome.status} />
+      </div>
+      <AskNanalytHost context={chrome.title} />
+    </div>
   )
 }
-
-export default AppLayout

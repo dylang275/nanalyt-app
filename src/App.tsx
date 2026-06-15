@@ -2,7 +2,9 @@ import { Routes, Route } from 'react-router-dom'
 import AppLayout from './components/AppLayout'
 import Dashboard from './pages/Dashboard'
 import Findings from './pages/Findings'
+import FindingDetail from './pages/FindingDetail'
 import Competitors from './pages/Competitors'
+import CompetitorProfile from './pages/CompetitorProfile'
 import ActiveProducts from './pages/ActiveProducts'
 import Studio from './pages/Studio'
 import PdpEditor from './pages/PdpEditor'
@@ -19,8 +21,10 @@ function App() {
       <Route element={<AppLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="findings" element={<Findings />} />
+        <Route path="findings/:id" element={<FindingDetail />} />
         <Route path="active-products" element={<ActiveProducts />} />
         <Route path="competitors" element={<Competitors />} />
+        <Route path="competitors/:id" element={<CompetitorProfile />} />
         <Route path="research" element={<Research />} />
         <Route path="research/analysis" element={<ResearchAnalysis />} />
         <Route path="studio" element={<Studio />} />

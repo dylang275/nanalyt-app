@@ -2,14 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Nanalyt design system tokens + shared classes.
+   Ported from design_handoff_nanalyt/source/system/nanalyt-tokens.css.
+   Light values are the :root defaults; dark mode overrides them inline on
+   <html> via the ThemeProvider (src/system/theme.tsx).
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --dv-page:#f7f7f5; --dv-surf:#ffffff;
+  --dv-ink:#10180f; --dv-ink-soft:#1b251a; --dv-ink-dim:#e9ebe7;
+  --dv-border:#ebebe8; --dv-border-s:#f2f2ef;
+  --dv-text:#16190f; --dv-mid:#16190f; --dv-dim:#16190f;
+  --dv-green:#2d5c3a; --dv-green-br:#3e8454; --dv-green-bg:#ecf3ee;
+  --dv-red:#c4504a; --dv-yellow:#a8742a; --dv-blue:#3a6ea8;
+  --dv-grid:#eeeeea; --dv-grid-strong:#d4d4cd;
+  --dv-s1:#1a3d26; --dv-s2:#2d5c3a; --dv-s3:#3e7a4f; --dv-s4:#5a9e6a; --dv-s5:#85be90;
+  --dv-shadow:0 1px 1px rgba(20,24,15,0.02), 0 4px 20px rgba(20,24,15,0.04);
+  --dv-btn-bg:#10180f; --dv-btn-fg:#ffffff;
+  --dv-brief:linear-gradient(135deg,#ffffff 0%,#fbfcfa 55%,#eef6ee 100%);
+  --dv-brief-glow:radial-gradient(circle, rgba(62,132,84,0.09) 0%, rgba(62,132,84,0) 70%);
+  --dv-scroll:#d8d8d4;
+  --dv-row-top:#f6faf6;
+}
+
 @layer base {
-  html, body, #root {
-    height: 100%;
-    background: #ffffff;
-  }
+  html, body, #root { height: 100%; width: 100%; }
+  html, body { background: var(--dv-page); }
+  #root { overflow-x: auto; }
   body {
-    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-    color: #111110;
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    color: var(--dv-text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -17,4 +40,53 @@
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d8d5d0; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--dv-scroll); border-radius: 2px; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.pulse { animation: pulse 2.4s ease-in-out infinite; }
+
+@keyframes dv2spin { to { transform: rotate(360deg); } }
+.dv2-spin { animation: dv2spin 0.9s linear infinite; transform-origin: center; }
+
+/* ── Hover states ── */
+.dv2-nav-item:hover { background: rgba(255,255,255,0.05) !important; }
+.dv2-menu-item:hover { background: var(--dv-page) !important; }
+.dv2-row:hover { opacity: 0.75; }
+.dv2-link:hover { color: var(--dv-text) !important; }
+.dv2-btn-p:hover { opacity: 0.88; }
+.dv2-btn-g:hover { background: var(--dv-page) !important; }
+.dv2-card-h { transition: box-shadow 0.15s, transform 0.15s; }
+.dv2-card-h:hover { box-shadow: 0 1px 1px rgba(20,24,15,0.03), 0 8px 28px rgba(20,24,15,0.10) !important; transform: translateY(-1px); }
+
+/* row quick action (revealed on hover) */
+.dv2-att-act { opacity: 0; transition: opacity 0.12s; }
+.dv2-row:hover .dv2-att-act { opacity: 1; }
+.dv2-row:hover { opacity: 1 !important; }
+
+/* stat tile hover footer */
+.dv2-stat-foot { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; transition: opacity 0.15s; }
+.dv2-card-h:hover .dv2-stat-foot { opacity: 1; }
+
+/* ── Entry animations (respect reduced motion) ── */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes dv2draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  .dv2-draw { stroke-dasharray: 1; animation: dv2draw 0.8s cubic-bezier(0.4,0,0.2,1) both; }
+  @keyframes dv2fadeup { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+  .dv2-num-in { animation: dv2fadeup 0.35s cubic-bezier(0.2,0,0.2,1); display: inline-block; }
+  @keyframes dv2fade { from { opacity: 0; } to { opacity: 1; } }
+  .dv2-fill-in { animation: dv2fade 0.9s ease both; }
+  .dv2-tip { animation: dv2fade 0.15s ease; }
+  @keyframes dv2slidein { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+  .dv2-drawer-in { animation: dv2slidein 0.25s cubic-bezier(0.2,0,0.2,1); }
+  .dv2-scrim-in { animation: dv2fade 0.25s ease; }
+
+  /* generate-assets modal pop-in */
+  @keyframes gaPop { from { transform: translateY(10px) scale(0.985); opacity: 0.4; } to { transform: none; opacity: 1; } }
+  .ga-pop { animation: gaPop 0.22s cubic-bezier(0.2,0.8,0.3,1); }
+
+  /* source-evidence drawer (Research Analysis) */
+  .ap-drawer-wrap { animation: apFade 0.16s ease; }
+  .ap-drawer-wrap > div > div { animation: apSlide 0.22s cubic-bezier(0.2,0.8,0.3,1); }
+  @keyframes apFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes apSlide { from { transform: translateX(28px); opacity: 0.4; } to { transform: none; opacity: 1; } }
+}

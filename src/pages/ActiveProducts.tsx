@@ -1,361 +1,123 @@
-import { useState, useMemo, useRef, useEffect } from 'react'
-
-// ─── Types & data ────────────────────────────────────────────────────────────
-
-type ProductState = 'In Market' | 'Testing' | 'Generating' | 'Researching' | 'Suggested'
-type AdSat = 'Low' | 'Mod' | 'High'
+// ActiveProducts.tsx — live product portfolio table.
+// Ported from design_handoff_nanalyt/source/active-products-page.jsx.
+// Renders content only; the shell (sidebar/top bar/status bar) is AppLayout.
+import { useState } from 'react'
+import { NT, ntCard } from '../system/tokens'
+import { StatSpark, MetricSelect, type MetricOption } from '../components/primitives'
 
 type Product = {
-  id: number
-  name: string
-  sku: string
-  state: ProductState
-  platforms: string
-  price: string
-  rev: string
-  margin: string
-  score: number
-  sentiment: string
-  adSat: AdSat
-  adCount: number
-  findings: number
-  spark: number[]
-  sparkPos: boolean
-  imgIdx: number
+  name: string; sku: string; img: string; state: string; platforms: string
+  rev: string; revN: number; margin: string; score: number; adSat: string; adCount: number
+  findings: number; spark: number[]; pos: boolean; action: string
 }
 
-const PRODUCT_IMAGES = [
-  '/uploads/IMG_3472.jpg',
-  '/uploads/IMG_3474.jpg',
-  '/uploads/Screenshot 2026-05-11 at 9.01.38 PM.png',
-  '/uploads/IMG_3476.jpg',
-  '/uploads/IMG_3505.jpg',
-  '/uploads/Screenshot 2026-05-11 at 9.00.15 PM.png',
-  '/uploads/Screenshot 2026-05-11 at 9.02.37 PM.png',
+const APP_PRODUCTS: Product[] = [
+  { name: 'Magnesium Glycinate Complex', sku: 'MAG-GLY-120', img: '/uploads/IMG_3472.jpg', state: 'In market',
+    platforms: 'Meta · TikTok · Amazon · Reddit', rev: '$18,420', revN: 18420, margin: '38.4%', score: 84, adSat: 'Moderate', adCount: 20, findings: 2, spark: [60, 65, 70, 72, 78, 82, 84], pos: true, action: 'Generate creatives' },
+  { name: 'ZzzPlex Sleep Support', sku: 'ZZZ-SLP-60', img: '/uploads/IMG_3474.jpg', state: 'In market',
+    platforms: 'Meta · Google · Amazon', rev: '$11,340', revN: 11340, margin: '31.2%', score: 71, adSat: 'High', adCount: 34, findings: 1, spark: [75, 72, 68, 65, 69, 71, 71], pos: false, action: 'Fix creative' },
+  { name: 'Vitamin D3 + K2 Complex', sku: 'VIT-D3K2-90', img: '/uploads/Screenshot 2026-05-11 at 9.01.38 PM.png', state: 'In market',
+    platforms: 'Amazon · Google', rev: '$7,840', revN: 7840, margin: '42.1%', score: 68, adSat: 'Low', adCount: 8, findings: 0, spark: [50, 52, 55, 58, 60, 65, 68], pos: true, action: 'Generate creatives' },
+  { name: 'ASHWAGANDHA+', sku: 'ASH-PLUS-60', img: '/uploads/IMG_3476.jpg', state: 'Testing',
+    platforms: 'Meta · TikTok', rev: '—', revN: 0, margin: '36.8%', score: 63, adSat: 'Low', adCount: 4, findings: 0, spark: [40, 45, 52, 58, 60, 61, 63], pos: true, action: 'View test' },
+  { name: 'Mag + Ashwagandha Gummies', sku: 'MAG-ASH-60', img: '/uploads/Screenshot 2026-05-11 at 9.01.01 PM.png', state: 'Researching',
+    platforms: 'Meta · Shopify · TikTok', rev: '—', revN: 0, margin: '33.5%', score: 77, adSat: 'Low', adCount: 6, findings: 1, spark: [50, 55, 60, 65, 70, 74, 77], pos: true, action: 'Start test' },
+  { name: 'Magnesium L-Threonate', sku: 'MAG-LT-60', img: '/uploads/Screenshot 2026-05-11 at 9.00.15 PM.png', state: 'Suggested',
+    platforms: 'Reddit · Amazon · Google', rev: '—', revN: 0, margin: '41.2%', score: 79, adSat: 'Low', adCount: 3, findings: 2, spark: [50, 55, 60, 65, 70, 75, 79], pos: true, action: 'Open research' },
+  { name: 'Glycine + Magnesium Stack', sku: 'GLY-MAG-90', img: '/uploads/Screenshot 2026-05-11 at 9.02.37 PM.png', state: 'Suggested',
+    platforms: 'Amazon · Reddit', rev: '—', revN: 0, margin: '38.9%', score: 61, adSat: 'Low', adCount: 2, findings: 0, spark: [30, 35, 40, 45, 50, 55, 61], pos: true, action: 'Open research' },
 ]
 
-const ALL_PRODUCTS: Product[] = [
-  { id: 1, name: 'Magnesium Glycinate Complex', sku: 'MAG-GLY-120', state: 'Generating', platforms: 'Meta · TikTok · Amazon · Reddit', price: '$34.99', rev: '—', margin: '—', score: 84, sentiment: 'Positive', adSat: 'Low', adCount: 0, findings: 2, spark: [], sparkPos: true, imgIdx: 0 },
-  { id: 2, name: 'ZzzPlex Sleep Support', sku: 'ZZZ-SLP-60', state: 'In Market', platforms: 'Meta · Google · Amazon', price: '$28.99', rev: '$11,340', margin: '31.2%', score: 71, sentiment: 'Neutral', adSat: 'High', adCount: 34, findings: 1, spark: [75, 72, 68, 65, 69, 71, 71], sparkPos: false, imgIdx: 1 },
-  { id: 3, name: 'Vitamin D3 + K2 Complex', sku: 'VIT-D3K2-90', state: 'In Market', platforms: 'Amazon · Google', price: '$22.99', rev: '$7,840', margin: '42.1%', score: 68, sentiment: 'Positive', adSat: 'Low', adCount: 8, findings: 0, spark: [50, 52, 55, 58, 60, 65, 68], sparkPos: true, imgIdx: 2 },
-  { id: 4, name: 'ASHWAGANDHA+', sku: 'ASH-PLUS-60', state: 'Testing', platforms: 'Meta · TikTok', price: '$29.99', rev: '$800', margin: '36.8%', score: 63, sentiment: 'Positive', adSat: 'Low', adCount: 4, findings: 0, spark: [40, 45, 52, 58, 60, 61, 63], sparkPos: true, imgIdx: 3 },
-  { id: 5, name: 'Mag + Ashwagandha Tablets', sku: 'MAG-ASH-60', state: 'Testing', platforms: 'Meta · Shopify · TikTok', price: '$32.99', rev: '$4,200', margin: '33.5%', score: 77, sentiment: 'Positive', adSat: 'Low', adCount: 6, findings: 1, spark: [50, 55, 60, 65, 70, 74, 77], sparkPos: true, imgIdx: 4 },
-  { id: 6, name: 'Magnesium L-Threonate', sku: 'MAG-LT-60', state: 'Suggested', platforms: 'Reddit · Amazon · Google', price: '$39.99', rev: '—', margin: '41.2%', score: 79, sentiment: 'Positive', adSat: 'Low', adCount: 3, findings: 2, spark: [50, 55, 60, 65, 70, 75, 79], sparkPos: true, imgIdx: 5 },
-  { id: 7, name: 'Glycine + Magnesium Stack', sku: 'GLY-MAG-90', state: 'Suggested', platforms: 'Amazon · Reddit', price: '$31.99', rev: '—', margin: '38.9%', score: 61, sentiment: 'Neutral', adSat: 'Low', adCount: 2, findings: 0, spark: [30, 35, 40, 45, 50, 55, 61], sparkPos: true, imgIdx: 6 },
+type Stage = { solid?: boolean; bg: string; fg?: string; border?: boolean }
+const APP_STAGE: Record<string, Stage> = {
+  'In market': { solid: true, bg: 'var(--dv-green)' },
+  'Testing': { fg: NT.green, bg: NT.greenBg },
+  'Researching': { fg: NT.blue, bg: 'rgba(58,110,168,0.1)' },
+  'Suggested': { fg: NT.text, bg: 'var(--dv-page)', border: true },
+}
+const APP_SAT: Record<string, { fg: string; bg: string }> = {
+  Low: { fg: NT.green, bg: NT.greenBg },
+  Moderate: { fg: NT.yellow, bg: 'rgba(168,116,42,0.13)' },
+  High: { fg: NT.red, bg: 'rgba(196,80,74,0.1)' },
+}
+const APP_SORTS: MetricOption[] = [
+  { id: 'score', label: 'Score', group: 'Sort' },
+  { id: 'rev', label: 'Revenue', group: 'Sort' },
+  { id: 'findings', label: 'Findings', group: 'Sort' },
 ]
+const APP_GRID = '56px minmax(0,1.6fr) 96px 92px 72px 84px 64px 100px'
 
-const PLATFORM_DOT: Record<string, string> = {
-  Meta: '#1877f2',
-  TikTok: '#010101',
-  Amazon: '#ff9900',
-  Reddit: '#ff4500',
-  Google: '#4285f4',
-  Shopify: '#96bf48',
-  YouTube: '#ff0000',
-}
-
-const STATE_LABEL: Record<ProductState, string> = {
-  'In Market': 'IN MARKET',
-  Testing: 'TESTING',
-  Generating: 'GENERATING',
-  Researching: 'RESEARCHING',
-  Suggested: 'SUGGESTED',
-}
-const STATE_COLOR: Record<ProductState, string> = {
-  'In Market': '#2d5c3a',
-  Testing: '#2563eb',
-  Generating: '#a16207',
-  Researching: '#a16207',
-  Suggested: '#a09d98',
-}
-
-const STATE_OPTIONS: ('All' | ProductState)[] = ['All', 'Suggested', 'Researching', 'Generating', 'Testing', 'In Market']
-const SORT_OPTIONS = ['Score', 'Revenue', 'Findings'] as const
-type Sort = (typeof SORT_OPTIONS)[number]
-
-// ─── Atoms ───────────────────────────────────────────────────────────────────
-
-function Spark({ data, color, w = 60, h = 20 }: { data: number[]; color: string; w?: number; h?: number }) {
-  if (!data || data.length < 2) return null
-  const min = Math.min(...data)
-  const max = Math.max(...data)
-  const rng = max - min || 1
-  const pts = data
-    .map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / rng) * (h - 4) - 2}`)
-    .join(' ')
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="block">
-      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function ChevDown() {
-  return (
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 4l3.5 3.5L9 4" />
-    </svg>
-  )
-}
-
-function Dropdown({ label, value, options, onChange }: {
-  label: string
-  value: string
-  options: string[]
-  onChange: (v: string) => void
-}) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handle)
-    return () => document.removeEventListener('mousedown', handle)
-  }, [open])
+export default function ActiveProducts() {
+  const [filter, setFilter] = useState('All')
+  const [sort, setSort] = useState<MetricOption>(APP_SORTS[0])
+  const filters: [string, number][] = [['All', 7], ['In market', 3], ['Testing', 1], ['Researching', 1], ['Suggested', 2]]
+  let list = APP_PRODUCTS.filter((p) => (filter === 'All' ? true : p.state === filter))
+  list = [...list].sort((a, b) => (sort.id === 'rev' ? b.revN - a.revN : sort.id === 'findings' ? b.findings - a.findings : b.score - a.score))
 
   return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] cursor-pointer select-none hover:bg-line-soft"
-      >
-        <span className="text-[11px] text-ink">{label}:</span>
-        <span className="text-[11px] text-ink font-medium">{value}</span>
-        <span className="text-ink"><ChevDown /></span>
-      </button>
-      {open && (
-        <div className="absolute top-[calc(100%+4px)] left-0 bg-surf rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.1)] z-50 min-w-[180px] overflow-hidden">
-          {options.map(opt => (
-            <div
-              key={opt}
-              onClick={() => { onChange(opt); setOpen(false) }}
-              className={`px-3.5 py-2 text-[12px] cursor-pointer hover:bg-surf-2 ${
-                opt === value ? 'text-ink font-medium bg-surf-2' : 'text-ink'
-              }`}
-            >
-              {opt}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─── Table ───────────────────────────────────────────────────────────────────
-
-const GRID_COLS = 'grid-cols-[52px_minmax(0,1fr)_90px_84px_84px_84px_80px_120px_36px]'
-const HEADER_ALIGN = ['', '', 'text-center', 'text-center', 'text-center', 'text-center', 'text-center', '', '']
-
-function TableHeader() {
-  const labels = ['', 'PRODUCT', 'SCORE', 'REVENUE', 'MARGIN', 'AD SAT.', 'TREND', 'STAGE', '']
-  return (
-    <div className={`grid ${GRID_COLS} gap-4 px-6 py-2.5 border-b border-line-soft bg-surf rounded-t-[10px]`}>
-      {labels.map((h, i) => (
-        <div key={i} className={`text-[9px] font-bold tracking-[0.08em] text-ink ${HEADER_ALIGN[i]}`}>
-          {h}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function ProductRow({ product, last }: { product: Product; last: boolean }) {
-  const { name, state, platforms, price, rev, margin, score, adSat, adCount, findings, spark, sparkPos, imgIdx } = product
-  const scoreColor = score >= 75 ? '#1d6b3a' : score >= 55 ? '#a16207' : '#dc2626'
-  const adSatColor = adSat === 'Low' ? '#2d5c3a' : adSat === 'High' ? '#dc2626' : '#a16207'
-  const stateColor = STATE_COLOR[state]
-  const platList = platforms.split(' · ').slice(0, 5)
-  const generating = state === 'Generating'
-
-  return (
-    <div className={`group grid ${GRID_COLS} gap-4 items-center px-6 py-3.5 cursor-pointer hover:bg-black/[0.02] ${last ? '' : 'border-b border-line-soft'}`}>
-      <div className="w-11 h-11 rounded-lg overflow-hidden border border-line shrink-0">
-        <img src={PRODUCT_IMAGES[imgIdx % PRODUCT_IMAGES.length]} alt="" className="w-full h-full object-cover block" />
-      </div>
-
-      <div className="min-w-0">
-        <div className="text-[14px] font-medium text-ink mb-[3px] truncate">{name}</div>
-        <div className="text-[11px] text-ink mb-[5px]">
-          {platList.map((p, i) => (
-            <span key={p}>
-              <span className="inline-flex items-center gap-[3px]">
-                <span className="w-[5px] h-[5px] rounded-full inline-block shrink-0 align-middle" style={{ background: PLATFORM_DOT[p] || '#a09d98' }} />
-                <span className="text-ink">{p}</span>
-              </span>
-              {i < platList.length - 1 && <span className="text-line-soft mx-1">·</span>}
-            </span>
-          ))}
-          <span className="text-ink mx-1.5">·</span>
-          <span className="text-ink">{price}</span>
-        </div>
-        {findings > 0 && (
-          <span className="text-[10px] font-semibold bg-brand-bg text-brand px-[7px] py-px rounded-[3px]">
-            {findings} finding{findings > 1 ? 's' : ''}
-          </span>
-        )}
-      </div>
-
-      <div className="text-center">
-        <div className="text-[22px] font-semibold font-mono tracking-[-0.03em] leading-none" style={{ color: scoreColor }}>{score}</div>
-      </div>
-
-      <div className="text-center">
-        <div className="text-[13px] font-medium font-mono tabular-nums text-ink">{rev}</div>
-        {!generating && rev !== '—' && <div className="text-[10px] text-ink mt-px">30d</div>}
-      </div>
-
-      <div className="text-center">
-        <div className="text-[12px] font-mono text-ink font-medium">{margin}</div>
-        {!generating && margin !== '—' && <div className="text-[10px] text-ink mt-px">margin</div>}
-      </div>
-
-      <div className="text-center">
-        {generating ? (
-          <div className="text-[13px] font-medium font-mono tabular-nums text-ink">—</div>
-        ) : (
-          <>
-            <div className="text-[12px] font-medium" style={{ color: adSatColor }}>{adSat}</div>
-            <div className="text-[10px] text-ink font-mono mt-px">{adCount}</div>
-          </>
-        )}
-      </div>
-
-      <div className="flex justify-center">
-        {generating ? (
-          <div className="text-[13px] font-medium font-mono tabular-nums text-ink">—</div>
-        ) : (
-          <Spark data={spark} color={sparkPos ? '#2d7a4f' : '#dc2626'} w={60} h={20} />
-        )}
-      </div>
-
-      <div className="flex items-center gap-1 cursor-pointer">
-        {generating && (
-          <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0 animate-soft-pulse" />
-        )}
-        <span className="text-[10px] font-bold tracking-[0.06em] whitespace-nowrap" style={{ color: stateColor }}>{STATE_LABEL[state]}</span>
-        {!generating && (
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke={stateColor} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 5h6M6 3l2 2-2 2" />
-          </svg>
-        )}
-      </div>
-
-      <div className="flex justify-center">
-        <span
-          onClick={e => e.stopPropagation()}
-          className="text-ink cursor-pointer flex p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
-            <circle cx="6.5" cy="2.5" r="1.1" />
-            <circle cx="6.5" cy="6.5" r="1.1" />
-            <circle cx="6.5" cy="10.5" r="1.1" />
-          </svg>
-        </span>
-      </div>
-    </div>
-  )
-}
-
-// ─── Page ────────────────────────────────────────────────────────────────────
-
-function ActiveProducts() {
-  const [stateFilter, setStateFilter] = useState<'All' | ProductState>('All')
-  const [sort, setSort] = useState<Sort>('Score')
-  const [search, setSearch] = useState('')
-
-  const filtered = useMemo(() => {
-    let list = ALL_PRODUCTS
-    if (stateFilter !== 'All') list = list.filter(p => p.state === stateFilter)
-    if (search.trim()) {
-      const q = search.toLowerCase()
-      list = list.filter(p => p.name.toLowerCase().includes(q))
-    }
-    if (sort === 'Score') list = [...list].sort((a, b) => b.score - a.score)
-    else if (sort === 'Revenue') {
-      const num = (v: string) => (v === '—' ? 0 : parseInt(v.replace(/\D/g, '')))
-      list = [...list].sort((a, b) => num(b.rev) - num(a.rev))
-    } else if (sort === 'Findings') {
-      list = [...list].sort((a, b) => b.findings - a.findings)
-    }
-    list = [...list].sort((a, b) => {
-      if (a.state === 'Generating' && b.state !== 'Generating') return -1
-      if (b.state === 'Generating' && a.state !== 'Generating') return 1
-      return 0
-    })
-    return list
-  }, [stateFilter, sort, search])
-
-  const stateLabel = (s: 'All' | ProductState) => {
-    const count = s === 'All' ? ALL_PRODUCTS.length : ALL_PRODUCTS.filter(p => p.state === s).length
-    return `${s} (${count})`
-  }
-  const stateValue = stateLabel(stateFilter)
-
-  return (
-    <div className="flex flex-col h-full font-sans">
-      <div className="px-6 pt-5 pb-4 flex items-center justify-between shrink-0">
+    <>
+      {/* title + filters */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '8px 2px 0', flexWrap: 'wrap' }}>
         <div>
-          <div className="text-[20px] font-medium text-ink tracking-[-0.025em]">Active Products</div>
-          <div className="text-[12px] text-ink mt-[3px]">{ALL_PRODUCTS.length} products tracked</div>
+          <span style={{ fontSize: 14.5, fontWeight: 550, color: NT.text, letterSpacing: '-0.012em' }}>Active Products</span>
+          <span style={{ fontSize: 11.5, color: NT.text, marginLeft: 9 }}>7 products · $37.6k revenue this week</span>
         </div>
-        <button className="flex items-center gap-1.5 bg-brand text-white border-0 rounded-md px-3.5 py-[7px] text-[12px] font-medium cursor-pointer hover:opacity-90">
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-            <path d="M5.5 1v9M1 5.5h9" />
-          </svg>
-          Add product
-        </button>
-      </div>
-
-      <div className="px-6 pb-3 flex items-center gap-2.5 shrink-0">
-        <Dropdown
-          label="State"
-          value={stateValue}
-          options={STATE_OPTIONS.map(stateLabel)}
-          onChange={v => {
-            const raw = v.split(' (')[0]
-            setStateFilter(raw as 'All' | ProductState)
-          }}
-        />
-        <Dropdown
-          label="Sort"
-          value={sort}
-          options={[...SORT_OPTIONS]}
-          onChange={v => setSort(v as Sort)}
-        />
-        <div className="ml-auto flex items-center gap-1.5 bg-surf border border-line rounded-md px-2.5 py-[5px] w-[240px]">
-          <span className="text-ink flex">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.3">
-              <circle cx="5.5" cy="5.5" r="3.5" />
-              <path d="M8.5 8.5L11 11" strokeLinecap="round" />
-            </svg>
-          </span>
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search products…"
-            className="border-0 bg-transparent outline-none text-[11px] text-ink w-full placeholder:text-ink"
-          />
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 7, alignItems: 'center', flexWrap: 'wrap' }}>
+          {filters.map(([id, n]) => (
+            <span key={id} onClick={() => setFilter(id)} style={{ fontSize: 11.5, fontWeight: filter === id ? 550 : 450, padding: '5.5px 13px', borderRadius: 9, cursor: 'pointer', whiteSpace: 'nowrap',
+              background: filter === id ? 'var(--dv-btn-bg)' : 'var(--dv-surf)', color: filter === id ? 'var(--dv-btn-fg)' : NT.text,
+              border: `1px solid ${filter === id ? 'var(--dv-btn-bg)' : NT.borderS}`, boxShadow: filter === id ? 'none' : NT.shadow, transition: 'all 0.12s' }}>{id} · {n}</span>
+          ))}
+          <button className="dv2-btn-p" style={{ background: 'var(--dv-btn-bg)', color: 'var(--dv-btn-fg)', border: 'none', padding: '7px 16px', borderRadius: 10, fontSize: 12, fontWeight: 500, fontFamily: NT.sans, cursor: 'pointer', marginLeft: 6, whiteSpace: 'nowrap' }}>+ Add product</button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto min-h-0 px-6 pb-8">
-        <div className="bg-surf rounded-[10px] shadow-lift overflow-hidden">
-          <TableHeader />
-          {filtered.length === 0 ? (
-            <div className="px-6 py-12 text-center text-ink text-[13px]">No products match your filters.</div>
-          ) : (
-            filtered.map((p, i) => (
-              <ProductRow key={p.id} product={p} last={i === filtered.length - 1} />
-            ))
-          )}
+      {/* portfolio table */}
+      <div style={{ ...ntCard, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '13px 22px 11px' }}>
+          <span style={{ fontSize: 13, fontWeight: 550, color: NT.text }}>Portfolio</span>
+          <span style={{ fontSize: 11, color: NT.text, fontFamily: NT.mono, marginLeft: 8 }}>{list.length}</span>
+          <div style={{ marginLeft: 'auto' }}>
+            <MetricSelect options={APP_SORTS} metric={sort} setMetric={setSort} />
+          </div>
         </div>
+        <div style={{ display: 'grid', gridTemplateColumns: APP_GRID, gap: 12, alignItems: 'center', padding: '7px 22px', borderTop: `1px solid ${NT.borderS}`, borderBottom: `1px solid ${NT.borderS}`, background: NT.page }}>
+          {['', 'Product', 'Score', 'Rev · wk', 'Margin', 'Ad saturation', 'Findings', 'Stage'].map((h, i) =>
+            <div key={i} style={{ fontSize: 10.5, fontWeight: 500, color: NT.text, whiteSpace: 'nowrap' }}>{h}</div>)}
+        </div>
+        {list.map((p, i) => {
+          const st = APP_STAGE[p.state]
+          const sat = APP_SAT[p.adSat]
+          return (
+            <div key={p.sku} className="dv2-row" style={{ display: 'grid', gridTemplateColumns: APP_GRID, gap: 12, alignItems: 'center', padding: '18px 22px', borderBottom: i < list.length - 1 ? `1px solid ${NT.borderS}` : 'none', cursor: 'pointer' }}>
+              <img src={p.img} style={{ width: 46, height: 46, borderRadius: 10, objectFit: 'cover' }} alt={p.name} />
+              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 550, color: NT.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '-0.01em' }}>{p.name}</div>
+                <div style={{ fontSize: 10.5, color: NT.text, fontFamily: NT.mono, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.sku} · {p.platforms}</div>
+                {p.findings > 0 && <span style={{ fontSize: 9.5, fontWeight: 550, color: NT.green, background: NT.greenBg, padding: '2px 8px', borderRadius: 8, alignSelf: 'start' }}>{p.findings} finding{p.findings > 1 ? 's' : ''}</span>}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 17, fontWeight: 550, color: NT.text, fontFamily: NT.mono, letterSpacing: '-0.02em' }}>{p.score}</span>
+                <StatSpark data={p.spark} color={p.pos ? NT.greenBr : NT.red} w={50} h={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: 12.5, fontWeight: 550, color: NT.text, fontFamily: NT.mono, marginBottom: 2 }}>{p.rev}</div>
+                {p.rev !== '—' && <div style={{ fontSize: 10, color: NT.text }}>this week</div>}
+              </div>
+              <div>
+                <div style={{ fontSize: 12.5, fontWeight: 550, color: NT.text, fontFamily: NT.mono, marginBottom: 2 }}>{p.margin}</div>
+                <div style={{ fontSize: 10, color: NT.text }}>margin</div>
+              </div>
+              <div>
+                <span style={{ fontSize: 10, fontWeight: 550, color: sat.fg, background: sat.bg, padding: '2.5px 9px', borderRadius: 9, whiteSpace: 'nowrap', display: 'inline-block', marginBottom: 3 }}>{p.adSat}</span>
+                <div style={{ fontSize: 10, color: NT.text, fontFamily: NT.mono }}>{p.adCount} ads</div>
+              </div>
+              <span style={{ fontSize: 12.5, fontWeight: 550, color: NT.text, fontFamily: NT.mono }}>{p.findings > 0 ? p.findings : '—'}</span>
+              <span style={{ fontSize: 10, fontWeight: 550, color: st.solid ? 'var(--dv-surf)' : st.fg, background: st.bg, border: st.border ? `1px solid ${NT.borderS}` : 'none', padding: '3.5px 11px', borderRadius: 10, whiteSpace: 'nowrap', justifySelf: 'start' }}>{p.state}</span>
+            </div>
+          )
+        })}
       </div>
-    </div>
+    </>
   )
 }
-
-export default ActiveProducts

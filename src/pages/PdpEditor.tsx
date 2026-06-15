@@ -1,680 +1,330 @@
-import { useState, useEffect, useRef, type ReactNode } from 'react'
+// PdpEditor.tsx — PDP editor (storefront preview + live editor rail).
+// Ported from design_handoff_nanalyt/source/pdp-editor.jsx. Standalone full-screen
+// page (its own strip; not inside AppLayout). Opened from Studio PDP tiles.
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { NT } from '../system/tokens'
 
-// ─── Demo content ────────────────────────────────────────────────────────────
-
-const DEFAULT_HEADLINE = 'Sleep through the worry, not just the fatigue.'
-const DEFAULT_SUBHEAD =
-  'Magnesium glycinate complex addresses anxiety as the root cause of poor sleep — calm mind enables calm body.'
-const DEFAULT_BODY =
-  "Our blend of magnesium glycinate, citrate, and malate was voted 'Best Overall Magnesium Supplement' by Healthline. Working professionals 25-45 with high cognitive stress that disrupts sleep find this formulation gives them what they actually need: not just sleep onset, but freedom from the racing thoughts that keep them awake."
-
-const ALT_IMAGES = [
-  '/uploads/IMG_3472.jpg',
-  '/uploads/IMG_3474.jpg',
-  '/uploads/IMG_3476.jpg',
-  '/uploads/Screenshot 2026-05-11 at 9.00.15 PM.png',
+const PE_SANS = NT.sans
+const PE_MONO = NT.mono
+const PE_NAVY = '#1f2f55'
+const PE_HEADLINES = [
+  { h: 'Sleep through the worry, not just the fatigue.', s: 'Magnesium glycinate complex addresses anxiety as the root cause of poor sleep — calm mind enables calm body.' },
+  { h: 'Wake up calm. Stay calm.', s: 'High-absorption magnesium that works with your body’s natural rhythms for deep, restorative sleep.' },
+  { h: 'The racing-thoughts remedy.', s: 'For working professionals whose minds won’t shut off — glycinate-first magnesium for real rest.' },
 ]
-const DEFAULT_IMAGE = ALT_IMAGES[0]
+const PE_DESC_DEFAULT = "Our blend of magnesium glycinate, citrate, and malate was voted 'Best Overall Magnesium Supplement' by Healthline. Working professionals 25–45 with high cognitive stress that disrupts sleep find this formulation gives them what they actually need: not just sleep onset, but freedom from the racing thoughts that keep them awake."
+const PE_BULLETS_DEFAULT = ['High Absorption Formula For Improved Bioavailability*', '3rd Party And Triple Lab Tested', 'Vegan, No Artificial Fillers Or Binders', 'Made To The Highest Standards In California']
+const PE_TABS = ['Description', 'Directions', 'Ingredients', 'Supplement Facts']
+const PE_TAB_BODY: Record<string, string> = {
+  Directions: 'Take 3 capsules daily with food, ideally 1–2 hours before bed. Consistent use for 2–4 weeks delivers the full effect.',
+  Ingredients: 'Magnesium (as glycinate, malate, citrate) 300mg · vegetable cellulose capsule. No fillers, binders, or artificial ingredients.',
+  'Supplement Facts': 'Serving size 3 veggie capsules · 30 servings per container · Magnesium 300mg (71% DV).',
+}
 
-const DEFAULT_BULLETS: string[] = [
-  'High Absorption Formula For Improved Bioavailability*',
-  '3rd Party And Triple Lab Tested',
-  'Vegan, No Artificial Fillers Or Binders',
-  'Made To The Highest Standards In California',
-]
+type St = { headline: string; subhead: string; desc: string; bullets: string[]; rating: number; reviews: number; discount: number; price: number }
 
-const TRUST_BADGES = [
-  {
-    label: 'LAB TESTED',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#1b3654" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 4h8v6l5 12a3 3 0 01-3 4H10a3 3 0 01-3-4l5-12V4z" />
-        <path d="M12 4h8" />
-        <path d="M10 18h12" />
-        <circle cx="13" cy="22" r="1" fill="#1b3654" stroke="none" />
-        <circle cx="18" cy="24" r="1.2" fill="#1b3654" stroke="none" />
-      </svg>
-    ),
-  },
-  {
-    label: 'VEGAN',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#1b3654" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 28C9 28 5 22 5 16c0-4 2-8 6-8 3 0 4 3 4 6" />
-        <path d="M16 28c0-9 4-16 11-18-1 12-6 18-11 18z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'MADE IN USA',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#1b3654" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="4" y="7" width="24" height="18" rx="1" />
-        <rect x="4" y="7" width="12" height="9" fill="#1b3654" stroke="none" />
-        <path d="M4 11h24M4 15h24M4 19h24M4 23h24" />
-      </svg>
-    ),
-  },
-  {
-    label: 'NON GMO',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#1b3654" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="16" cy="16" r="11" />
-        <path d="M10 11l12 10" />
-        <path d="M11 16h10" />
-      </svg>
-    ),
-  },
-]
+function PeCheck({ children }: { children: ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+      <span style={{ color: '#3c7a4e', fontSize: 11, marginTop: 1, flexShrink: 0 }}>✓</span>
+      <span style={{ fontSize: 12.5, color: '#222', lineHeight: 1.5 }}>{children}</span>
+    </div>
+  )
+}
+function PeStars({ rating }: { rating: number }) {
+  const full = Math.round(rating)
+  return <span style={{ color: '#e8a33d', fontSize: 13, letterSpacing: 1 }}>{'★'.repeat(full)}{'☆'.repeat(5 - full)}</span>
+}
 
-type SectionId =
-  | 'hero'
-  | 'positioning'
-  | 'why'
-  | 'ingredients'
-  | 'reviews'
-  | 'faq'
-  | 'subscribe'
-
-const SECTIONS: { id: SectionId; label: string }[] = [
-  { id: 'hero', label: 'Hero section' },
-  { id: 'positioning', label: 'Product positioning' },
-  { id: 'why', label: 'Why it works' },
-  { id: 'ingredients', label: 'Ingredient breakdown' },
-  { id: 'reviews', label: 'Reviews & social proof' },
-  { id: 'faq', label: 'FAQ' },
-  { id: 'subscribe', label: 'Subscribe & purchase' },
-]
-
-type Tab = 'Description' | 'Directions' | 'Ingredients' | 'Supplement Facts'
-
-// ─── PDP canvas ──────────────────────────────────────────────────────────────
-
-function PdpCanvas({
-  headline,
-  subHeadline,
-  heroImg,
-  bullets,
-  onEditHeadline,
-  onEditSubHead,
-}: {
-  headline: string
-  subHeadline: string
-  heroImg: string
-  bullets: string[]
-  onEditHeadline: () => void
-  onEditSubHead: () => void
-}) {
-  const [plan, setPlan] = useState<'subscribe' | 'onetime'>('subscribe')
+function PeStorefront({ st, imgVariant }: { st: St; imgVariant: number }) {
+  const [tab, setTab] = useState('Description')
   const [qty, setQty] = useState(1)
-  const [cartFlash, setCartFlash] = useState(false)
-  const [activeTab, setActiveTab] = useState<Tab>('Description')
-
-  const addToCart = () => {
-    setCartFlash(true)
-    setTimeout(() => setCartFlash(false), 1500)
-  }
-
-  const editClass =
-    'cursor-pointer rounded-sm transition-colors hover:bg-brand-bg hover:outline hover:outline-1 hover:outline-dashed hover:outline-brand'
-
+  const [mode, setMode] = useState('sub')
+  const subPrice = (st.price * (1 - st.discount / 100)).toFixed(2)
   return (
-    <div className="bg-white border-[0.5px] border-[#e5e7eb] rounded-xl overflow-hidden">
-      <div className="bg-[#fafbfc] border-b-[0.5px] border-[#e5e7eb] px-4 py-1.5 flex items-center justify-between text-[10px] text-ink">
-        <span className="font-mono">nanalyt-demo.myshopify.com/products/magnesium-glycinate-complex</span>
-        <span>Preview · Desktop</span>
-      </div>
-
-      <div className="px-7 py-5 border-b-[0.5px] border-[#e5e7eb] flex items-center justify-between">
-        <div className="text-[16px] font-bold tracking-tight text-[#0066a0]">Nanalyt Demo</div>
-        <div className="flex gap-6 text-[12px] text-ink">
-          <span>Shop</span>
-          <span>Bundle &amp; Save</span>
-          <span>About Us</span>
-          <span>Rewards</span>
-          <span>Contact Us</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-8 p-7 items-start">
-        {/* LEFT — product image */}
-        <div className="aspect-square bg-white border-[0.5px] border-[#e5e7eb] rounded-lg overflow-hidden relative group">
-          <img src={heroImg} alt="" className="w-full h-full object-contain p-6" />
-          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white shadow-[0_2px_8px_rgba(0,0,0,0.12)] rounded px-2 py-1 text-[10px] font-medium text-ink">
-            ✎ Edit image
-          </div>
-        </div>
-
-        {/* RIGHT — title, plans, cart, description, badges */}
-        <div>
-          <div className="text-[11px] text-ink mb-2">
-            <span className="text-[#fbbf24]">★★★★★</span> 1503 Reviews
-          </div>
-
-          <h1
-            onClick={onEditHeadline}
-            className={`text-[26px] font-semibold leading-[1.15] text-[#1b3654] mb-3 ${editClass}`}
-          >
-            {headline}
-          </h1>
-
-          <p
-            onClick={onEditSubHead}
-            className={`text-[13px] leading-[1.5] text-ink mb-4 ${editClass}`}
-          >
-            {subHeadline}
-          </p>
-
-          {/* Subscribe card */}
-          <div
-            onClick={() => setPlan('subscribe')}
-            className={`relative bg-white rounded-lg px-3.5 py-3 mb-2.5 cursor-pointer transition-colors ${
-              plan === 'subscribe' ? 'border-[1.5px] border-[#0066a0]' : 'border-[0.5px] border-[#d1d5db]'
-            }`}
-          >
-            <span className="absolute -top-2.5 right-3 text-[9px] font-semibold text-white bg-[#0066a0] px-2 py-0.5 rounded-md">
-              Save up to 15%
-            </span>
-            <div className="flex items-start justify-between mb-2.5">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-4 h-4 rounded-full border-[1.5px] bg-white flex items-center justify-center ${
-                    plan === 'subscribe' ? 'border-[#0066a0]' : 'border-[#d1d5db]'
-                  }`}
-                >
-                  {plan === 'subscribe' && <div className="w-2 h-2 rounded-full bg-[#0066a0]" />}
-                </div>
-                <span className="text-[13px] font-semibold text-ink">Subscribe &amp; Save</span>
-                <span className="text-[10px] text-ink">ⓘ</span>
-              </div>
-              <div className="text-right">
-                <div className="text-[10px] text-ink line-through">$27.99</div>
-                <div className="text-[14px] font-semibold text-ink">$23.79</div>
-              </div>
-            </div>
-            {plan === 'subscribe' && (
-              <>
-                <div className="text-[11px] text-ink space-y-1 mb-3">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#0066a0]">✓</span> Save 15%
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#0066a0]">✓</span> Free Shipping On Orders &gt; $30
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#0066a0]">✓</span> No commitment — Cancel any time
-                  </div>
-                </div>
-                <div onClick={e => e.stopPropagation()}>
-                  <div className="text-[10px] font-semibold text-ink mb-1">Deliver every</div>
-                  <select className="w-full bg-white border-[0.5px] border-[#0066a0] rounded px-2.5 py-1.5 text-[11px] text-ink outline-none cursor-pointer">
-                    <option>30 Days: Save 15%</option>
-                    <option>60 Days: Save 15%</option>
-                    <option>90 Days: Save 15%</option>
-                  </select>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* One-time card */}
-          <div
-            onClick={() => setPlan('onetime')}
-            className={`bg-white rounded-lg px-3.5 py-2.5 mb-2 flex items-center justify-between cursor-pointer transition-colors ${
-              plan === 'onetime' ? 'border-[1.5px] border-[#0066a0]' : 'border-[0.5px] border-[#d1d5db]'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-4 h-4 rounded-full border-[1.5px] bg-white flex items-center justify-center ${
-                  plan === 'onetime' ? 'border-[#0066a0]' : 'border-[#d1d5db]'
-                }`}
-              >
-                {plan === 'onetime' && <div className="w-2 h-2 rounded-full bg-[#0066a0]" />}
-              </div>
-              <span className="text-[13px] font-semibold text-ink">One-time Purchase</span>
-            </div>
-            <span className="text-[13px] text-ink">$27.99</span>
-          </div>
-
-          <div className="text-[11px] text-ink mb-3">
-            <span className="underline cursor-pointer text-[#0066a0]">Shipping</span> calculated at checkout.
-          </div>
-
-          {/* Qty + Add to cart */}
-          <div className="flex gap-2 mb-3">
-            <div className="flex items-center border-[0.5px] border-[#d1d5db] rounded-full">
-              <button
-                onClick={() => setQty(q => Math.max(1, q - 1))}
-                className="px-2.5 py-1.5 text-[14px] text-ink leading-none cursor-pointer hover:bg-[#fafafa] rounded-l-full"
-                aria-label="Decrease quantity"
-              >
-                −
-              </button>
-              <span className="px-2 py-1.5 text-[12px] text-ink leading-none min-w-[20px] text-center">{qty}</span>
-              <button
-                onClick={() => setQty(q => q + 1)}
-                className="px-2.5 py-1.5 text-[14px] text-ink leading-none cursor-pointer hover:bg-[#fafafa] rounded-r-full"
-                aria-label="Increase quantity"
-              >
-                +
-              </button>
-            </div>
-            <button
-              onClick={addToCart}
-              className="flex-1 bg-[#1b3654] text-white rounded-full py-2 text-[14px] font-semibold hover:opacity-90 transition-opacity"
-            >
-              {cartFlash ? '✓ Added to Cart' : 'Add to Cart'}
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3 text-[10px] text-ink flex-wrap mb-5">
-            <span className="flex items-center gap-1">
-              <span className="text-brand">●</span> IN STOCK
-            </span>
-            <span className="font-semibold">HSA/FSA eligible</span>
-            <span className="flex items-center gap-1">
-              <span>ⓘ</span> Save an average of 30%
-            </span>
-            <span className="underline cursor-pointer">Learn more</span>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-1.5 mb-2">
-            {(['Description', 'Directions', 'Ingredients', 'Supplement Facts'] as Tab[]).map(t => (
-              <div
-                key={t}
-                onClick={() => setActiveTab(t)}
-                className={`text-[10px] cursor-pointer px-2.5 py-1.5 rounded-md transition-colors ${
-                  activeTab === t
-                    ? 'bg-[#1b3654] text-white font-semibold'
-                    : 'bg-[#dbeafe] text-[#0066a0] hover:bg-[#bfdbfe]'
-                }`}
-              >
-                {t}
-              </div>
+    <div style={{ flex: 1, minWidth: 0, overflowY: 'auto', background: '#f3f2ef' }}>
+      <div style={{ background: '#fff', margin: '10px', borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 4px rgba(16,24,15,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '16px 30px', borderBottom: '1px solid #ecebe7' }}>
+          <span style={{ fontSize: 16, fontWeight: 650, color: '#2d5c3a', letterSpacing: '-0.02em' }}>Nanalyt Demo</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 24 }}>
+            {['Shop', 'Bundle & Save', 'About Us', 'Rewards', 'Contact Us'].map((l) => (
+              <span key={l} style={{ fontSize: 12.5, color: '#222', cursor: 'pointer' }}>{l}</span>
             ))}
           </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.05fr) minmax(0,1fr)', gap: 34, padding: '26px 30px 34px' }}>
+          <div style={{ position: 'relative', background: '#fafaf8', border: '1px solid #ecebe7', borderRadius: 10, overflow: 'hidden', alignSelf: 'start' }}>
+            <img src="/uploads/IMG_3472.jpg" alt="Magnesium Glycinate Complex"
+              style={{ width: '100%', display: 'block', transform: imgVariant === 1 ? 'scaleX(-1)' : 'none', transition: 'transform 0.3s' }} />
+            <span style={{ position: 'absolute', top: 12, right: 12, display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10.5, fontWeight: 500, color: '#222', background: '#fff', border: '1px solid #e2e0db', padding: '4px 10px', borderRadius: 8, cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>✎ Edit image</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 13, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <PeStars rating={st.rating} />
+              <span style={{ fontSize: 11.5, color: '#222' }}>{st.reviews.toLocaleString()} Reviews</span>
+            </div>
+            <h1 style={{ fontSize: 27, fontWeight: 650, color: '#161614', letterSpacing: '-0.022em', lineHeight: 1.18, margin: 0 }}>{st.headline}</h1>
+            <p style={{ fontSize: 12.5, color: '#222', lineHeight: 1.55, margin: 0 }}>{st.subhead}</p>
 
-          {/* Description body */}
-          <div className="bg-white border-[0.5px] border-[#e5e7eb] rounded-lg p-4 mb-3">
-            <p className="text-[11px] leading-[1.6] text-ink mb-3">{DEFAULT_BODY}</p>
-            <ul className="space-y-1.5">
-              {bullets.map((b, i) => (
-                <li key={i} className="flex gap-2 text-[11px] text-ink leading-[1.5]">
-                  <span className="text-[#1b3654] mt-px shrink-0">✓</span>
-                  <span>{b}</span>
-                </li>
+            <div onClick={() => setMode('sub')} style={{ border: `1.5px solid ${mode === 'sub' ? PE_NAVY : '#e2e0db'}`, borderRadius: 10, padding: '13px 16px', position: 'relative', cursor: 'pointer' }}>
+              <span style={{ position: 'absolute', top: -9, right: 14, fontSize: 9.5, fontWeight: 600, background: PE_NAVY, color: '#fff', padding: '2.5px 9px', borderRadius: 8 }}>Save up to {st.discount}%</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                <span style={{ width: 14, height: 14, borderRadius: '50%', border: `4.5px solid ${mode === 'sub' ? PE_NAVY : '#c9c6bf'}`, display: 'block', flexShrink: 0 }}></span>
+                <span style={{ fontSize: 13.5, fontWeight: 600, color: '#161614' }}>Subscribe &amp; Save</span>
+                <span style={{ fontSize: 10, color: '#222', border: '1px solid #c9c6bf', borderRadius: '50%', width: 13, height: 13, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>i</span>
+                <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
+                  <div style={{ fontSize: 11, color: '#222', textDecoration: 'line-through' }}>${st.price.toFixed(2)}</div>
+                  <div style={{ fontSize: 17, fontWeight: 650, color: '#161614', fontFamily: PE_MONO }}>${subPrice}</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5, margin: '11px 0 12px' }}>
+                <PeCheck>Save {st.discount}%</PeCheck>
+                <PeCheck>Free Shipping On Orders &gt; $30</PeCheck>
+                <PeCheck>No commitment — Cancel any time</PeCheck>
+              </div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#161614', marginBottom: 5 }}>Deliver every</div>
+              <select onClick={(e) => e.stopPropagation()} style={{ width: '100%', fontSize: 12, color: '#161614', border: '1px solid #c9c6bf', borderRadius: 7, padding: '8px 10px', background: '#fff', fontFamily: PE_SANS, outline: 'none', cursor: 'pointer' }}>
+                <option>30 Days: Save {st.discount}%</option><option>60 Days: Save {st.discount}%</option><option>90 Days: Save {st.discount}%</option>
+              </select>
+            </div>
+
+            <div onClick={() => setMode('one')} style={{ border: `1.5px solid ${mode === 'one' ? PE_NAVY : '#e2e0db'}`, borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 9, cursor: 'pointer' }}>
+              <span style={{ width: 14, height: 14, borderRadius: '50%', border: `${mode === 'one' ? '4.5px' : '1.5px'} solid ${mode === 'one' ? PE_NAVY : '#c9c6bf'}`, display: 'block', flexShrink: 0 }}></span>
+              <span style={{ fontSize: 13, fontWeight: 550, color: '#161614' }}>One-time Purchase</span>
+              <span style={{ marginLeft: 'auto', fontSize: 14, fontWeight: 600, color: '#161614', fontFamily: PE_MONO }}>${st.price.toFixed(2)}</span>
+            </div>
+
+            <div style={{ fontSize: 11, color: '#222' }}><span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Shipping</span> calculated at checkout.</div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #c9c6bf', borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
+                <span onClick={() => setQty((q) => Math.max(1, q - 1))} style={{ padding: '9px 13px', fontSize: 13, color: '#222', cursor: 'pointer', userSelect: 'none' }}>−</span>
+                <span style={{ padding: '9px 6px', fontSize: 12.5, fontWeight: 550, color: '#161614', fontFamily: PE_MONO, minWidth: 24, textAlign: 'center' }}>{qty}</span>
+                <span onClick={() => setQty((q) => q + 1)} style={{ padding: '9px 13px', fontSize: 13, color: '#222', cursor: 'pointer', userSelect: 'none' }}>+</span>
+              </div>
+              <button style={{ flex: 1, background: PE_NAVY, color: '#fff', border: 'none', borderRadius: 24, padding: '11px 0', fontSize: 13.5, fontWeight: 600, fontFamily: PE_SANS, cursor: 'pointer' }}>Add to Cart</button>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10.5, fontWeight: 600, color: '#161614' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3c7a4e', display: 'inline-block' }}></span>IN STOCK</span>
+              <span style={{ fontSize: 10.5, color: '#222' }}>HSA/FSA eligible</span>
+              <span style={{ fontSize: 10.5, color: '#222' }}>Save an average of 30% <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more</span></span>
+            </div>
+
+            <div style={{ display: 'flex', gap: 7, marginTop: 2 }}>
+              {PE_TABS.map((t) => (
+                <span key={t} onClick={() => setTab(t)} style={{ fontSize: 11, fontWeight: tab === t ? 600 : 475, padding: '5.5px 13px', borderRadius: 8, cursor: 'pointer', background: tab === t ? PE_NAVY : '#eef1f6', color: tab === t ? '#fff' : PE_NAVY, transition: 'all 0.12s' }}>{t}</span>
               ))}
-            </ul>
-          </div>
-
-          {/* Trust badges */}
-          <div className="grid grid-cols-4 gap-2">
-            {TRUST_BADGES.map(b => (
-              <div
-                key={b.label}
-                className="flex flex-col items-center gap-1.5 bg-white border-[0.5px] border-[#e5e7eb] rounded-md py-3 px-1"
-              >
-                <div>{b.icon}</div>
-                <div className="text-[9px] font-semibold tracking-[0.04em] text-[#1b3654] text-center">{b.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Edit panel components ───────────────────────────────────────────────────
-
-function FieldLabel({ children }: { children: ReactNode }) {
-  return (
-    <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-1">{children}</div>
-  )
-}
-
-function ImageField({
-  thumb,
-  onReplace,
-  onRegen,
-}: {
-  thumb: string
-  onReplace: () => void
-  onRegen: () => void
-}) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <div className="w-9 h-9 rounded shrink-0 overflow-hidden border-[0.5px] border-[#d1d5db]">
-        <img src={thumb} alt="" className="w-full h-full object-cover" />
-      </div>
-      <button
-        onClick={onReplace}
-        className="flex-1 text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 cursor-pointer hover:bg-[#fafafa]"
-      >
-        Replace
-      </button>
-      <button
-        onClick={onRegen}
-        className="text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 cursor-pointer hover:bg-[#fafafa]"
-        aria-label="Regenerate"
-      >
-        ↻ Regen
-      </button>
-    </div>
-  )
-}
-
-function SectionCard({
-  label,
-  expanded,
-  onToggle,
-  children,
-}: {
-  label: string
-  expanded: boolean
-  onToggle: () => void
-  children?: ReactNode
-}) {
-  return (
-    <div
-      className={`rounded-md border-[0.5px] ${
-        expanded ? 'border-brand bg-brand-bg p-3.5' : 'border-[#e5e7eb] bg-white px-3.5 py-3'
-      }`}
-    >
-      <div onClick={onToggle} className="flex items-center justify-between cursor-pointer">
-        <span className="text-[12px] font-medium text-ink">{label}</span>
-        <span className="text-[12px] text-ink leading-none">{expanded ? '−' : '+'}</span>
-      </div>
-      {expanded && children && <div className="mt-2.5 flex flex-col gap-2.5">{children}</div>}
-    </div>
-  )
-}
-
-// ─── Page ────────────────────────────────────────────────────────────────────
-
-function PdpEditor() {
-  const navigate = useNavigate()
-  const [headline, setHeadline] = useState(DEFAULT_HEADLINE)
-  const [subHeadline, setSubHeadline] = useState(DEFAULT_SUBHEAD)
-  const [heroImg, setHeroImg] = useState(DEFAULT_IMAGE)
-  const [bullets, setBullets] = useState<string[]>(DEFAULT_BULLETS)
-  const [expandedSection, setExpandedSection] = useState<SectionId | null>('hero')
-  const [replaceMenuOpen, setReplaceMenuOpen] = useState(false)
-  const [regenSpinning, setRegenSpinning] = useState(false)
-  const [focusField, setFocusField] = useState<'headline' | 'sub' | null>(null)
-  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
-  const [pushState, setPushState] = useState<'idle' | 'pushing' | 'live'>('idle')
-
-  const handlePush = () => {
-    if (pushState !== 'idle') return
-    setPushState('pushing')
-    window.setTimeout(() => setPushState('live'), 2500)
-  }
-  const handleOpenInShopify = () => {
-    window.open(
-      'https://nanalyt-demo.myshopify.com/products/magnesium-glycinate-complex',
-      '_blank',
-      'noopener,noreferrer',
-    )
-  }
-
-  const headlineRef = useRef<HTMLInputElement>(null)
-  const subRef = useRef<HTMLTextAreaElement>(null)
-
-  useEffect(() => {
-    if (expandedSection !== 'hero' || !focusField) return
-    const id = window.setTimeout(() => {
-      if (focusField === 'headline') headlineRef.current?.focus()
-      if (focusField === 'sub') subRef.current?.focus()
-      setFocusField(null)
-    }, 30)
-    return () => clearTimeout(id)
-  }, [expandedSection, focusField])
-
-  const editFromCanvas = (field: 'headline' | 'sub') => {
-    setExpandedSection('hero')
-    setFocusField(field)
-  }
-
-  const handleDiscard = () => {
-    setHeadline(DEFAULT_HEADLINE)
-    setSubHeadline(DEFAULT_SUBHEAD)
-    setHeroImg(DEFAULT_IMAGE)
-    setBullets(DEFAULT_BULLETS)
-    setShowDiscardConfirm(false)
-    navigate('/studio')
-  }
-
-  const updateBullet = (i: number, value: string) => {
-    setBullets(prev => prev.map((b, j) => (j === i ? value : b)))
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col bg-canvas font-sans">
-      <div className="bg-white border-b-[0.5px] border-[#e5e7eb] px-6 py-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate('/studio')}
-            className="text-[12px] text-ink bg-transparent border-0 cursor-pointer hover:opacity-70"
-          >
-            ← Back to Studio
-          </button>
-          <div className="w-px h-6 bg-line" />
-          <div>
-            <div className="text-[12px] font-medium text-ink">Magnesium Glycinate Complex</div>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[11px] text-ink">PDP · v1 · Drafted 4 days ago</span>
-              <span className="text-[9px] font-semibold bg-info-bg text-info px-1.5 py-px rounded">DRAFT</span>
             </div>
-          </div>
-        </div>
+            <div style={{ background: '#fafaf8', border: '1px solid #ecebe7', borderRadius: 10, padding: '14px 17px' }}>
+              {tab === 'Description' ? (
+                <>
+                  <p style={{ fontSize: 12, color: '#222', lineHeight: 1.6, margin: '0 0 11px' }}>{st.desc}</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {st.bullets.map((b, i) => <PeCheck key={i}>{b}</PeCheck>)}
+                  </div>
+                </>
+              ) : (
+                <p style={{ fontSize: 12, color: '#222', lineHeight: 1.6, margin: 0 }}>{PE_TAB_BODY[tab]}</p>
+              )}
+            </div>
 
-        <div className="flex items-center gap-2.5">
-          <span className="text-[11px] text-ink bg-brand-bg px-2.5 py-1 rounded-md">
-            Generated for Sleep-Anxiety Crossover
-          </span>
-          <button
-            onClick={() => setShowDiscardConfirm(true)}
-            className="text-[12px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded-md px-3 py-1.5 cursor-pointer hover:bg-[#fafafa]"
-          >
-            Discard
-          </button>
-          {pushState === 'idle' && (
-            <button
-              onClick={handlePush}
-              className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3.5 py-1.5 cursor-pointer hover:opacity-90"
-            >
-              Push to Shopify
-            </button>
-          )}
-          {pushState === 'pushing' && (
-            <button
-              disabled
-              className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3.5 py-1.5 cursor-default opacity-90 flex items-center gap-1.5"
-            >
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" className="animate-spin">
-                <circle cx="6" cy="6" r="4.5" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-                <path d="M6 1.5A4.5 4.5 0 0110.5 6" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-              </svg>
-              Pushing…
-            </button>
-          )}
-          {pushState === 'live' && (
-            <button
-              onClick={handleOpenInShopify}
-              className="text-[12px] font-medium text-white bg-brand border-0 rounded-md px-3.5 py-1.5 cursor-pointer hover:opacity-90 flex items-center gap-1.5"
-            >
-              Open in new window
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2 9L9 2M4 2h5v5" />
-              </svg>
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-[1fr_340px] flex-1 min-h-0">
-        <div className="overflow-y-auto p-8">
-          <PdpCanvas
-            headline={headline}
-            subHeadline={subHeadline}
-            heroImg={heroImg}
-            bullets={bullets}
-            onEditHeadline={() => editFromCanvas('headline')}
-            onEditSubHead={() => editFromCanvas('sub')}
-          />
-        </div>
-
-        <div className="bg-white border-l-[0.5px] border-[#e5e7eb] px-[18px] py-5 overflow-y-auto">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-[13px] font-medium text-ink">Edit page</span>
-            <span className="text-[11px] text-brand flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand block animate-soft-pulse" />
-              Live preview
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            {SECTIONS.map(s => {
-              const expanded = expandedSection === s.id
-              return (
-                <SectionCard
-                  key={s.id}
-                  label={s.label}
-                  expanded={expanded}
-                  onToggle={() => setExpandedSection(expanded ? null : s.id)}
-                >
-                  {s.id === 'hero' && (
-                    <>
-                      <div>
-                        <FieldLabel>HEADLINE</FieldLabel>
-                        <input
-                          ref={headlineRef}
-                          value={headline}
-                          onChange={e => setHeadline(e.target.value)}
-                          className="w-full text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 outline-none focus:border-brand"
-                        />
-                      </div>
-                      <div>
-                        <FieldLabel>SUB-HEADLINE</FieldLabel>
-                        <textarea
-                          ref={subRef}
-                          value={subHeadline}
-                          onChange={e => setSubHeadline(e.target.value)}
-                          rows={3}
-                          className="w-full text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 outline-none focus:border-brand resize-none"
-                        />
-                      </div>
-                      <div className="relative">
-                        <FieldLabel>HERO IMAGE</FieldLabel>
-                        <ImageField
-                          thumb={heroImg}
-                          onReplace={() => setReplaceMenuOpen(v => !v)}
-                          onRegen={() => {
-                            setRegenSpinning(true)
-                            setTimeout(() => setRegenSpinning(false), 1200)
-                          }}
-                        />
-                        {regenSpinning && (
-                          <div className="text-[10px] text-ink mt-1 flex items-center gap-1">
-                            <svg width="10" height="10" viewBox="0 0 14 14" className="animate-spin" fill="none">
-                              <circle cx="7" cy="7" r="5.5" stroke="#e8e5e0" strokeWidth="1.5" />
-                              <path d="M7 1.5A5.5 5.5 0 0112.5 7" stroke="#2d5c3a" strokeWidth="1.5" strokeLinecap="round" />
-                            </svg>
-                            Regenerating…
-                          </div>
-                        )}
-                        {replaceMenuOpen && (
-                          <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border-[0.5px] border-[#e5e7eb] rounded-md shadow-[0_4px_16px_rgba(0,0,0,0.1)] p-2 z-10">
-                            <div className="text-[9px] font-semibold tracking-[0.04em] uppercase text-ink mb-2">Choose an image</div>
-                            <div className="grid grid-cols-4 gap-1.5">
-                              {ALT_IMAGES.map(img => (
-                                <div
-                                  key={img}
-                                  onClick={() => {
-                                    setHeroImg(img)
-                                    setReplaceMenuOpen(false)
-                                  }}
-                                  className={`aspect-square rounded overflow-hidden cursor-pointer border-[0.5px] ${
-                                    img === heroImg ? 'border-brand' : 'border-[#e5e7eb] hover:border-[#d1d5db]'
-                                  }`}
-                                >
-                                  <img src={img} alt="" className="w-full h-full object-cover" />
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-                  {s.id === 'why' && (
-                    <>
-                      <div className="text-[10px] text-ink leading-[1.5] -mt-0.5">
-                        Four bullets appear in the Description tab on the live PDP.
-                      </div>
-                      {bullets.map((b, i) => (
-                        <div key={i}>
-                          <FieldLabel>BULLET {i + 1}</FieldLabel>
-                          <input
-                            value={b}
-                            onChange={e => updateBullet(i, e.target.value)}
-                            className="w-full text-[11px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded px-2 py-1.5 outline-none focus:border-brand"
-                          />
-                        </div>
-                      ))}
-                    </>
-                  )}
-                </SectionCard>
-              )
-            })}
-          </div>
-
-          <div className="mt-6 pt-4 border-t-[0.5px] border-[#f0f1f3]">
-            <div className="text-[10px] font-medium tracking-[0.03em] uppercase text-ink mb-2">AGENT SUGGESTIONS</div>
-            <div className="bg-[#f7f8fa] rounded-md px-3 py-2.5 flex gap-2">
-              <span className="text-[13px] text-brand shrink-0 leading-none">●</span>
-              <div>
-                <div className="text-[11px] font-medium text-ink mb-0.5">Add a 'How magnesium works' graphic</div>
-                <div className="text-[10px] text-ink">
-                  Performance data shows visual explainers in this section lift CVR 1.4×
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 9 }}>
+              {([['⚗', 'Lab tested'], ['🌱', 'Vegan'], ['🇺🇸', 'Made in USA'], ['🚫', 'Non GMO']] as [string, string][]).map(([g, l]) => (
+                <div key={l} style={{ border: '1px solid #ecebe7', borderRadius: 9, padding: '12px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 15, filter: 'grayscale(1)', opacity: 0.8 }}>{g}</span>
+                  <span style={{ fontSize: 8.5, fontWeight: 600, letterSpacing: '0.05em', color: PE_NAVY, textTransform: 'uppercase' }}>{l}</span>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
-
-      {showDiscardConfirm && (
-        <div
-          onClick={() => setShowDiscardConfirm(false)}
-          className="fixed inset-0 z-[600] bg-black/35 flex items-center justify-center"
-        >
-          <div onClick={e => e.stopPropagation()} className="bg-white rounded-xl px-6 py-5 w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.18)]">
-            <div className="text-[14px] font-medium text-ink mb-2">Discard all edits?</div>
-            <div className="text-[12px] text-ink mb-5">This can't be undone.</div>
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setShowDiscardConfirm(false)}
-                className="text-[12px] text-ink bg-white border-[0.5px] border-[#d1d5db] rounded-md px-3 py-1.5 cursor-pointer hover:bg-[#fafafa]"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDiscard}
-                className="text-[12px] font-medium text-white bg-danger border-0 rounded-md px-3 py-1.5 cursor-pointer hover:opacity-90"
-              >
-                Discard
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
 
-export default PdpEditor
+function PeField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div>
+      <div style={{ fontSize: 10, fontWeight: 550, color: NT.text, marginBottom: 5 }}>{label}</div>
+      {children}
+    </div>
+  )
+}
+const peInput: CSSProperties = { width: '100%', fontSize: 11.5, color: NT.text, background: 'var(--dv-surf)', border: `1px solid ${NT.border}`, borderRadius: 9, padding: '8px 11px', fontFamily: PE_SANS, outline: 'none', boxSizing: 'border-box', lineHeight: 1.5 }
+
+function PeSection({ id, title, open, onToggle, children }: { id: string; title: string; open: boolean; onToggle: (id: string) => void; children: ReactNode }) {
+  return (
+    <div style={{ background: 'var(--dv-surf)', border: `1px solid ${open ? 'var(--dv-chip-br)' : NT.borderS}`, borderRadius: 13, boxShadow: '0 1px 3px rgba(16,24,15,0.05)', overflow: 'hidden', flexShrink: 0 }}>
+      <div onClick={() => onToggle(id)} style={{ display: 'flex', alignItems: 'center', padding: '11px 15px', cursor: 'pointer', background: open ? NT.greenBg : 'transparent' }}>
+        <span style={{ fontSize: 11.5, fontWeight: 550, color: NT.text }}>{title}</span>
+        <span style={{ marginLeft: 'auto', fontSize: 13, color: NT.text, fontWeight: 500 }}>{open ? '−' : '+'}</span>
+      </div>
+      {open && <div style={{ padding: '12px 15px 15px', borderTop: `1px solid ${NT.borderS}`, display: 'flex', flexDirection: 'column', gap: 11 }}>{children}</div>}
+    </div>
+  )
+}
+
+function PeEditor({ st, set, openSec, setOpenSec, imgVariant, setImgVariant }: {
+  st: St; set: (patch: Partial<St>) => void; openSec: string | null; setOpenSec: (fn: (o: string | null) => string | null) => void
+  imgVariant: number; setImgVariant: (fn: (v: number) => number) => void
+}) {
+  const [regenBusy, setRegenBusy] = useState(false)
+  const [hIdx, setHIdx] = useState(0)
+  const [suggested, setSuggested] = useState(false)
+  const toggle = (id: string) => setOpenSec((o) => (o === id ? null : id))
+
+  const regenHeadline = () => {
+    const n = (hIdx + 1) % PE_HEADLINES.length
+    setHIdx(n)
+    set({ headline: PE_HEADLINES[n].h, subhead: PE_HEADLINES[n].s })
+  }
+  const regenImage = () => {
+    if (regenBusy) return
+    setRegenBusy(true)
+    setTimeout(() => { setImgVariant((v) => (v === 0 ? 1 : 0)); setRegenBusy(false) }, 1400)
+  }
+
+  return (
+    <div style={{ width: 354, flexShrink: 0, borderLeft: `1px solid ${NT.borderS}`, background: NT.page, overflowY: 'auto', padding: '14px 16px 22px', display: 'flex', flexDirection: 'column', gap: 10, fontFamily: PE_SANS }}>
+      <PeSection id="hero" title="Hero section" open={openSec === 'hero'} onToggle={toggle}>
+        <PeField label="Headline">
+          <div style={{ display: 'flex', gap: 6 }}>
+            <input value={st.headline} onChange={(e) => set({ headline: e.target.value })} style={{ ...peInput, flex: 1 }} />
+            <button onClick={regenHeadline} title="Regenerate headline" style={{ background: 'var(--dv-surf)', color: NT.text, border: `1px solid ${NT.border}`, borderRadius: 9, padding: '0 10px', fontSize: 11, fontFamily: PE_SANS, cursor: 'pointer', flexShrink: 0 }}>↻</button>
+          </div>
+        </PeField>
+        <PeField label="Sub-headline">
+          <textarea value={st.subhead} onChange={(e) => set({ subhead: e.target.value })} rows={3} style={{ ...peInput, resize: 'vertical' }} />
+        </PeField>
+        <PeField label="Hero image">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 8, overflow: 'hidden', border: `1px solid ${NT.borderS}`, flexShrink: 0, position: 'relative' }}>
+              <img src="/uploads/IMG_3472.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: imgVariant === 1 ? 'scaleX(-1)' : 'none' }} alt="hero" />
+              {regenBusy && <div className="pulse" style={{ position: 'absolute', inset: 0, background: 'var(--dv-page)', opacity: 0.75 }}></div>}
+            </div>
+            <button style={{ flex: 1, background: 'var(--dv-surf)', color: NT.text, border: `1px solid ${NT.border}`, padding: '8px 0', borderRadius: 9, fontSize: 11, fontWeight: 500, fontFamily: PE_SANS, cursor: 'pointer' }}>Replace</button>
+            <button onClick={regenImage} style={{ flex: 1, background: 'var(--dv-surf)', color: NT.text, border: `1px solid ${NT.border}`, padding: '8px 0', borderRadius: 9, fontSize: 11, fontWeight: 500, fontFamily: PE_SANS, cursor: 'pointer' }}>{regenBusy ? 'Generating…' : '↻ Regen'}</button>
+          </div>
+        </PeField>
+      </PeSection>
+
+      <PeSection id="pos" title="Product positioning" open={openSec === 'pos'} onToggle={toggle}>
+        <PeField label="Angle">
+          <span style={{ fontSize: 10, fontWeight: 550, color: NT.green, background: NT.greenBg, padding: '3px 10px', borderRadius: 9, display: 'inline-block' }}>Next-day calm · from finding</span>
+        </PeField>
+        <PeField label="Benefit bullets (one per line)">
+          <textarea value={st.bullets.join('\n')} onChange={(e) => set({ bullets: e.target.value.split('\n') })} rows={4} style={{ ...peInput, resize: 'vertical', fontSize: 11 }} />
+        </PeField>
+      </PeSection>
+
+      <PeSection id="why" title="Why it works" open={openSec === 'why'} onToggle={toggle}>
+        <PeField label="Description (shown in the Description tab)">
+          <textarea value={st.desc} onChange={(e) => set({ desc: e.target.value })} rows={6} style={{ ...peInput, resize: 'vertical', fontSize: 11 }} />
+        </PeField>
+      </PeSection>
+
+      <PeSection id="reviews" title="Reviews & social proof" open={openSec === 'reviews'} onToggle={toggle}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <PeField label="Rating">
+            <select value={st.rating} onChange={(e) => set({ rating: parseFloat(e.target.value) })} style={{ ...peInput, cursor: 'pointer' }}>
+              <option value={5}>5.0</option><option value={4.5}>4.5</option><option value={4}>4.0</option>
+            </select>
+          </PeField>
+          <PeField label="Review count">
+            <input type="number" value={st.reviews} onChange={(e) => set({ reviews: parseInt(e.target.value) || 0 })} style={peInput} />
+          </PeField>
+        </div>
+        <div style={{ fontSize: 10.5, color: NT.text, lineHeight: 1.5 }}>Pulled from your Shopify reviews app — counts sync automatically when live.</div>
+      </PeSection>
+
+      <PeSection id="faq" title="FAQ" open={openSec === 'faq'} onToggle={toggle}>
+        {['How long until I feel it?', 'Will it make me groggy?', 'Can I take it with melatonin?'].map((q, i) => (
+          <div key={i} className="dv2-row" style={{ fontSize: 11.5, color: NT.text, padding: '7px 10px', border: `1px solid ${NT.borderS}`, borderRadius: 9, cursor: 'pointer' }}>{q}</div>
+        ))}
+        <div style={{ fontSize: 10.5, color: NT.text }}>Rendered further down the page — drag to reorder when live.</div>
+      </PeSection>
+
+      <PeSection id="sub" title="Subscribe & purchase" open={openSec === 'sub'} onToggle={toggle}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <PeField label="Subscription discount">
+            <select value={st.discount} onChange={(e) => set({ discount: parseInt(e.target.value) })} style={{ ...peInput, cursor: 'pointer' }}>
+              <option value={10}>10%</option><option value={15}>15%</option><option value={20}>20%</option>
+            </select>
+          </PeField>
+          <PeField label="One-time price">
+            <input type="number" step="0.01" value={st.price} onChange={(e) => set({ price: parseFloat(e.target.value) || 0 })} style={peInput} />
+          </PeField>
+        </div>
+        <div style={{ fontSize: 10.5, color: NT.text, lineHeight: 1.5 }}>Subscribe price updates automatically: ${(st.price * (1 - st.discount / 100)).toFixed(2)} at {st.discount}% off.</div>
+      </PeSection>
+
+      <div style={{ margin: '4px 2px 0', flexShrink: 0 }}>
+        <span style={{ fontSize: 11, fontWeight: 550, color: NT.text }}>Agent suggestions</span>
+      </div>
+      <div style={{ background: 'var(--dv-surf)', border: `1px solid ${NT.borderS}`, borderRadius: 13, boxShadow: '0 1px 3px rgba(16,24,15,0.05)', padding: '12px 15px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--dv-green-br)', display: 'block', marginTop: 5, flexShrink: 0 }}></span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11.5, fontWeight: 550, color: NT.text, lineHeight: 1.45 }}>Add a 'How magnesium works' graphic</div>
+            <div style={{ fontSize: 10.5, color: NT.text, lineHeight: 1.5, marginTop: 3 }}>Performance data shows visual explainers in this section lift CVR 1.4×</div>
+            <button onClick={() => setSuggested(true)} disabled={suggested} style={{ marginTop: 9, background: suggested ? 'var(--dv-page)' : 'var(--dv-btn-bg)', color: suggested ? NT.text : 'var(--dv-btn-fg)', border: suggested ? `1px solid ${NT.borderS}` : 'none', padding: '6px 13px', borderRadius: 9, fontSize: 10.5, fontWeight: 500, fontFamily: PE_SANS, cursor: suggested ? 'default' : 'pointer' }}>{suggested ? '✓ Queued for generation' : 'Generate it →'}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function PdpEditor() {
+  const navigate = useNavigate()
+  const [st, setSt] = useState<St>({
+    headline: PE_HEADLINES[0].h, subhead: PE_HEADLINES[0].s,
+    desc: PE_DESC_DEFAULT, bullets: PE_BULLETS_DEFAULT,
+    rating: 5, reviews: 1503, discount: 15, price: 27.99,
+  })
+  const [openSec, setOpenSec] = useState<string | null>('hero')
+  const [imgVariant, setImgVariant] = useState(0)
+  const [push, setPush] = useState<'idle' | 'pushing' | 'done'>('idle')
+  const set = (patch: Partial<St>) => { setSt((s) => ({ ...s, ...patch })); if (push === 'done') setPush('idle') }
+  const doPush = () => {
+    if (push === 'pushing') return
+    setPush('pushing')
+    setTimeout(() => setPush('done'), 2200)
+  }
+
+  return (
+    <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', background: NT.page, fontFamily: PE_SANS, overflow: 'hidden' }}>
+      <div style={{ height: 46, display: 'flex', alignItems: 'center', gap: 11, padding: '0 18px', borderBottom: `1px solid ${NT.borderS}`, background: 'var(--dv-surf)', flexShrink: 0 }}>
+        <span onClick={() => navigate('/studio')} style={{ fontSize: 11.5, color: NT.text, cursor: 'pointer', fontWeight: 500 }}>← Studio</span>
+        <span style={{ fontSize: 11.5, color: NT.text }}>/</span>
+        <span style={{ fontSize: 11.5, fontWeight: 550, color: NT.text }}>Magnesium Glycinate Complex · PDP v1</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 9.5, fontWeight: 550, color: NT.green, background: 'var(--dv-surf)', border: `1px solid ${NT.borderS}`, padding: '2px 8px', borderRadius: 8 }}>
+          <span className="pulse" style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--dv-green-br)', display: 'inline-block' }}></span>Live
+        </span>
+        <span style={{ fontSize: 10.5, color: NT.text, fontFamily: PE_MONO }}>2.4% CVR · 32d live · Next-day calm</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {push === 'pushing' && <span style={{ fontSize: 10.5, color: NT.text, fontFamily: PE_MONO }}>syncing hero · pricing · content…</span>}
+          <button style={{ background: 'var(--dv-surf)', color: NT.text, border: `1px solid ${NT.border}`, padding: '6.5px 13px', borderRadius: 9, fontSize: 11, fontWeight: 450, fontFamily: PE_SANS, cursor: 'pointer' }}>Discard changes</button>
+          {push === 'done' ? (
+            <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--dv-green)', color: '#fff', border: 'none', padding: '6.5px 15px', borderRadius: 9, fontSize: 11, fontWeight: 550, fontFamily: PE_SANS, cursor: 'pointer' }}>
+              Open in new window
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M1.5 7.5l6-6M7.5 1.5h-5M7.5 1.5v5" /></svg>
+            </button>
+          ) : (
+            <button onClick={doPush} className="dv2-btn-p" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'var(--dv-btn-bg)', color: 'var(--dv-btn-fg)', border: 'none', padding: '6.5px 15px', borderRadius: 9, fontSize: 11, fontWeight: 500, fontFamily: PE_SANS, cursor: push === 'pushing' ? 'default' : 'pointer', opacity: push === 'pushing' ? 0.85 : 1 }}>
+              {push === 'pushing' && <span className="pulse" style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--dv-btn-fg)', display: 'inline-block' }}></span>}
+              {push === 'pushing' ? 'Pushing to Shopify…' : 'Push to Shopify →'}
+            </button>
+          )}
+        </div>
+      </div>
+      <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+        <PeStorefront st={st} imgVariant={imgVariant} />
+        <PeEditor st={st} set={set} openSec={openSec} setOpenSec={setOpenSec} imgVariant={imgVariant} setImgVariant={setImgVariant} />
+      </div>
+    </div>
+  )
+}

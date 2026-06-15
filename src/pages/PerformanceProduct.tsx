@@ -1,598 +1,214 @@
-import { useNavigate, useParams } from 'react-router-dom'
-import type { ReactNode } from 'react'
+// PerformanceProduct.tsx — pipeline product-detail view (Magnesium Glycinate Complex).
+// Ported from design_handoff_nanalyt/source/Performance Detail.html (legacy standalone),
+// rebuilt onto the shared shell: local color object C → --dv-* tokens + Geist.
+// Renders content only; the shell is AppLayout.
+import { useNavigate } from 'react-router-dom'
+import { NT } from '../system/tokens'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+const PD_BAR = 'rgba(92,184,119,0.32)' // light-green spend bars (was #c8ddd0)
 
-type ActiveVerdict = 'performing' | 'stable' | 'watch'
-type PipelineVerdict = 'validated' | 'testing' | 'wind-down' | 'killed'
-type RowVerdict = 'scaling' | 'stable' | 'watch' | 'wind-down'
-type Format = 'UGC' | 'STATIC' | 'VIDEO' | 'PDP'
-
-type CreativeRow = {
-  id: string
-  format: Format
-  bg: string
-  name: string
-  angle: string
-  daysLive: string
-  spend: string
-  roas: string
-  cvr: string
-  ctr: string
-  verdict: RowVerdict
-  winner?: boolean
-}
-
-type Kpi = { label: string; value: string; delta: string; deltaSign?: 'pos' | 'neg' }
-
-type ProductDetail = {
-  slug: string
-  name: string
-  kind: 'active' | 'pipeline'
-  img?: string
-  gradient?: string
-  subline: string
-  spend: string
-  roas: string
-  cvr: string
-  activeVerdict?: ActiveVerdict
-  pipelineVerdict?: PipelineVerdict
-  vsAvg?: string
-  kpis: Kpi[]
-  bars: number[]
-  roasLine: number[]
-  creatives: CreativeRow[]
-}
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const DATES = ['Apr 19', 'Apr 26', 'May 3', 'May 10', 'May 17']
-const DATE_RANGE = 'Apr 19 – May 19'
-
-const GRID_PDP = 'grid grid-cols-[68px_1fr_80px_80px_116px_42px] items-center pl-4 pr-6 gap-0'
-const GRID_ADS = 'grid grid-cols-[68px_1fr_68px_72px_68px_64px_60px_116px_42px] items-center pl-4 pr-6 gap-0'
-
-// ─── Demo data ───────────────────────────────────────────────────────────────
-
-const MAG_CREATIVES: CreativeRow[] = [
-  {
-    id: 'm0', format: 'PDP',
-    bg: 'linear-gradient(140deg, #F0F4F8, #B8C7D6)',
-    name: 'Next-day calm landing page',
-    angle: 'v1 · Sleep-Anxiety Crossover · PDP',
-    daysLive: '32d', spend: '—', roas: '—', cvr: '2.4%', ctr: '—',
-    verdict: 'scaling',
-  },
-  {
-    id: 'm1', format: 'UGC',
-    bg: 'linear-gradient(140deg, #E5C9D5, #B96F8E)',
-    name: "Couldn't shut my brain off",
-    angle: 'Sleep-Anxiety Crossover · UGC',
-    daysLive: '22d', spend: '$6.2k', roas: '5.4×', cvr: '3.2%', ctr: '1.8%',
-    verdict: 'scaling', winner: true,
-  },
-  {
-    id: 'm2', format: 'STATIC',
-    bg: 'linear-gradient(140deg, #E5E2C9, #B9B26F)',
-    name: 'Lifestyle composition',
-    angle: 'Lifestyle & Wellness · Static',
-    daysLive: '18d', spend: '$3.4k', roas: '3.6×', cvr: '2.4%', ctr: '1.2%',
-    verdict: 'stable',
-  },
-  {
-    id: 'm3', format: 'VIDEO',
-    bg: 'linear-gradient(140deg, #D5C9E5, #8E6FB9)',
-    name: 'Tried everything for sleep',
-    angle: 'Sleep-Anxiety Crossover · Video',
-    daysLive: '14d', spend: '$2.1k', roas: '2.8×', cvr: '1.9%', ctr: '0.9%',
-    verdict: 'watch',
-  },
+// ── chart ──
+const SPEND_DATA = [
+  248, 268, 282, 295, 288, 312, 328, 318, 344, 358,
+  350, 372, 388, 378, 398, 412, 408, 428, 442, 436,
+  458, 468, 474, 488, 498, 508, 522, 512, 548, 582,
+]
+const ROAS_DATA = [
+  3.0, 3.05, 3.0, 3.15, 3.1, 3.25, 3.2, 3.38, 3.35, 3.5,
+  3.42, 3.58, 3.52, 3.7, 3.68, 3.82, 3.8, 3.92, 4.02, 4.12,
+  4.1, 4.22, 4.32, 4.42, 4.52, 4.62, 4.82, 5.02, 5.22, 5.5,
 ]
 
-const GUMMIES_CREATIVES: CreativeRow[] = [
-  {
-    id: 'g0', format: 'PDP',
-    bg: "url('/uploads/magnesium-ashwagandha-tablets-pdp.png') center/cover",
-    name: 'Magnesium + Ashwagandha tablets landing page',
-    angle: 'v1 · Sleep & Stress Combo · PDP',
-    daysLive: '32d', spend: '—', roas: '—', cvr: '2.8%', ctr: '—',
-    verdict: 'scaling',
-  },
-  {
-    id: 'g1', format: 'UGC',
-    bg: "url('/uploads/IMG_3502.jpg') center/cover",
-    name: '"Why I switched to magnesium + ashwagandha"',
-    angle: 'Sleep & Stress Combo · UGC',
-    daysLive: '28d', spend: '$1.8k', roas: '5.2×', cvr: '3.4%', ctr: '1.9%',
-    verdict: 'scaling', winner: true,
-  },
-  {
-    id: 'g2', format: 'VIDEO',
-    bg: "url('/uploads/IMG_3505.jpg') center/cover",
-    name: 'Magnesium + ashwagandha: better together',
-    angle: 'Sleep & Stress Combo · Video',
-    daysLive: '21d', spend: '$1.2k', roas: '4.8×', cvr: '3.0%', ctr: '1.6%',
-    verdict: 'scaling',
-  },
-  {
-    id: 'g3', format: 'STATIC',
-    bg: "url('/uploads/IMG_3504.jpg') center/cover",
-    name: 'The science behind stress + sleep',
-    angle: 'Sleep-Anxiety Crossover · Static',
-    daysLive: '18d', spend: '$0.8k', roas: '3.9×', cvr: '2.7%', ctr: '1.2%',
-    verdict: 'stable',
-  },
-  {
-    id: 'g4', format: 'UGC',
-    bg: "url('/uploads/IMG_3503.jpg') center/cover",
-    name: '"My new bedtime ritual"',
-    angle: 'Lifestyle & Wellness · UGC',
-    daysLive: '14d', spend: '$0.4k', roas: '2.4×', cvr: '1.8%', ctr: '0.9%',
-    verdict: 'watch',
-  },
-]
+function PerformanceChart() {
+  const W = 800, H = 172
+  const N = SPEND_DATA.length
+  const slotW = W / N
+  const barW = slotW * 0.5
+  const barPad = (slotW - barW) / 2
+  const maxSpend = Math.max(...SPEND_DATA)
+  const minRoas = Math.min(...ROAS_DATA), maxRoas = Math.max(...ROAS_DATA)
+  const roasRng = maxRoas - minRoas || 1
 
-const GUMMIES_BARS = [248, 268, 282, 295, 288, 312, 328, 318, 344, 358, 350, 372, 388, 378, 398, 412, 408, 428, 442, 436, 458, 468, 474, 488, 498, 508, 522, 512, 548, 582]
-const GUMMIES_ROAS = [3.0, 3.05, 3.0, 3.15, 3.1, 3.25, 3.2, 3.38, 3.35, 3.5, 3.42, 3.58, 3.52, 3.7, 3.68, 3.82, 3.8, 3.92, 4.02, 4.12, 4.1, 4.22, 4.32, 4.42, 4.52, 4.62, 4.82, 5.02, 5.22, 5.5]
-
-const PRODUCTS: ProductDetail[] = [
-  {
-    slug: 'magnesium-glycinate-complex',
-    name: 'Magnesium Glycinate Complex',
-    kind: 'active',
-    img: '/uploads/IMG_3472.jpg',
-    subline: 'In market · 1 PDP · 3 ads · last 30 days',
-    spend: '$12.4k', roas: '4.1×', cvr: '2.8%',
-    activeVerdict: 'performing',
-    kpis: [
-      { label: 'Impressions', value: '520k', delta: '+14%', deltaSign: 'pos' },
-      { label: 'CTR', value: '1.6%', delta: '+0.3', deltaSign: 'pos' },
-      { label: 'ATCs', value: '1,520', delta: '+12%', deltaSign: 'pos' },
-      { label: 'CPA', value: '$16.40', delta: '−$1.40', deltaSign: 'pos' },
-    ],
-    bars: [32, 38, 45, 52, 48, 58, 64, 60, 72, 78, 85, 80, 92, 98, 105, 112, 108, 118, 124, 130, 128, 138],
-    roasLine: [3.0, 2.9, 3.1, 3.2, 3.3, 3.4, 3.5, 3.5, 3.7, 3.8, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.7, 4.9, 5.0, 5.2, 5.4, 5.5],
-    creatives: MAG_CREATIVES,
-  },
-  {
-    slug: 'zzzplex-sleep-support',
-    name: 'ZzzPlex Sleep Support',
-    kind: 'active',
-    img: '/uploads/IMG_3474.jpg',
-    subline: 'In market · 1 PDP · 2 ads · last 30 days',
-    spend: '$8.6k', roas: '3.4×', cvr: '2.1%',
-    activeVerdict: 'stable',
-    kpis: [
-      { label: 'Impressions', value: '348k', delta: '+2%', deltaSign: 'pos' },
-      { label: 'CTR', value: '1.1%', delta: '+0.1', deltaSign: 'pos' },
-      { label: 'ATCs', value: '720', delta: '+1%', deltaSign: 'pos' },
-      { label: 'CPA', value: '$19.20', delta: '+$0.30', deltaSign: 'neg' },
-    ],
-    bars: [55, 58, 62, 60, 65, 68, 72, 75, 78, 76, 82, 80, 85, 88, 84, 90, 92, 89, 94, 96, 92, 98],
-    roasLine: [3.2, 3.1, 3.3, 3.4, 3.5, 3.4, 3.5, 3.3, 3.4, 3.5, 3.6, 3.5, 3.4, 3.5, 3.4, 3.5, 3.4, 3.5, 3.4, 3.4, 3.5, 3.4],
-    creatives: [
-      { id: 'z0', format: 'PDP', bg: 'linear-gradient(140deg, #E0E7FF, #8B9DCC)', name: 'Sleep quality landing page', angle: 'v1 · Sleep quality · PDP', daysLive: '28d', spend: '—', roas: '—', cvr: '2.1%', ctr: '—', verdict: 'stable' },
-      { id: 'z1', format: 'STATIC', bg: 'linear-gradient(140deg, #DBEAFE, #1E3A8A)', name: 'Restful nights, sharper mornings', angle: 'Sleep quality · Static', daysLive: '21d', spend: '$5.1k', roas: '3.6×', cvr: '2.3%', ctr: '1.4%', verdict: 'stable' },
-      { id: 'z2', format: 'UGC', bg: 'linear-gradient(140deg, #BFDBFE, #3B82F6)', name: 'Creator review walkthrough', angle: 'Sleep quality · UGC', daysLive: '16d', spend: '$3.5k', roas: '3.2×', cvr: '1.9%', ctr: '1.1%', verdict: 'stable' },
-    ],
-  },
-  {
-    slug: 'ashwagandha-plus',
-    name: 'ASHWAGANDHA+',
-    kind: 'active',
-    img: '/uploads/IMG_3476.jpg',
-    subline: 'In market · No PDP · 1 ad · last 30 days',
-    spend: '$3.6k', roas: '2.1×', cvr: '1.4%',
-    activeVerdict: 'watch',
-    kpis: [
-      { label: 'Impressions', value: '142k', delta: '-6%', deltaSign: 'neg' },
-      { label: 'CTR', value: '0.8%', delta: '-0.2', deltaSign: 'neg' },
-      { label: 'ATCs', value: '248', delta: '-10%', deltaSign: 'neg' },
-      { label: 'CPA', value: '$28.40', delta: '+$3.80', deltaSign: 'neg' },
-    ],
-    bars: [42, 46, 48, 52, 50, 54, 56, 52, 58, 54, 56, 50, 48, 52, 54, 50, 48, 52, 50, 46, 48, 44],
-    roasLine: [2.8, 2.7, 2.6, 2.7, 2.6, 2.5, 2.4, 2.5, 2.4, 2.3, 2.4, 2.3, 2.2, 2.3, 2.2, 2.1, 2.2, 2.1, 2.0, 2.1, 2.0, 2.1],
-    creatives: [
-      { id: 'a1', format: 'UGC', bg: 'linear-gradient(140deg, #FDE68A, #D97706)', name: 'Stress-sleep angle test', angle: 'Stress-Sleep · UGC', daysLive: '12d', spend: '$3.6k', roas: '2.1×', cvr: '1.4%', ctr: '0.8%', verdict: 'watch' },
-    ],
-  },
-  {
-    slug: 'magnesium-ashwagandha-gummies',
-    name: 'Magnesium + Ashwagandha Tablets',
-    kind: 'pipeline',
-    img: '/uploads/IMG_3505.jpg',
-    subline: 'In test · 1 PDP · 4 ads · last 30 days',
-    spend: '$4.2k', roas: '4.6×', cvr: '3.1%',
-    pipelineVerdict: 'validated',
-    vsAvg: '+21%',
-    kpis: [
-      { label: 'Impressions', value: '481k', delta: '+18%', deltaSign: 'pos' },
-      { label: 'CTR', value: '1.4%', delta: '+0.3', deltaSign: 'pos' },
-      { label: 'ATCs', value: '1,240', delta: '+9%', deltaSign: 'pos' },
-      { label: 'CPA', value: '$18.20', delta: '−$2.10', deltaSign: 'pos' },
-    ],
-    bars: GUMMIES_BARS,
-    roasLine: GUMMIES_ROAS,
-    creatives: GUMMIES_CREATIVES,
-  },
-]
-
-// ─── Pills ───────────────────────────────────────────────────────────────────
-
-const HEADER_PILL_BASE = 'text-[11px] font-semibold tracking-[0.01em] px-3 py-1 rounded-[20px] whitespace-nowrap'
-
-function ValidatedPill({ v }: { v: PipelineVerdict }) {
-  if (v === 'validated') return <span className={`${HEADER_PILL_BASE} bg-brand text-white`}>VALIDATED</span>
-  if (v === 'testing') return <span className={`${HEADER_PILL_BASE} bg-surf-2 text-ink`}>TESTING</span>
-  if (v === 'wind-down') return <span className={`${HEADER_PILL_BASE} bg-warn-bg text-warn`}>WIND DOWN</span>
-  return <span className={`${HEADER_PILL_BASE} bg-danger-bg text-danger`}>KILLED</span>
-}
-
-function ActivePill({ v }: { v: ActiveVerdict }) {
-  if (v === 'performing') return <span className={`${HEADER_PILL_BASE} bg-brand-bg text-brand`}>PERFORMING</span>
-  if (v === 'stable') return <span className={`${HEADER_PILL_BASE} bg-surf-2 text-ink`}>STABLE</span>
-  return <span className={`${HEADER_PILL_BASE} bg-warn-bg text-warn`}>WATCH</span>
-}
-
-const ROW_PILL_BASE = 'text-[10px] font-semibold tracking-[0.04em] px-[9px] py-1 rounded-[4px] whitespace-nowrap inline-block'
-
-function RowPill({ v }: { v: RowVerdict }) {
-  if (v === 'scaling') return <span className={`${ROW_PILL_BASE} bg-brand-bg text-brand`}>▲ SCALING</span>
-  if (v === 'stable') return <span className={`${ROW_PILL_BASE} bg-surf-2 text-ink`}>STABLE</span>
-  if (v === 'watch') return <span className={`${ROW_PILL_BASE} bg-warn-bg text-warn`}>WATCH</span>
-  return <span className={`${ROW_PILL_BASE} bg-danger-bg text-danger`}>WIND DOWN</span>
-}
-
-// ─── Chart ───────────────────────────────────────────────────────────────────
-
-function PerformanceChart({ bars, roasLine }: { bars: number[]; roasLine: number[] }) {
-  const W = 800
-  const H = 148
-  const slotW = W / bars.length
-  const barW = slotW * 0.52
-  const maxBar = Math.max(...bars)
-  const minR = Math.min(...roasLine)
-  const maxR = Math.max(...roasLine)
-  const rngR = maxR - minR || 1
-
-  const pts = roasLine.map((v, i) => ({
-    x: i * slotW + slotW / 2,
-    y: H * 0.06 + (1 - (v - minR) / rngR) * (H * 0.8),
+  const bars = SPEND_DATA.map((v, i) => ({
+    x: i * slotW + barPad, w: barW,
+    h: (v / maxSpend) * H * 0.86,
+    y: H - (v / maxSpend) * H * 0.86,
   }))
-
-  let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`
-  for (let i = 1; i < pts.length; i++) {
-    const p = pts[i - 1]
-    const c = pts[i]
+  const roasPts = ROAS_DATA.map((v, i) => ({
+    x: i * slotW + slotW / 2,
+    y: H * 0.06 + (1 - (v - minRoas) / roasRng) * (H * 0.8),
+  }))
+  let path = `M ${roasPts[0].x} ${roasPts[0].y}`
+  for (let i = 1; i < roasPts.length; i++) {
+    const p = roasPts[i - 1], c = roasPts[i]
     const dx = (c.x - p.x) / 3
-    d += ` C ${(p.x + dx).toFixed(1)} ${p.y.toFixed(1)} ${(c.x - dx).toFixed(1)} ${c.y.toFixed(1)} ${c.x.toFixed(1)} ${c.y.toFixed(1)}`
+    path += ` C ${p.x + dx} ${p.y} ${c.x - dx} ${c.y} ${c.x} ${c.y}`
   }
+  const gridYs = [0.25, 0.5, 0.75].map((f) => f * H)
 
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block" style={{ height: 148 }}>
-      {[0.25, 0.5, 0.75].map(f => (
-        <line key={f} x1="0" x2={W} y1={f * H} y2={f * H} stroke="#e0ddd8" strokeWidth="0.8" strokeDasharray="3 5" />
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: 180 }}>
+      {gridYs.map((y, i) => (
+        <line key={i} x1={0} y1={y} x2={W} y2={y} stroke="var(--dv-grid)" strokeWidth="0.8" strokeDasharray="3 5" />
       ))}
-      {bars.map((v, i) => {
-        const bh = (v / maxBar) * H * 0.86
-        const by = H - bh
-        const x = i * slotW + (slotW - barW) / 2
-        return <rect key={i} x={x.toFixed(1)} y={by.toFixed(1)} width={barW.toFixed(1)} height={bh.toFixed(1)} rx={2} fill="#c8ddd0" />
-      })}
-      <path d={d} fill="none" stroke="#2d5c3a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      {bars.map((b, i) => (
+        <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill={PD_BAR} rx="2" />
+      ))}
+      <path d={path} fill="none" stroke="var(--dv-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
 
-// ─── Atoms ───────────────────────────────────────────────────────────────────
-
-const FMT_BG: Record<Format, string> = {
-  UGC: '#2d5c3a',
-  STATIC: '#4a4740',
-  VIDEO: '#6b45a8',
-  PDP: '#1e5faa',
-}
-
-function FmtPill({ fmt }: { fmt: Format }) {
-  return (
-    <span
-      className="absolute top-[5px] left-[5px] text-[8px] font-bold text-white px-[5px] py-[2px] rounded-[3px] leading-[12px] z-10"
-      style={{ background: FMT_BG[fmt], letterSpacing: '0.05em' }}
-    >
-      {fmt}
-    </span>
-  )
-}
-
-function PlayOverlay() {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div className="w-[22px] h-[22px] rounded-full bg-black/40 border border-white/50 flex items-center justify-center text-white">
-        <svg width="7" height="8" viewBox="0 0 7 8" fill="currentColor">
-          <path d="M1 0.5l5.5 3.5L1 7.5V0.5z" />
-        </svg>
-      </div>
-    </div>
-  )
-}
-
-function CreativeThumb({ row }: { row: CreativeRow }) {
-  return (
-    <div className="relative w-14 h-14 rounded-[7px] overflow-hidden shrink-0" style={{ background: row.bg }}>
-      <FmtPill fmt={row.format} />
-      {(row.format === 'UGC' || row.format === 'VIDEO') && <PlayOverlay />}
-    </div>
-  )
-}
-
-function RowActions() {
-  return (
-    <div
-      className="flex justify-end gap-1.5 text-ink transition-opacity"
-      style={{ opacity: 0.38 }}
-      onMouseEnter={e => ((e.currentTarget as HTMLDivElement).style.opacity = '0.7')}
-      onMouseLeave={e => ((e.currentTarget as HTMLDivElement).style.opacity = '0.38')}
-    >
-      <svg width="10" height="11" viewBox="0 0 10 11" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-        <line x1="2" y1="1" x2="2" y2="10" />
-        <line x1="8" y1="1" x2="8" y2="10" />
-      </svg>
-      <span className="text-[14px] font-bold font-mono leading-none">⋯</span>
-    </div>
-  )
-}
-
-function ColHdr({ children, creative }: { children: ReactNode; creative?: boolean }) {
-  return (
-    <div className={`text-[9px] font-medium uppercase tracking-[0.06em] text-ink ${creative ? 'pl-3' : ''}`}>
-      {children}
-    </div>
-  )
-}
-
-// ─── Product detail (handles both active + pipeline) ────────────────────────
-
-function ProductDetail({ product }: { product: ProductDetail }) {
-  const isPipeline = product.kind === 'pipeline'
-  const showPromote = product.pipelineVerdict === 'validated'
-  const pdpRows = product.creatives.filter(c => c.format === 'PDP')
-  const adRows = product.creatives.filter(c => c.format !== 'PDP')
-  const deltaCls = product.vsAvg && product.vsAvg.startsWith('-') ? 'text-danger' : 'text-brand'
-
-  return (
-    <>
-      {/* Product header */}
-      <section className="bg-white border border-line rounded-[10px] px-[22px] py-5 flex items-center gap-0">
-        <div className="flex items-start gap-3.5 flex-1 min-w-0">
-          {product.img ? (
-            <img
-              src={product.img}
-              alt=""
-              className="w-16 h-16 rounded-[10px] object-cover shrink-0 mt-px border border-line"
-            />
-          ) : (
-            <div
-              className="w-16 h-16 rounded-[10px] overflow-hidden shrink-0 mt-px border border-line"
-              style={{ background: 'linear-gradient(140deg, #f0ede8, #c8c1b5)' }}
-            />
-          )}
-          <div className="pt-px">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.09em] text-brand opacity-70 mb-[5px]">
-              {isPipeline ? 'Pipeline Product' : 'Product'}
-            </p>
-            <div className="flex items-center gap-2.5 flex-wrap mb-1">
-              <h1 className="text-[18px] font-medium text-ink tracking-[-0.025em] leading-none">{product.name}</h1>
-              {isPipeline && product.pipelineVerdict && <ValidatedPill v={product.pipelineVerdict} />}
-              {!isPipeline && product.activeVerdict && <ActivePill v={product.activeVerdict} />}
-            </div>
-            <p className="text-[11px] text-ink mb-[7px]">{product.subline}</p>
-            {product.vsAvg && (
-              <p className="text-[12px] text-ink">
-                vs catalog avg ROAS: <strong className={`font-semibold ${deltaCls}`}>{product.vsAvg}</strong>
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className={`flex shrink-0 ${showPromote ? 'flex-col items-end gap-3.5' : 'items-center'}`}>
-          <div className="flex">
-            {[
-              { label: 'Spend', value: product.spend },
-              { label: 'Blended ROAS', value: product.roas },
-              { label: 'Avg CVR', value: product.cvr },
-            ].map((k, i) => (
-              <div
-                key={k.label}
-                className="text-right pl-[26px]"
-                style={i > 0 ? { borderLeft: '1px solid #e8e5e0', marginLeft: 26 } : undefined}
-              >
-                <p className="text-[9px] font-semibold uppercase tracking-[0.08em] text-brand opacity-[0.65] mb-[5px]">
-                  {k.label}
-                </p>
-                <p className="text-[22px] font-medium text-ink font-mono leading-none tracking-[-0.035em]">
-                  {k.value}
-                </p>
-              </div>
-            ))}
-          </div>
-          {showPromote && (
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 bg-brand text-white border-0 rounded-[7px] px-4 py-2 text-[12px] font-medium tracking-[-0.01em] whitespace-nowrap cursor-pointer hover:opacity-90"
-            >
-              Promote to catalog
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2 5.5h7M6.5 3L9 5.5 6.5 8" />
-              </svg>
-            </button>
-          )}
-        </div>
-      </section>
-
-      {/* Chart + KPI sidebar */}
-      <div className="grid grid-cols-[1fr_196px] gap-3.5">
-        <section className="bg-white border border-line rounded-[10px] px-5 pt-4 pb-[13px]">
-          <div className="flex items-center mb-4">
-            <span className="text-[13px] font-medium text-ink tracking-[-0.01em] mr-3.5">Performance over time</span>
-            <div className="flex gap-3">
-              <span className="flex items-center gap-1.5 text-[11px] text-ink">
-                <span className="block w-4 rounded-[2px] shrink-0" style={{ height: 2.5, background: '#2d5c3a' }} />
-                ROAS
-              </span>
-              <span className="flex items-center gap-1.5 text-[11px] text-ink">
-                <span className="block w-3 h-2.5 rounded-[2px] shrink-0" style={{ background: '#c8ddd0' }} />
-                Spend
-              </span>
-            </div>
-            <span className="ml-auto text-[11px] text-ink font-mono">{DATE_RANGE}</span>
-          </div>
-          <PerformanceChart bars={product.bars} roasLine={product.roasLine} />
-          <div className="flex justify-between mt-[9px]">
-            {DATES.map(d => (
-              <span key={d} className="text-[10px] text-ink font-mono">{d}</span>
-            ))}
-          </div>
-        </section>
-
-        <aside className="bg-white border border-line rounded-[10px] overflow-hidden flex flex-col">
-          {product.kpis.map((k, i) => (
-            <div
-              key={k.label}
-              className={`px-3.5 py-[11px] flex-1 flex flex-col justify-center ${i > 0 ? 'border-t-[0.5px] border-line' : ''}`}
-            >
-              <div className="text-[9px] font-semibold uppercase tracking-[0.07em] text-ink mb-1.5">{k.label}</div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-[17px] font-medium text-ink font-mono leading-none tracking-[-0.02em]">{k.value}</span>
-                <span className={`text-[11px] font-medium font-mono ${k.deltaSign === 'neg' ? 'text-danger' : 'text-brand'}`}>{k.delta}</span>
-              </div>
-            </div>
-          ))}
-        </aside>
-      </div>
-
-      {/* Creatives table */}
-      <section className="bg-white border border-line rounded-[10px] overflow-hidden">
-        {pdpRows.length > 0 && (
-          <>
-            <div className="px-4 pt-[11px] pb-[9px] flex items-center gap-1.5">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Product page</span>
-              <span className="text-[10px] font-semibold text-ink font-mono">· {pdpRows.length}</span>
-            </div>
-            {pdpRows.map(row => (
-              <div
-                key={row.id}
-                className={`${GRID_PDP} pt-[11px] pb-[11px] border-b border-line cursor-pointer transition-colors hover:bg-black/[0.02]`}
-              >
-                <CreativeThumb row={row} />
-                <div className="pl-3 min-w-0">
-                  <div className="flex items-center gap-[7px] mb-0.5 flex-wrap">
-                    <span className="text-[13px] font-medium text-ink">{row.name}</span>
-                  </div>
-                  <span className="text-[11px] text-ink">{row.angle}</span>
-                </div>
-                <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.daysLive}</span>
-                <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.cvr}</span>
-                <RowPill v={row.verdict} />
-                <RowActions />
-              </div>
-            ))}
-          </>
-        )}
-
-        {adRows.length > 0 && (
-          <>
-            <div className="px-4 pt-[11px] pb-[9px] flex items-center gap-1.5">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Ads</span>
-              <span className="text-[10px] font-semibold text-ink font-mono">· {adRows.length}</span>
-              <span className="text-[11px] text-ink ml-0.5">Sending traffic to the page above:</span>
-            </div>
-            <div className={`${GRID_ADS} pt-2 pb-2 border-b border-line-soft`}>
-              <div />
-              <ColHdr creative>Creative</ColHdr>
-              <ColHdr>Days Live</ColHdr>
-              <ColHdr>Spend</ColHdr>
-              <ColHdr>ROAS</ColHdr>
-              <ColHdr>CVR</ColHdr>
-              <ColHdr>CTR</ColHdr>
-              <ColHdr>Verdict</ColHdr>
-              <div />
-            </div>
-            {adRows.map((row, i, arr) => {
-              const last = i === arr.length - 1
-              return (
-                <div
-                  key={row.id}
-                  className={`${GRID_ADS} pt-[11px] pb-[11px] ${last ? '' : 'border-b border-line-soft'} cursor-pointer transition-colors hover:bg-black/[0.02]`}
-                >
-                  <CreativeThumb row={row} />
-                  <div className="pl-3 min-w-0">
-                    <div className="flex items-center gap-[7px] mb-0.5 flex-wrap">
-                      <span className="text-[13px] font-medium text-ink">{row.name}</span>
-                      {row.winner && (
-                        <span className="text-[9px] font-semibold tracking-[0.05em] bg-brand-bg text-brand px-[7px] py-[2px] rounded-[3px]">
-                          WINNER
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[11px] text-ink">{row.angle}</span>
-                  </div>
-                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.daysLive}</span>
-                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.spend}</span>
-                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.roas}</span>
-                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.cvr}</span>
-                  <span className="text-[13px] text-ink font-mono tracking-[-0.01em]">{row.ctr}</span>
-                  <RowPill v={row.verdict} />
-                  <RowActions />
-                </div>
-              )
-            })}
-          </>
-        )}
-      </section>
-    </>
-  )
-}
-
-// ─── Page ────────────────────────────────────────────────────────────────────
-
-function PerformanceProduct() {
-  const navigate = useNavigate()
-  const { slug } = useParams()
-  const product = PRODUCTS.find(p => p.slug === slug)
-
-  if (!product) {
-    return (
-      <div className="font-sans">
-        <div className="max-w-[1200px] mx-auto px-6 pt-5 pb-12">
-          <button
-            onClick={() => navigate('/performance')}
-            className="text-[12px] font-medium text-ink bg-transparent border-0 cursor-pointer hover:opacity-70 mb-[18px]"
-          >
-            ← Back to Performance
-          </button>
-          <div className="bg-white border-[0.5px] border-[#E5E7EB] rounded-[10px] px-6 py-12 flex items-center justify-center">
-            <div className="text-[13px] text-ink">Product not found · <span className="font-mono">{slug}</span></div>
-          </div>
-        </div>
-      </div>
-    )
+// ── pills ──
+function StatusPill({ status }: { status: string }) {
+  const map: Record<string, { bg: string; color: string; label: string }> = {
+    performing: { bg: NT.greenBg, color: NT.green, label: '▲ Performing' },
+    stable: { bg: 'var(--dv-page)', color: NT.mid, label: 'Stable' },
+    watch: { bg: 'rgba(168,116,42,0.13)', color: NT.yellow, label: 'Watch' },
   }
+  const s = map[status] || map.stable
+  return <span style={{ fontSize: 11, fontWeight: 500, background: s.bg, color: s.color, padding: '4px 11px', borderRadius: 20, whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>{s.label}</span>
+}
+function VerdictPill({ verdict }: { verdict: string }) {
+  const map: Record<string, { bg: string; color: string; label: string }> = {
+    scaling: { bg: NT.greenBg, color: NT.green, label: '▲ SCALING' },
+    stable: { bg: 'var(--dv-page)', color: NT.mid, label: 'STABLE' },
+    watch: { bg: 'rgba(168,116,42,0.13)', color: NT.yellow, label: 'WATCH' },
+    winddown: { bg: 'rgba(196,80,74,0.1)', color: NT.red, label: '▼ WIND DOWN' },
+  }
+  const s = map[verdict] || map.stable
+  return <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.035em', background: s.bg, color: s.color, padding: '4px 9px', borderRadius: 4, whiteSpace: 'nowrap' }}>{s.label}</span>
+}
 
+const FORMAT_COLORS: Record<string, string> = { UGC: '#2d5c3a', STATIC: '#4a4740', VIDEO: '#6b45a8', PDP: '#1e5faa' }
+function Thumb({ gradient, format, hasPlay }: { gradient: string; format: string; hasPlay?: boolean }) {
   return (
-    <div className="font-sans">
-      <div className="max-w-[1200px] mx-auto px-6 pt-5 pb-12">
-        <button
-          onClick={() => navigate('/performance')}
-          className="text-[12px] font-medium text-ink bg-transparent border-0 cursor-pointer hover:opacity-70 mb-[18px]"
-        >
-          ← Back to Performance
-        </button>
-        <div className="flex flex-col gap-3.5">
-          <ProductDetail product={product} />
+    <div style={{ width: 56, height: 56, borderRadius: 7, background: gradient, position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+      <span style={{ position: 'absolute', top: 5, left: 5, fontSize: 8, fontWeight: 700, letterSpacing: '0.05em', background: FORMAT_COLORS[format] || 'rgba(0,0,0,0.55)', color: '#fff', padding: '2px 5px', borderRadius: 3, zIndex: 1, lineHeight: '13px' }}>{format}</span>
+      {hasPlay && (
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(0,0,0,0.40)', border: '1px solid rgba(255,255,255,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="7" height="8" viewBox="0 0 7 8" fill="white"><path d="M1 0.5l5.5 3.5L1 7.5V0.5z" /></svg>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
 
-export default PerformanceProduct
+const COL_GRID = '72px 1fr 76px 76px 76px 68px 68px 118px 48px'
+type Creative = { id: number; gradient: string; format: string; hasPlay: boolean; name: string; winner: boolean; subline: string; days: string; spend: string; roas: string; cvr: string; ctr: string; verdict: string; winnerRow: boolean; isLast: boolean }
+const CREATIVES: Creative[] = [
+  { id: 1, gradient: 'linear-gradient(140deg,#f0a2c2 0%,#9b62bb 100%)', format: 'UGC', hasPlay: true, name: '"Couldn\'t shut my brain off"', winner: true, subline: 'Sleep-Anxiety Crossover · UGC', days: '22d', spend: '$6.2k', roas: '5.4×', cvr: '3.2%', ctr: '1.8%', verdict: 'scaling', winnerRow: true, isLast: false },
+  { id: 2, gradient: 'linear-gradient(140deg,#d4c4a0 0%,#a88c60 100%)', format: 'STATIC', hasPlay: false, name: 'Lifestyle composition', winner: false, subline: 'Lifestyle & Wellness · Static', days: '18d', spend: '$3.4k', roas: '3.6×', cvr: '2.4%', ctr: '1.2%', verdict: 'stable', winnerRow: false, isLast: false },
+  { id: 3, gradient: 'linear-gradient(140deg,#ab8acc 0%,#6540aa 100%)', format: 'VIDEO', hasPlay: true, name: 'Tried everything for sleep', winner: false, subline: 'Sleep-Anxiety Crossover · Video', days: '14d', spend: '$2.1k', roas: '2.8×', cvr: '1.9%', ctr: '0.9%', verdict: 'watch', winnerRow: false, isLast: false },
+  { id: 4, gradient: 'linear-gradient(140deg,#a8cce8 0%,#5d8ec8 100%)', format: 'PDP', hasPlay: false, name: 'Next-day calm landing page', winner: false, subline: 'v1 · Sleep-Anxiety Crossover · PDP', days: '32d', spend: '—', roas: '—', cvr: '2.4%', ctr: '—', verdict: 'scaling', winnerRow: false, isLast: true },
+]
+
+function CreativeTable() {
+  const HEADERS = ['CREATIVE', 'DAYS LIVE', 'SPEND', 'ROAS', 'CVR', 'CTR', 'VERDICT']
+  const MV = ({ v }: { v: string }) => <span style={{ fontSize: 13, color: v === '—' ? NT.dim : NT.text, fontFamily: NT.mono, letterSpacing: '-0.01em' }}>{v}</span>
+  return (
+    <div style={{ background: 'var(--dv-surf)', border: `1px solid ${NT.border}`, borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: COL_GRID, alignItems: 'center', padding: '10px 16px', borderBottom: `1px solid ${NT.border}` }}>
+        <div></div>
+        {HEADERS.map((h, i) => (
+          <div key={h} style={{ fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: NT.dim, paddingLeft: i === 0 ? 12 : 0 }}>{h}</div>
+        ))}
+        <div></div>
+      </div>
+      {CREATIVES.map((row) => (
+        <div key={row.id} className="dv2-row" style={{ display: 'grid', gridTemplateColumns: COL_GRID, alignItems: 'center', padding: '11px 16px',
+          background: row.winnerRow ? 'var(--dv-row-top)' : 'transparent', borderBottom: row.isLast ? 'none' : `1px solid ${NT.borderS}`, cursor: 'pointer' }}>
+          <Thumb gradient={row.gradient} format={row.format} hasPlay={row.hasPlay} />
+          <div style={{ paddingLeft: 12, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', marginBottom: 2 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: NT.text, letterSpacing: '-0.01em' }}>{row.name}</span>
+              {row.winner && <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.05em', background: NT.greenBg, color: NT.green, padding: '2px 7px', borderRadius: 3, whiteSpace: 'nowrap' }}>WINNER</span>}
+            </div>
+            <div style={{ fontSize: 11, color: NT.dim }}>{row.subline}</div>
+          </div>
+          <MV v={row.days} />
+          <MV v={row.spend} />
+          <MV v={row.roas} />
+          <MV v={row.cvr} />
+          <MV v={row.ctr} />
+          <div><VerdictPill verdict={row.verdict} /></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
+            <span style={{ color: NT.dim, cursor: 'pointer', display: 'flex', opacity: 0.5 }}>
+              <svg width="11" height="12" viewBox="0 0 11 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><line x1="2.5" y1="1.5" x2="2.5" y2="10.5" /><line x1="8.5" y1="1.5" x2="8.5" y2="10.5" /></svg>
+            </span>
+            <span style={{ color: NT.dim, cursor: 'pointer', opacity: 0.5, fontSize: 15, fontWeight: 700, letterSpacing: '0.06em', lineHeight: 1 }}>⋯</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function PerformanceProduct() {
+  const navigate = useNavigate()
+  const CARD = { background: 'var(--dv-surf)', border: `1px solid ${NT.border}`, borderRadius: 10 }
+  const DATE_LABELS = ['Apr 19', 'Apr 26', 'May 3', 'May 10', 'May 17']
+
+  return (
+    <div style={{ maxWidth: 980 }}>
+      <span onClick={() => navigate('/performance')} className="dv2-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, color: NT.dim, cursor: 'pointer', marginBottom: 16, letterSpacing: '-0.01em' }}>
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5.5H2M4.5 3L2 5.5 4.5 8" /></svg>
+        <span>Back to Performance</span>
+      </span>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {/* Product header card */}
+        <div style={{ ...CARD, display: 'flex', alignItems: 'center', padding: '16px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 8, overflow: 'hidden', flexShrink: 0, border: `1px solid ${NT.border}`, background: 'var(--dv-page)' }}>
+              <img src="/uploads/IMG_3472.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} alt="Magnesium Glycinate Complex" />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: NT.dim, marginBottom: 5 }}>PRODUCT</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
+                <span style={{ fontSize: 18, fontWeight: 500, color: NT.text, letterSpacing: '-0.025em', lineHeight: 1 }}>Magnesium Glycinate Complex</span>
+                <StatusPill status="performing" />
+              </div>
+              <div style={{ fontSize: 11, color: NT.dim }}>In market · 1 PDP · 3 ads · last 30 days</div>
+            </div>
+          </div>
+          <div style={{ width: 1, height: 48, background: NT.borderS, flexShrink: 0, margin: '0 28px' }}></div>
+          <div style={{ display: 'flex', gap: 28, flexShrink: 0, alignItems: 'flex-start' }}>
+            {[{ label: 'SPEND', value: '$12.4k' }, { label: 'BLENDED ROAS', value: '4.1×' }, { label: 'AVG CVR', value: '2.8%' }].map((m, i) => (
+              <div key={i} style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: NT.dim, marginBottom: 5 }}>{m.label}</div>
+                <div style={{ fontSize: 22, fontWeight: 500, color: NT.text, fontFamily: NT.mono, letterSpacing: '-0.03em', lineHeight: 1 }}>{m.value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Performance over time */}
+        <div style={{ ...CARD, padding: '16px 20px 14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 18 }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: NT.text, letterSpacing: '-0.01em', marginRight: 14 }}>Performance over time</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 18, height: 2.5, background: 'var(--dv-green)', borderRadius: 2, flexShrink: 0 }}></div>
+                <span style={{ fontSize: 11, color: NT.mid }}>ROAS</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 12, height: 11, background: PD_BAR, borderRadius: 2, flexShrink: 0 }}></div>
+                <span style={{ fontSize: 11, color: NT.mid }}>Spend</span>
+              </div>
+            </div>
+            <span style={{ marginLeft: 'auto', fontSize: 11, color: NT.dim, fontFamily: NT.mono }}>Apr 19 – May 19</span>
+          </div>
+          <PerformanceChart />
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 9, paddingLeft: 1, paddingRight: 1 }}>
+            {DATE_LABELS.map((d, i) => <span key={i} style={{ fontSize: 10, color: NT.dim, fontFamily: NT.mono }}>{d}</span>)}
+          </div>
+        </div>
+
+        <CreativeTable />
+      </div>
+    </div>
+  )
+}
