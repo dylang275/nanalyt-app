@@ -39,6 +39,7 @@ export default function FindingDetail() {
   const typeTone = FD_TONE_D[NANALYT_FINDING_TYPES[f.type].tone]
   const [genOpen, setGenOpen] = useState(false)
   const takeAction = () => setGenOpen(true)
+  const askNanalyt = () => window.dispatchEvent(new CustomEvent('nanalyt-chat-open', { detail: { context: 'Finding · ' + (f.type === 'New angle' ? 'Next-day calm' : f.product2 || f.headline.split(' ').slice(0, 6).join(' ')) } }))
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -201,7 +202,7 @@ export default function FindingDetail() {
                 )
               })}
             </div>
-            <div className="dv2-card-h" style={{ ...ntCard, padding: '13px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+            <div onClick={askNanalyt} className="dv2-card-h" style={{ ...ntCard, padding: '13px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
               <span style={{ fontSize: 12.5, fontWeight: 500, color: NT.text }}>Ask Nanalyt about this finding</span>
               <span style={{ fontSize: 12, color: NT.text }}>→</span>
             </div>
@@ -234,7 +235,7 @@ export default function FindingDetail() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           {[`Run full intelligence pass on ${f.product ? f.product.name : 'this category'}`, 'Ask Nanalyt about this finding'].map((t) => (
-            <div key={t} className="dv2-card-h" style={{ ...ntCard, padding: '13px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+            <div key={t} onClick={askNanalyt} className="dv2-card-h" style={{ ...ntCard, padding: '13px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
               <span style={{ fontSize: 12.5, fontWeight: 500, color: NT.text }}>{t}</span>
               <span style={{ fontSize: 12, color: NT.text }}>→</span>
             </div>

@@ -275,10 +275,13 @@ function AskNanalytPanel({ context, onClose }: { context?: string; onClose: () =
 
 export function AskNanalytHost({ context }: { context?: string }) {
   const [open, setOpen] = useState(false)
+  const [ctxOverride, setCtxOverride] = useState<string | undefined>(undefined)
   useEffect(() => {
-    const onOpen = () => setOpen(true)
+    // Opened from the top-bar search (no detail) or a specific surface
+    // (e.g. a finding's "Ask Nanalyt about this finding" → detail.context).
+    const onOpen = (e: Event) => { setCtxOverride((e as CustomEvent).detail?.context); setOpen(true) }
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setOpen((o) => !o) }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setCtxOverride(undefined); setOpen((o) => !o) }
       if (e.key === 'Escape') setOpen(false)
     }
     window.addEventListener('nanalyt-chat-open', onOpen)
@@ -286,5 +289,5 @@ export function AskNanalytHost({ context }: { context?: string }) {
     return () => { window.removeEventListener('nanalyt-chat-open', onOpen); window.removeEventListener('keydown', onKey) }
   }, [])
   if (!open) return null
-  return <AskNanalytPanel context={context} onClose={() => setOpen(false)} />
+  return <AskNanalytPanel context={ctxOverride || context} onClose={() => setOpen(false)} />
 }
