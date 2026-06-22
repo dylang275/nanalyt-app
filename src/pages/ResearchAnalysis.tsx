@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { NT, ntCard } from '../system/tokens'
 import { HeroChart } from '../components/HeroChart'
 import { SOURCE_DRAWERS } from '../components/source-boards'
+import AngleMap from '../components/AngleMap'
 
 const AP_MONO = NT.mono
 const AP_IMG = '/uploads/Screenshot 2026-05-11 at 9.00.15 PM.png'
@@ -185,11 +186,12 @@ function ApEconCard() {
   )
 }
 
-function ApAnglesCard() {
+function ApAnglesCard({ onExpand }: { onExpand: () => void }) {
   return (
     <div style={{ ...ntCard, overflow: 'hidden' }}>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '13px 22px 11px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 22px 11px' }}>
         <span style={{ fontSize: 13, fontWeight: 550, color: NT.text }}>Positioning angles</span>
+        <span className="dv2-link" onClick={onExpand} style={{ fontSize: 11, fontWeight: 500, color: NT.green, cursor: 'pointer' }}>Expand ↗</span>
         <span style={{ marginLeft: 'auto', fontSize: 11, color: NT.text, fontFamily: AP_MONO }}>5 classified</span>
       </div>
       <div style={{ padding: '4px 22px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -239,6 +241,7 @@ function ApSourcesCard({ onOpen }: { onOpen: (key: string) => void }) {
 export default function ResearchAnalysis() {
   const navigate = useNavigate()
   const [drawer, setDrawer] = useState<string | null>(null)
+  const [angleMap, setAngleMap] = useState(false)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setDrawer(null) }
     window.addEventListener('keydown', onKey)
@@ -269,7 +272,7 @@ export default function ResearchAnalysis() {
             <div style={{ fontSize: 11.5, color: NT.text, lineHeight: 1.55, marginBottom: 11 }}>Add to pipeline and generate a campaign package to start validation testing.</div>
             <button className="dv2-btn-p" style={{ background: 'var(--dv-btn-bg)', color: 'var(--dv-btn-fg)', border: 'none', padding: '8px 16px', borderRadius: 9, fontSize: 12, fontWeight: 500, fontFamily: NT.sans, cursor: 'pointer' }}>Add to pipeline</button>
           </div>
-          <ApAnglesCard />
+          <ApAnglesCard onExpand={() => setAngleMap(true)} />
           <ApSourcesCard onOpen={(k) => setDrawer(k)} />
         </div>
       </div>
@@ -279,6 +282,8 @@ export default function ResearchAnalysis() {
           {DrawerComp({ onClose: () => setDrawer(null), onSwitch: (k) => setDrawer(k) })}
         </div>
       )}
+
+      <AngleMap open={angleMap} onClose={() => setAngleMap(false)} />
     </>
   )
 }
