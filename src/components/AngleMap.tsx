@@ -134,7 +134,9 @@ function AmmBand({ children, right }: { children: ReactNode; right?: ReactNode }
 }
 
 function AmmDonutBig() {
-  const W = 434, H = 320, cx = 217, cy = 146, stroke = 40, r = 92
+  // Canvas is wider/taller than the donut (r=92) so the leader-line labels have
+  // clearance to render larger without clipping the edges or crowding the band below.
+  const W = 448, H = 340, cx = 224, cy = 146, stroke = 40, r = 92
   const C = 2 * Math.PI * r, GAP = 3
   const segs = AMM_ANGLES.filter((a) => a.adShare > 0)
   const polar = (R: number, pct: number): [number, number] => { const t = (pct / 100) * 2 * Math.PI; return [cx + R * Math.sin(t), cy - R * Math.cos(t)] }
@@ -165,8 +167,8 @@ function AmmDonutBig() {
           <g key={i}>
             <text x={ix} y={iy} textAnchor="middle" dominantBaseline="central" fontFamily={AMM_MONO} fontSize="14" fontWeight="600" fill="#fff">{a.adShare}%</text>
             <polyline points={`${ox},${oy} ${ex},${ey} ${isBottom ? ex : tx},${ey}`} fill="none" stroke="var(--dv-border)" strokeWidth="1" />
-            <text x={tx} y={isBottom ? ey + 13 : ey - 6} textAnchor={anchor} dominantBaseline="central" fontFamily={AMM_SANS} fontSize="12.5" fontWeight="550" fill="var(--dv-text)">{a.name}</text>
-            <text x={tx} y={isBottom ? ey + 27 : ey + 9} textAnchor={anchor} dominantBaseline="central" fontFamily={AMM_MONO} fontSize="10.5" fontWeight="500" fill="var(--dv-text)">{a.buyer}% buyers</text>
+            <text x={tx} y={isBottom ? ey + 14 : ey - 7} textAnchor={anchor} dominantBaseline="central" fontFamily={AMM_SANS} fontSize="14.5" fontWeight="550" fill="var(--dv-text)">{a.name}</text>
+            <text x={tx} y={isBottom ? ey + 30 : ey + 10} textAnchor={anchor} dominantBaseline="central" fontFamily={AMM_MONO} fontSize="12.5" fontWeight="500" fill="var(--dv-text)">{a.buyer}% buyers</text>
           </g>
         )
       })}
@@ -317,7 +319,7 @@ export default function AngleMap({ open, onClose }: { open: boolean; onClose: ()
               const isFocus = i === focusIdx
               const isSel = selected.has(i)
               return (
-                <div key={a.name} className="dv2-row" onClick={() => setFocusIdx(i)} style={{ padding: '7px 22px', borderBottom: `1px solid ${NT.borderS}`, cursor: 'pointer', background: isFocus ? 'var(--dv-row-top)' : 'transparent', borderLeft: isFocus ? '3px solid var(--dv-green-br)' : '3px solid transparent' }}>
+                <div key={a.name} className="dv2-row" onClick={() => setFocusIdx(i)} style={{ padding: '6px 22px', borderBottom: `1px solid ${NT.borderS}`, cursor: 'pointer', background: isFocus ? 'var(--dv-row-top)' : 'transparent', borderLeft: isFocus ? '3px solid var(--dv-green-br)' : '3px solid transparent' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 5 }}>
                     <span onClick={(e) => { e.stopPropagation(); toggle(i) }} style={{ display: 'flex' }}><AmmCheck on={isSel} /></span>
                     <span style={{ width: 9, height: 9, borderRadius: 3, background: a.adShare > 0 ? a.color : 'transparent', border: a.adShare > 0 ? 'none' : `1.5px dashed ${NT.red}`, flexShrink: 0 }}></span>
