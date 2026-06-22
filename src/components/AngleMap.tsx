@@ -14,14 +14,14 @@ type AmmAd = { img: string; who: string; fmt: string; meta: string }
 type AmmAngle = {
   name: string; score: number; buyer: number; ad: number; gap: number; adShare: number
   type: 'Underserved' | 'Emerging' | 'Contested' | 'Saturated'
-  trend: string; d30: string; vel: string; sources: number; signal: string; color: string
+  trend: string; d30: string; vel: string; longevity: string; sources: number; signal: string; color: string
   plats: string[]; why: string; ads: AmmAd[]
   youtube: { n: number; pos: number; vids: string[] }
   quotes: [string, string][]
 }
 
 const AMM_ANGLES: AmmAngle[] = [
-  { name: 'Cognitive health', score: 87.3, buyer: 43, ad: 0, gap: 43, adShare: 0, type: 'Underserved', trend: 'Rising', d30: '+9', vel: '+3.2×', sources: 3, signal: 'High', color: 'var(--dv-s2)',
+  { name: 'Cognitive health', score: 87.3, buyer: 43, ad: 0, gap: 43, adShare: 0, type: 'Underserved', trend: 'Rising', d30: '+9', vel: '+3.2×', longevity: '—', sources: 3, signal: 'High', color: 'var(--dv-s2)',
     plats: ['Amazon', 'YouTube', 'Reddit'],
     why: 'Cognitive health is what buyers ask for most, yet no competitor advertises it directly. A clean first-mover lane.',
     ads: [],
@@ -31,7 +31,7 @@ const AMM_ANGLES: AmmAngle[] = [
       ['Bought it for focus during study sessions, noticed sharper recall within a week.', 'amazon review · 5★'],
       ['The only magnesium that actually crosses into the brain — that’s why I take it.', 'reddit · r/Nootropics'],
     ] },
-  { name: 'Sleep quality', score: 72.1, buyer: 38, ad: 12, gap: 26, adShare: 17, type: 'Emerging', trend: 'Rising', d30: '+6', vel: '+2.1×', sources: 4, signal: 'High', color: 'var(--dv-s3)',
+  { name: 'Sleep quality', score: 72.1, buyer: 38, ad: 12, gap: 26, adShare: 17, type: 'Emerging', trend: 'Rising', d30: '+6', vel: '+2.1×', longevity: '14d', sources: 4, signal: 'High', color: 'var(--dv-s3)',
     plats: ['Amazon', 'TikTok', 'Reddit'],
     why: 'Strong buyer demand with only light ad coverage — competitors are testing it but haven’t locked it down.',
     ads: [
@@ -43,7 +43,7 @@ const AMM_ANGLES: AmmAngle[] = [
       ['Falling asleep faster and staying asleep — first supplement that’s done that for me.', 'amazon review · 5★'],
       ['Calmer at night, no groggy morning. Replaced my melatonin entirely.', 'amazon review · 4★'],
     ] },
-  { name: 'Stress relief', score: 58.4, buyer: 31, ad: 14, gap: 17, adShare: 20, type: 'Emerging', trend: 'Rising', d30: '+4', vel: '+1.6×', sources: 3, signal: 'Medium', color: 'var(--dv-s4)',
+  { name: 'Stress relief', score: 58.4, buyer: 31, ad: 14, gap: 17, adShare: 20, type: 'Emerging', trend: 'Rising', d30: '+4', vel: '+1.6×', longevity: '11d', sources: 3, signal: 'Medium', color: 'var(--dv-s4)',
     plats: ['Amazon', 'TikTok'],
     why: 'Buyers connect magnesium to calm; a handful of advertisers are starting to claim it.',
     ads: [
@@ -55,7 +55,7 @@ const AMM_ANGLES: AmmAngle[] = [
       ['Noticeably less on-edge during a stressful month at work.', 'amazon review · 5★'],
       ['Takes the edge off without making me drowsy.', 'amazon review · 4★'],
     ] },
-  { name: 'Clinical / science', score: 44.2, buyer: 22, ad: 18, gap: 4, adShare: 26, type: 'Contested', trend: 'Stable', d30: '+1', vel: '+0.4×', sources: 2, signal: 'Medium', color: 'var(--dv-s5)',
+  { name: 'Clinical / science', score: 44.2, buyer: 22, ad: 18, gap: 4, adShare: 26, type: 'Contested', trend: 'Stable', d30: '+1', vel: '+0.4×', longevity: '22d', sources: 2, signal: 'Medium', color: 'var(--dv-s5)',
     plats: ['YouTube', 'Google'],
     why: 'Demand and ad coverage are roughly matched — an evidence-led claim several brands already make.',
     ads: [
@@ -67,7 +67,7 @@ const AMM_ANGLES: AmmAngle[] = [
       ['Bought it because of the published cognition study — the science sold me.', 'amazon review · 5★'],
       ['Appreciate that this form is actually backed by trials.', 'amazon review · 4★'],
     ] },
-  { name: 'Value & dosage', score: 24.5, buyer: 14, ad: 26, gap: -12, adShare: 37, type: 'Saturated', trend: 'Stable', d30: '-2', vel: '-0.3×', sources: 2, signal: 'Low', color: '#c9d6cb',
+  { name: 'Value & dosage', score: 24.5, buyer: 14, ad: 26, gap: -12, adShare: 37, type: 'Saturated', trend: 'Stable', d30: '-2', vel: '-0.3×', longevity: '31d', sources: 2, signal: 'Low', color: '#c9d6cb',
     plats: ['Amazon', 'Google'],
     why: 'More ads chase price and dosage than buyers care about — a crowded, discount-led race to avoid.',
     ads: [
@@ -98,17 +98,24 @@ function AmmGap({ g, big }: { g: number; big?: boolean }) {
   return <span style={{ fontSize: big ? 16 : 12.5, fontWeight: 600, color: pos ? NT.green : NT.red, fontFamily: AMM_MONO }}>{pos ? '+' : ''}{g}pp</span>
 }
 
-function AmmDualBar({ buyer, ad, w = 128 }: { buyer: number; ad: number; w?: number }) {
-  const rows: [string, number, string, number][] = [['BUYERS', buyer, 'var(--dv-green-br)', 1], ['ADS', ad, NT.text, 0.5]]
+const AMM_TBL_GRID = '20px minmax(0,1fr) 120px 42px 36px 46px 96px 42px'
+
+function AmmMetric({ v, tone }: { v: string; tone?: 'pos' | 'neg' | null }) {
+  const c = v === '—' ? NT.text : tone === 'pos' ? NT.green : tone === 'neg' ? NT.red : NT.text
+  return <span style={{ fontSize: 11, fontWeight: 550, color: c, fontFamily: AMM_MONO }}>{v}</span>
+}
+
+function AmmBarMini({ buyer, ad }: { buyer: number; ad: number }) {
+  const rows: [string, number, string, number][] = [['Buy', buyer, 'var(--dv-green-br)', 1], ['Ads', ad, NT.text, 0.5]]
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: w }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
       {rows.map(([l, v, c, o]) => (
-        <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-          <span style={{ fontSize: 8.5, fontWeight: 600, color: NT.text, width: 34, flexShrink: 0, letterSpacing: '0.02em' }}>{l}</span>
+        <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ fontSize: 8, fontWeight: 600, color: NT.text, width: 20, flexShrink: 0, letterSpacing: '0.02em' }}>{l}</span>
           <div style={{ flex: 1, height: 5, background: 'var(--dv-page)', border: `1px solid ${NT.borderS}`, borderRadius: 3, overflow: 'hidden' }}>
             <div style={{ width: `${v}%`, height: '100%', background: c, opacity: o, borderRadius: 3 }}></div>
           </div>
-          <span style={{ fontSize: 10, fontWeight: 550, color: NT.text, fontFamily: AMM_MONO, width: 30, textAlign: 'right' }}>{v}%</span>
+          <span style={{ fontSize: 9, fontWeight: 550, color: NT.text, fontFamily: AMM_MONO, width: 24, textAlign: 'right' }}>{v}%</span>
         </div>
       ))}
     </div>
@@ -293,7 +300,7 @@ export default function AngleMap({ open, onClose }: { open: boolean; onClose: ()
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(16,24,15,0.34)', fontFamily: AMM_SANS, display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'ammFade 0.16s ease' }}>
       <style>{'@keyframes ammFade { from { opacity:0; } to { opacity:1; } } @keyframes ammPop { from { transform:translateY(10px) scale(0.99); opacity:0.4; } to { transform:none; opacity:1; } }'}</style>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: 1200, maxWidth: 'calc(100vw - 48px)', height: 820, maxHeight: 'calc(100vh - 48px)', background: 'var(--dv-surf)', borderRadius: 18, boxShadow: '0 32px 80px rgba(16,24,15,0.34)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'ammPop 0.22s cubic-bezier(0.2,0.8,0.3,1)' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: 1280, maxWidth: 'calc(100vw - 48px)', height: 820, maxHeight: 'calc(100vh - 48px)', background: 'var(--dv-surf)', borderRadius: 18, boxShadow: '0 32px 80px rgba(16,24,15,0.34)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'ammPop 0.22s cubic-bezier(0.2,0.8,0.3,1)' }}>
         {/* title bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '16px 24px 14px', borderBottom: `1px solid ${NT.borderS}`, flexShrink: 0 }}>
           <img src={AMM_PROD_IMG} style={{ width: 36, height: 36, borderRadius: 9, objectFit: 'cover', border: `1px solid ${NT.borderS}` }} alt="Magnesium L-Threonate" />
@@ -307,30 +314,32 @@ export default function AngleMap({ open, onClose }: { open: boolean; onClose: ()
           <span onClick={onClose} style={{ marginLeft: 'auto', width: 30, height: 30, borderRadius: 8, border: `1px solid ${NT.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: NT.text, fontSize: 12 }}>✕</span>
         </div>
         {/* body */}
-        <div style={{ display: 'grid', gridTemplateColumns: '440px minmax(0,1fr)', flex: 1, minHeight: 0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', flex: 1, minHeight: 0 }}>
           <div style={{ borderRight: `1px solid ${NT.borderS}`, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
             <div style={{ padding: '16px 22px 8px' }}>
               <div style={{ fontSize: 10, fontWeight: 600, color: NT.text, letterSpacing: '0.05em', marginBottom: 3 }}>AD COVERAGE BY ANGLE</div>
               <div style={{ fontSize: 11, color: NT.text }}>where the 4 competitors concentrate their ads</div>
             </div>
             <AmmDonutBig />
-            <AmmBand right="by gap">ANGLES · 5</AmmBand>
+            <div style={{ display: 'grid', gridTemplateColumns: AMM_TBL_GRID, gap: 10, padding: '8px 22px', background: 'var(--dv-page)', borderTop: `1px solid ${NT.borderS}`, borderBottom: `1px solid ${NT.borderS}` }}>
+              {['', 'Angle', 'Presence', 'Longev.', '30D', 'Vel.', 'Type', 'Gap'].map((c, i) => <div key={i} style={{ fontSize: 9, fontWeight: 600, color: NT.text, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{c}</div>)}
+            </div>
             {AMM_ANGLES.map((a, i) => {
               const isFocus = i === focusIdx
               const isSel = selected.has(i)
               return (
-                <div key={a.name} className="dv2-row" onClick={() => setFocusIdx(i)} style={{ padding: '6px 22px', borderBottom: `1px solid ${NT.borderS}`, cursor: 'pointer', background: isFocus ? 'var(--dv-row-top)' : 'transparent', borderLeft: isFocus ? '3px solid var(--dv-green-br)' : '3px solid transparent' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 5 }}>
-                    <span onClick={(e) => { e.stopPropagation(); toggle(i) }} style={{ display: 'flex' }}><AmmCheck on={isSel} /></span>
+                <div key={a.name} className="dv2-row" onClick={() => setFocusIdx(i)} style={{ display: 'grid', gridTemplateColumns: AMM_TBL_GRID, gap: 10, alignItems: 'center', padding: '12px 22px', borderBottom: `1px solid ${NT.borderS}`, cursor: 'pointer', background: isFocus ? 'var(--dv-row-top)' : 'transparent', borderLeft: isFocus ? '3px solid var(--dv-green-br)' : '3px solid transparent' }}>
+                  <span onClick={(e) => { e.stopPropagation(); toggle(i) }} style={{ display: 'flex' }}><AmmCheck on={isSel} /></span>
+                  <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ width: 9, height: 9, borderRadius: 3, background: a.adShare > 0 ? a.color : 'transparent', border: a.adShare > 0 ? 'none' : `1.5px dashed ${NT.red}`, flexShrink: 0 }}></span>
-                    <span style={{ fontSize: 13, fontWeight: isFocus ? 600 : 550, color: NT.text }}>{a.name}</span>
-                    {i === 0 && <span style={{ fontSize: 9, fontWeight: 600, color: NT.green, background: NT.greenBg, padding: '1.5px 7px', borderRadius: 7 }}>Top</span>}
-                    <span style={{ marginLeft: 'auto' }}><AmmGap g={a.gap} /></span>
+                    <span style={{ fontSize: 12.5, fontWeight: isFocus ? 600 : 550, color: NT.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.name}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 28 }}>
-                    <AmmDualBar buyer={a.buyer} ad={a.ad} w={170} />
-                    <AmmTypePill t={a.type} />
-                  </div>
+                  <AmmBarMini buyer={a.buyer} ad={a.ad} />
+                  <AmmMetric v={a.longevity} />
+                  <AmmMetric v={a.d30} tone={a.d30[0] === '+' ? 'pos' : a.d30[0] === '-' ? 'neg' : null} />
+                  <AmmMetric v={a.vel} tone={a.vel[0] === '+' ? 'pos' : a.vel[0] === '-' ? 'neg' : null} />
+                  <AmmTypePill t={a.type} />
+                  <AmmGap g={a.gap} />
                 </div>
               )
             })}

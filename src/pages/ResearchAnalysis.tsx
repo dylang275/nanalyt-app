@@ -189,10 +189,9 @@ function ApEconCard() {
 function ApAnglesCard({ onExpand }: { onExpand: () => void }) {
   return (
     <div style={{ ...ntCard, overflow: 'hidden' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 22px 11px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '13px 22px 11px' }}>
         <span style={{ fontSize: 13, fontWeight: 550, color: NT.text }}>Positioning angles</span>
-        <span className="dv2-link" onClick={onExpand} style={{ fontSize: 11, fontWeight: 500, color: NT.green, cursor: 'pointer' }}>Expand ↗</span>
-        <span style={{ marginLeft: 'auto', fontSize: 11, color: NT.text, fontFamily: AP_MONO }}>5 classified</span>
+        <span className="dv2-link" onClick={onExpand} style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 550, color: NT.green, cursor: 'pointer' }}>Expand ↗</span>
       </div>
       <div style={{ padding: '4px 22px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         {AP_ANGLES.map((a, i) => (
@@ -209,7 +208,7 @@ function ApAnglesCard({ onExpand }: { onExpand: () => void }) {
             </div>
           </div>
         ))}
-        <div style={{ fontSize: 10.5, color: NT.text, lineHeight: 1.5 }}>Classified from competitor ad copy. Open a source for buyer language and evidence.</div>
+        <div style={{ fontSize: 10.5, color: NT.text, lineHeight: 1.5 }}>Classified from competitor ad copy. <span className="dv2-link" onClick={onExpand} style={{ fontWeight: 550, color: NT.green, cursor: 'pointer' }}>Expand</span> for the full gap analysis and creative evidence.</div>
       </div>
     </div>
   )
